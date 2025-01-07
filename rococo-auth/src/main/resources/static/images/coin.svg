@@ -1,0 +1,28 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Фон -->
+    <rect width="200" height="200" fill="#F4D03F"/>
+
+    <!-- Лицо (овальная форма) -->
+    <ellipse cx="100" cy="100" rx="60" ry="80" fill="#E67E22"/>
+
+    <!-- Глаза (асимметричные формы) -->
+    <circle cx="80" cy="90" r="10" fill="#2C3E50"/>
+    <ellipse cx="120" cy="85" rx="15" ry="10" fill="#2C3E50"/>
+
+    <!-- Нос (угловатая форма) -->
+    <polygon points="100,110 90,130 110,130" fill="#D35400"/>
+
+    <!-- Рот (изогнутая линия) -->
+    <path d="M80 150 Q100 160 120 150" stroke="#2C3E50" stroke-width="5" fill="none"/>
+
+    <!-- Усы (стилизованные) -->
+    <path d="M80 140 Q90 145 100 140" stroke="#2C3E50" stroke-width="3" fill="none"/>
+    <path d="M100 140 Q110 145 120 140" stroke="#2C3E50" stroke-width="3" fill="none"/>
+
+    <!-- Волосы (волнистые линии) -->
+    <path d="M70 50 Q80 30 90 50 T110 50 T130 30 T150 50" stroke="#8E44AD" stroke-width="5" fill="none"/>
+
+    <!-- Брови (угловатые линии) -->
+    <path d="M70 80 L90 75" stroke="#2C3E50" stroke-width="3"/>
+    <path d="M110 75 L130 80" stroke="#2C3E50" stroke-width="3"/>
+</svg>
