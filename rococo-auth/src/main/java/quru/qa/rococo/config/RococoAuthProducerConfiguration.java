@@ -30,14 +30,14 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
  * определения бинов, которые будут управляться Spring-контейнером.
  */
 @Configuration
-public class NifflerAuthProducerConfiguration {
+public class RococoAuthProducerConfiguration {
 
     // KafkaProperties предоставляет настройки Kafka, такие как адреса брокеров, SSL и другие параметры.
     private final KafkaProperties kafkaProperties;
 
     // Конструктор для внедрения зависимости KafkaProperties через Spring DI.
     @Autowired
-    public NifflerAuthProducerConfiguration(KafkaProperties kafkaProperties) {
+    public RococoAuthProducerConfiguration(KafkaProperties kafkaProperties) {
         this.kafkaProperties = kafkaProperties;
     }
 

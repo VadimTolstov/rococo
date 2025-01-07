@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Класс оборачивает сущность {@link UserEntity} и предоставляет методы для получения информации
  * о пользователе, такой как его имя, пароль, статус аккаунта и права доступа.
  */
-public class NifflerUserPrincipal implements UserDetails {
+public class RococoUserPrincipal implements UserDetails {
 
     // Сущность пользователя, которую представляет этот принципал
     private final UserEntity user;
@@ -26,7 +26,7 @@ public class NifflerUserPrincipal implements UserDetails {
      *
      * @param user Сущность пользователя, которую нужно обернуть в принципал.
      */
-    public NifflerUserPrincipal(UserEntity user) {
+    public RococoUserPrincipal(UserEntity user) {
         this.user = user;
     }
 

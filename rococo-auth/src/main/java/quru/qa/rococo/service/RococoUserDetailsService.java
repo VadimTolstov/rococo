@@ -1,7 +1,7 @@
 package quru.qa.rococo.service;
 
 import quru.qa.rococo.data.repository.UserRepository;
-import quru.qa.rococo.domain.NifflerUserPrincipal;
+import quru.qa.rococo.domain.RococoUserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  * который будет управляться Spring-контейнером.
  */
 @Component
-public class NifflerUserDetailsService implements UserDetailsService {
+public class RococoUserDetailsService implements UserDetailsService {
 
     // Репозиторий для работы с данными пользователей
     private final UserRepository userRepository;
@@ -29,7 +29,7 @@ public class NifflerUserDetailsService implements UserDetailsService {
      * @param userRepository Репозиторий для работы с данными пользователей.
      */
     @Autowired
-    public NifflerUserDetailsService(UserRepository userRepository) {
+    public RococoUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -48,7 +48,7 @@ public class NifflerUserDetailsService implements UserDetailsService {
         // Ищем пользователя в репозитории по имени
         return userRepository.findByUsername(username)
                 // Если пользователь найден, создаем объект NifflerUserPrincipal
-                .map(NifflerUserPrincipal::new)
+                .map(RococoUserPrincipal::new)
                 // Если пользователь не найден, выбрасываем исключение
                 .orElseThrow(() -> new UsernameNotFoundException("Username: `" + username + "` not found"));
     }

@@ -53,7 +53,7 @@ import java.util.UUID;
  * определения бинов, которые будут управляться Spring-контейнером.
  */
 @Configuration
-public class NifflerAuthServiceConfig {
+public class RococoAuthServiceConfig {
 
     // Менеджер ключей для генерации RSA-ключей
     private final KeyManager keyManager;
@@ -91,13 +91,13 @@ public class NifflerAuthServiceConfig {
      * @param environment    Окружение (профили) приложения.
      */
     @Autowired
-    public NifflerAuthServiceConfig(KeyManager keyManager,
-                                    @Value("${rococo-front.base-uri}") String rococoFrontUri,
-                                    @Value("${rococo-auth.base-uri}") String rococoAuthUri,
-                                    @Value("${oauth2.client-id}") String clientId,
-                                    @Value("${server.port}") String serverPort,
-                                    CorsCustomizer corsCustomizer,
-                                    Environment environment) {
+    public RococoAuthServiceConfig(KeyManager keyManager,
+                                   @Value("${rococo-front.base-uri}") String rococoFrontUri,
+                                   @Value("${rococo-auth.base-uri}") String rococoAuthUri,
+                                   @Value("${oauth2.client-id}") String clientId,
+                                   @Value("${server.port}") String serverPort,
+                                   CorsCustomizer corsCustomizer,
+                                   Environment environment) {
         this.keyManager = keyManager;
         this.rococoFrontUri = rococoFrontUri;
         this.rococoAuthUri = rococoAuthUri;
