@@ -48,8 +48,8 @@ import java.util.UUID;
 public class NifflerAuthServiceConfig {
 
   private final KeyManager keyManager;
-  private final String nifflerFrontUri;
-  private final String nifflerAuthUri;
+  private final String rococoFrontUri;
+  private final String rococoAuthUri;
   private final String clientId;
   private final CorsCustomizer corsCustomizer;
   private final String serverPort;
@@ -58,15 +58,15 @@ public class NifflerAuthServiceConfig {
 
   @Autowired
   public NifflerAuthServiceConfig(KeyManager keyManager,
-                                  @Value("${niffler-front.base-uri}") String nifflerFrontUri,
-                                  @Value("${niffler-auth.base-uri}") String nifflerAuthUri,
+                                  @Value("${rococo-front.base-uri}") String rococoFrontUri,
+                                  @Value("${rococo-auth.base-uri}") String rococoAuthUri,
                                   @Value("${oauth2.client-id}") String clientId,
                                   @Value("${server.port}") String serverPort,
                                   CorsCustomizer corsCustomizer,
                                   Environment environment) {
     this.keyManager = keyManager;
-    this.nifflerFrontUri = nifflerFrontUri;
-    this.nifflerAuthUri = nifflerAuthUri;
+    this.rococoFrontUri = rococoFrontUri;
+    this.rococoAuthUri = rococoAuthUri;
     this.clientId = clientId;
     this.serverPort = serverPort;
     this.corsCustomizer = corsCustomizer;
@@ -125,7 +125,7 @@ public class NifflerAuthServiceConfig {
         .clientId(clientId)
         .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
         .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-        .redirectUri(nifflerFrontUri + "/authorized")
+        .redirectUri(rococoFrontUri + "/authorized")
         .scope(OidcScopes.OPENID)
         .scope(OidcScopes.PROFILE)
         .clientSettings(ClientSettings.builder()
@@ -149,7 +149,7 @@ public class NifflerAuthServiceConfig {
   @Bean
   public AuthorizationServerSettings authorizationServerSettings() {
     return AuthorizationServerSettings.builder()
-        .issuer(nifflerAuthUri)
+        .issuer(rococoAuthUri)
         .build();
   }
 

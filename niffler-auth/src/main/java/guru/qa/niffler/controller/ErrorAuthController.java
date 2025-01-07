@@ -13,10 +13,10 @@ public class ErrorAuthController implements ErrorController {
 
   private static final String ERROR_VIEW_NAME = "error";
 
-  private final String nifflerFrontUri;
+  private final String rococoFrontUri;
 
-  public ErrorAuthController(@Value("${niffler-front.base-uri}") String nifflerFrontUri) {
-    this.nifflerFrontUri = nifflerFrontUri;
+  public ErrorAuthController(@Value("${rococo-front.base-uri}") String rococoFrontUri) {
+    this.rococoFrontUri = rococoFrontUri;
   }
 
   @GetMapping("/error")
@@ -24,7 +24,7 @@ public class ErrorAuthController implements ErrorController {
     int status = response.getStatus();
     Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
     model.addAttribute("status", status);
-    model.addAttribute("frontUri", nifflerFrontUri + "/main");
+    model.addAttribute("frontUri", rococoFrontUri + "/main");
     model.addAttribute("error", throwable != null ? throwable.getMessage() : "Unknown error");
     return ERROR_VIEW_NAME;
   }

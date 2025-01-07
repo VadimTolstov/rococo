@@ -31,19 +31,19 @@ public class RegisterController {
   private static final String REG_MODEL_ERROR_BEAN_NAME = "org.springframework.validation.BindingResult.registrationModel";
 
   private final UserService userService;
-  private final String nifflerFrontUri;
+  private final String rococoFrontUri;
 
   @Autowired
   public RegisterController(UserService userService,
-                            @Value("${niffler-front.base-uri}") String nifflerFrontUri) {
+                            @Value("${rococo-front.base-uri}") String rococoFrontUri) {
     this.userService = userService;
-    this.nifflerFrontUri = nifflerFrontUri;
+    this.rococoFrontUri = rococoFrontUri;
   }
 
   @GetMapping("/register")
   public String getRegisterPage(@Nonnull Model model) {
     model.addAttribute(MODEL_REG_FORM_ATTR, new RegistrationModel(null, null, null));
-    model.addAttribute(MODEL_FRONT_URI_ATTR, nifflerFrontUri + "/main");
+    model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
     return REGISTRATION_VIEW_NAME;
   }
 
@@ -73,7 +73,7 @@ public class RegisterController {
     } else {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
-    model.addAttribute(MODEL_FRONT_URI_ATTR, nifflerFrontUri + "/main");
+    model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
     return REGISTRATION_VIEW_NAME;
   }
 
