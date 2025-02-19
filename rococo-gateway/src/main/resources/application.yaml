@@ -1,56 +1,148 @@
+# Основная конфигурация приложения (активна по умолчанию)
 server:
-  port: 8080
+  # Порт, на котором будет запущено приложение
+  port: 8090
 
 spring:
   application:
+    # Имя приложения для идентификации в сервисе Discovery (Eureka и т.д.)
     name: rococo-gateway
-  graphql:
-    graphiql:
-      enabled: true
-    schema:
-      introspection:
-        enabled: true
+
+  # Конфигурация безопасности
   security:
     oauth2:
       resourceserver:
         jwt:
+          # URL сервера авторизации (OAuth2) для проверки JWT токенов
           issuer-uri: 'http://127.0.0.1:9000'
+
+  # Настройки подключения к базе данных
   datasource:
+    # JDBC URL для подключения к MySQL с параметрами:
+    # - автоматическое создание БД при отсутствии
+    # - установка таймзоны UTC
     url: 'jdbc:mysql://127.0.0.1:3306/rococo-gateway?serverTimezone=UTC&createDatabaseIfNotExist=true'
+
+    # Конфигурация пула соединений HikariCP
     hikari:
-      connection-timeout: 20000
-      minimum-idle: 10
-      maximum-pool-size: 30
-      idle-timeout: 10000
-      max-lifetime: 1000
-      auto-commit: true
+      connection-timeout: 20000  # Таймаут подключения (20 сек)
+      minimum-idle: 10           # Минимальное количество простаивающих соединений
+      maximum-pool-size: 30      # Максимальный размер пула
+      idle-timeout: 10000        # Таймаут простаивающего соединения (10 сек)
+      max-lifetime: 1000         # Максимальное время жизни соединения (1 сек)
+      auto-commit: true          # Автоматический коммит транзакций
+
+    # Учетные данные для подключения к БД
     username: root
     password: secret
+
+  # Настройки миграций Flyway
   flyway:
-    enabled: true
-    baseline-on-migrate: true
-    baseline-version: 0
-    schemas: rococo-gateway
-    locations: classpath:db/migration/rococo-gateway
+    enabled: true                # Включение Flyway
+    baseline-on-migrate: true    # Создание baseline для существующих БД
+    baseline-version: 0          # Начальная версия миграций
+    schemas: rococo-gateway      # Целевая схема БД
+    locations: classpath:db/migration/rococo-gateway  # Путь к скриптам миграций
+
+  # Конфигурация JPA и Hibernate
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: none  # Отключение автоматической генерации DDL
     properties:
       hibernate:
         jdbc:
           lob:
+            # Разрешение создания LOB объектов вне контекста
             non_contextual_creation: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: false
-    generate-ddl: true
-    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # Диалект для MySQL 8
+    show-sql: false     # Отключение логирования SQL-запросов
+    generate-ddl: true  # Разрешение генерации DDL (используется с ddl-auto: none)
+    open-in-view: false # Отключение режима "open session in view"
 
+# Настройки логирования
 logging:
   level:
-    root: INFO
+    root: INFO  # Базовый уровень логирования
+    # Детальное логирование для Spring компонентов
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
+    org.springframework.boot.autoconfigure: INFO
+  file:
+    name: 'gateway.log'  # Имя файла для сохранения логов
+
+# Кастомные настройки приложения
+rococo-userdata:
+  client: rest  # Использование REST клиента для сервиса userdata
 
 rococo-front:
+  base-uri: 'http://127.0.0.1:3000'  # Базовый URL фронтенд-приложения
+
+---
+# Конфигурация для профиля "local"
+spring:
+  config:
+    activate:
+      on-profile: 'local'  # Активация настроек только для профиля "local"
+
+  # Отключение автоконфигурации Vault (не используется в локальном окружении)
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: 'http://127.0.0.1:9000'  # Локальный сервер авторизации
+
+# URL микросервисов в локальном окружении
+rococo-userdata:
+  base-uri: 'http://127.0.0.1:8285'
+rococo-front:
   base-uri: 'http://127.0.0.1:3000'
+rococo-artist:
+  base-uri: 'http://127.0.0.1:8282'
+rococo-museum:
+  base-uri: 'http://127.0.0.1:8283'
+rococo-painting:
+  base-uri: 'http://127.0.0.1:8284'
+rococo-gateway:
+  base-uri: 'http://127.0.0.1:8090'
+
+---
+# Конфигурация для профиля "docker"
+spring:
+  config:
+    activate:
+      on-profile: 'docker'  # Активация настроек только для профиля "docker"
+
+  # Отключение автоконфигурации Vault
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Сервер авторизации в Docker-сети
+          issuer-uri: 'http://auth.rococo.dc:9000'
+
+# URL микросервисов в Docker окружении (сервисы в отдельных контейнерах)
+rococo-userdata:
+  base-uri: 'http://userdata.rococo.dc:8285'
+rococo-front:
+  base-uri: 'http://frontend.rococo.dc'
+rococo-artist:
+  base-uri: 'http://artist.rococo.dc:8282'
+rococo-museum:
+  base-uri: 'http://museum.rococo.dc:8283'
+rococo-painting:
+  base-uri: 'http://painting.rococo.dc:8284'
+rococo-gateway:
+  base-uri: 'http://gateway.rococo.dc:8090'
