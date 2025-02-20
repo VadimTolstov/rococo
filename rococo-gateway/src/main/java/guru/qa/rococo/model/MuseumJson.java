@@ -37,5 +37,10 @@ public record MuseumJson(
         @NotNull(message = "Необходимо выбрать страну")
         @JsonProperty("country")
         CountryJson country
+        //todo  проверить если в запросе геоданные
+        //        @Valid
+        //        @NotNull(message = "geo: Геоданные обязательны для заполнения")
+        //        @JsonProperty("geo")
+        //        GeoJson geo
 ) {
 }

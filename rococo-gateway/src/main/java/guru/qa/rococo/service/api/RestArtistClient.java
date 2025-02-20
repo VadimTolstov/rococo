@@ -3,6 +3,7 @@ package guru.qa.rococo.service.api;
 import guru.qa.rococo.ex.NoRestResponseException;
 import guru.qa.rococo.model.ArtistJson;
 import guru.qa.rococo.model.page.RestPage;
+import guru.qa.rococo.service.utils.HttpQueryPaginationAndSort;
 import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,24 +31,16 @@ public class RestArtistClient {
     }
 
     public @Nonnull Page<ArtistJson> getAllArtists(@Nonnull Pageable pageable) {
+        // Генерация параметров запроса
+        HttpQueryPaginationAndSort query = new HttpQueryPaginationAndSort(pageable);
         // 1. Безопасное формирование URL с параметрами пагинации и сортировки
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+        URI uri = UriComponentsBuilder
                 .fromUriString(rococoArtistBaseUri)
                 .path("/artist")
                 // Добавляем параметры пагинации
-                .queryParam("page", pageable.getPageNumber())
-                .queryParam("size", pageable.getPageSize());
-
-        // Добавляем параметры сортировки (если они есть)
-        if (pageable.getSort().isSorted()) {
-            pageable.getSort().forEach(order ->
-                    uriBuilder.queryParam("sort",
-                            order.getProperty() + "," + order.getDirection().name().toLowerCase()
-                    )
-            );
-        }
-
-        URI uri = uriBuilder.build().toUri();
+                .queryParams(query.toQueryParams())
+                .build()
+                .toUri();
 
         // 2. Выполнение запроса
         ResponseEntity<RestPage<ArtistJson>> response = restTemplate.exchange(

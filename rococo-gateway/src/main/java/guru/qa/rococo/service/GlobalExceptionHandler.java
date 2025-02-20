@@ -48,25 +48,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @return Ответ с детализированной информацией об ошибках валидации
      */
     @Override
-    protected @Nonnull ResponseEntity<Object> handleMethodArgumentNotValid(
-            @Nonnull MethodArgumentNotValidException ex,
-            @Nonnull HttpHeaders headers,
-            @Nonnull HttpStatusCode status,
-            @Nonnull WebRequest request) {
-        // Собираем все сообщения об ошибках валидации в одну строку
-        String errorMessages = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-
+    protected @Nonnull ResponseEntity<Object> handleMethodArgumentNotValid(@Nonnull MethodArgumentNotValidException ex,
+                                                                           @Nonnull HttpHeaders headers,
+                                                                           @Nonnull HttpStatusCode status,
+                                                                           @Nonnull WebRequest request) {
         return ResponseEntity
                 .status(status)
                 .body(new ErrorJson(
-                        appName + ": Ошибка валидации данных",
-                        HttpStatus.resolve(status.value()).getReasonPhrase(),
-                        status.value(),
-                        errorMessages,
+                        appName + ": Entity validation error", // Тип ошибки
+                        HttpStatus.resolve(status.value()).getReasonPhrase(), // Стандартное описание статуса
+                        status.value(), // HTTP-статус код
+                        // Собираем сообщения об ошибках валидации в одну строку
+                        ex.getBindingResult()
+                                .getFieldErrors()
+                                .stream()
+                                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                                .collect(Collectors.joining(", ")),
+                        // URI запроса, вызвавшего ошибку
                         ((ServletWebRequest) request).getRequest().getRequestURI()
                 ));
     }
@@ -136,11 +134,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(new ErrorJson(
-                        appName + ": " + type,
-                        status.getReasonPhrase(),
-                        status.value(),
-                        message,
-                        request.getRequestURI()
+                        appName + ": " + type, // Тип ошибки с именем приложения
+                        status.getReasonPhrase(), // Стандартное описание статуса
+                        status.value(), // HTTP-код
+                        message, // Детализированное сообщение
+                        request.getRequestURI() // URI запроса
                 ));
     }
 
@@ -155,19 +153,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Nonnull
     private ResponseEntity<ErrorJson> handleForwardedException(@Nonnull HttpClientErrorException ex,
                                                                @Nonnull HttpServletRequest request) {
-        // Десериализуем тело ошибки из удаленного сервиса
+        // Десериализация тела ошибки из удаленного сервиса
         ErrorJson originalError = ex.getResponseBodyAs(ErrorJson.class);
-        assert originalError != null;
-
-        // Сохраняем оригинальный статус и сообщение
         return ResponseEntity
                 .status(originalError.status())
                 .body(new ErrorJson(
-                        originalError.type(),
-                        originalError.title(),
-                        originalError.status(),
-                        originalError.detail(),
-                        request.getRequestURI()
+                        originalError.type(), // Сохраняем оригинальный тип
+                        originalError.title(), // Сохраняем оригинальный заголовок
+                        originalError.status(), // Сохраняем оригинальный статус
+                        originalError.detail(), // Сохраняем оригинальные детали
+                        request.getRequestURI() // URI текущего запроса
                 ));
     }
 }

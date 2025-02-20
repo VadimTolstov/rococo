@@ -85,7 +85,7 @@ public class RococoGatewayServiceConfig {
                 .servers(List.of(server))
                 // Настраиваем метаинформацию о API.
                 .info(new Info()
-                        .title("Niffler Gateway API Documentation")// Устанавливаем заголовок API.
+                        .title("Rococo Gateway API Documentation")// Устанавливаем заголовок API.
                         .version("1.0") // Устанавливаем версию API.
                         .description("API documentation with Swagger and SpringDoc"))   // Устанавливаем описание API.
                 // Добавляем требование безопасности, указывающее, что для доступа к API требуется аутентификация.
