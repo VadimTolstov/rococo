@@ -5,6 +5,7 @@ import guru.qa.rococo.model.ArtistJson;
 import guru.qa.rococo.model.page.RestPage;
 import guru.qa.rococo.service.utils.HttpQueryPaginationAndSort;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,24 +32,27 @@ public class RestArtistClient {
         this.rococoArtistBaseUri = rococoArtistBaseUri + "/internal";
     }
 
-    public @Nonnull Page<ArtistJson> getAllArtists(@Nonnull Pageable pageable) {
-        // Генерация параметров запроса
-        HttpQueryPaginationAndSort query = new HttpQueryPaginationAndSort(pageable);
+    public @Nonnull Page<ArtistJson> getAllArtists(@Nonnull Pageable pageable,
+                                                   @Nullable String name) {
         // 1. Безопасное формирование URL с параметрами пагинации и сортировки
-        URI uri = UriComponentsBuilder
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
                 .fromUriString(rococoArtistBaseUri)
                 .path("/artist")
                 // Добавляем параметры пагинации
-                .queryParams(query.toQueryParams())
-                .build()
-                .toUri();
+                .queryParams(new HttpQueryPaginationAndSort(pageable).toQueryParams());
+
+        if (StringUtils.hasText(name)) {
+            uriBuilder.queryParam("name", name.trim());
+        }
+
+        URI uri = uriBuilder.build().toUri();
 
         // 2. Выполнение запроса
         ResponseEntity<RestPage<ArtistJson>> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<RestPage<ArtistJson>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
 
@@ -69,23 +74,24 @@ public class RestArtistClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
     }
 
-    public @Nonnull ArtistJson getArtistByName(@Nonnull String name) {
-        URI uri = UriComponentsBuilder
-                .fromUriString(rococoArtistBaseUri)
-                .path("/artist")
-                .queryParam("name", name)
-                .build()
-                .toUri();
-        ResponseEntity<ArtistJson> response = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                null,
-                ArtistJson.class
-        );
-
-        return Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
-    }
+    //todo проверить как будет работать фронт с пагинацией
+//    public @Nonnull ArtistJson getArtistByName(@Nonnull String name) {
+//        URI uri = UriComponentsBuilder
+//                .fromUriString(rococoArtistBaseUri)
+//                .path("/artist")
+//                .queryParam("name", name)
+//                .build()
+//                .toUri();
+//        ResponseEntity<ArtistJson> response = restTemplate.exchange(
+//                uri,
+//                HttpMethod.GET,
+//                null,
+//                ArtistJson.class
+//        );
+//
+//        return Optional.ofNullable(response.getBody())
+//                .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
+//    }
 
     public @Nonnull ArtistJson addArtist(@Nonnull ArtistJson artist) {
         URI uri = UriComponentsBuilder
@@ -96,6 +102,7 @@ public class RestArtistClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ArtistJson> request = new HttpEntity<>(artist, headers);
+
         ResponseEntity<ArtistJson> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
@@ -116,8 +123,8 @@ public class RestArtistClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<ArtistJson> request = new HttpEntity<>(artist, headers);
+
         ResponseEntity<ArtistJson> response = restTemplate.exchange(
                 uri,
                 HttpMethod.PATCH,  // Явное указание метода PATCH

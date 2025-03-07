@@ -62,12 +62,14 @@ public class SecurityConfigLocal {
         http.csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF (Cross-Site Request Forgery) защиту, так как она не нужна для API, использующих токены (например, JWT).
                 .authorizeHttpRequests(customizer ->
                         customizer.requestMatchers(
-                                        antMatcher(HttpMethod.GET, "/api/session"), // Разрешаем доступ к эндпоинту текущей сессии без аутентификации.
-                                        antMatcher(HttpMethod.GET, "/api/country/**"),     // Разрешаем доступ к health-check эндпоинту (для мониторинга).
-                                        antMatcher(HttpMethod.GET, "/api/artist/**"),       // Разрешаем доступ к Swagger UI для просмотра документации API.
-                                        antMatcher(HttpMethod.GET, "/api/museum/**"),      // Разрешаем доступ к JSON-документации API (Swagger).
-                                        antMatcher("/graphiql/**"),         // Разрешаем доступ к GraphiQL (интерфейс для работы с GraphQL).
-                                        antMatcher(HttpMethod.GET, "/api/painting/**")) // Разрешаем POST-запросы к GraphQL эндпоинту.
+                                        antMatcher(HttpMethod.GET, "/api/session"),      // Разрешаем доступ к эндпоинту текущей сессии без аутентификации.
+                                        antMatcher("/actuator/health"),                  // Разрешаем доступ к health-check эндпоинту (для мониторинга).
+                                        antMatcher("/swagger-ui/**"),                   // Разрешаем доступ к Swagger UI для просмотра документации API.
+                                        antMatcher("/v3/api-docs/**"),                  // Разрешаем доступ к JSON-документации API (Swagger).
+                                        antMatcher(HttpMethod.GET, "/api/country/**"),
+                                        antMatcher(HttpMethod.GET, "/api/artist/**"),
+                                        antMatcher(HttpMethod.GET, "/api/museum/**"),
+                                        antMatcher(HttpMethod.GET, "/api/painting/**"))
                                 .permitAll() // Разрешаем доступ к указанным выше эндпоинтам без аутентификации.
                                 .anyRequest()
                                 .authenticated() // Для всех остальных запросов требуем аутентификацию.

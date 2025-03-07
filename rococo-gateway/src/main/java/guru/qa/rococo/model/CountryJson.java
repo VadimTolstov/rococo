@@ -11,6 +11,7 @@ public record CountryJson(
         @JsonProperty("id")
         UUID id,
 
-        @JsonProperty("name") String name
+        @JsonProperty("name")
+        String name
 ) {
 }

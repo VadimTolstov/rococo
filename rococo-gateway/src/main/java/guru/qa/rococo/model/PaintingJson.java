@@ -5,6 +5,7 @@ import guru.qa.rococo.config.RococoGatewayServiceConfig;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
  * <p>
  * Включает информацию о названии, описании, содержимом и связанных ресурсах.
  */
-public record PaintingRequestJson(
+public record PaintingJson(
         @JsonProperty("id")
         UUID id,
 
@@ -28,18 +29,19 @@ public record PaintingRequestJson(
         @JsonProperty("description")
         String description,
 
+        @Pattern(regexp = "^data:image/.*", message = "photo: Фото должно начинаться с 'data:image/'")
         @NotNull(message = "content: Фото обязательно для заполнения")
         @Size(max = RococoGatewayServiceConfig.ONE_MB, message = "content: Размер фото не должен превышать 1MB")
         @JsonProperty("content")
         String content,
 
         @Valid
-        @NotBlank(message = "artist: Художник обязателен для заполнения, не может быть пустой или состоять только из пробелов")
+        @NotNull(message = "artist: Художник обязателен для заполнения, не может быть пустой или состоять только из пробелов")
         @JsonProperty("artist")
         ArtistRef artist,
 
         @Valid
-        @NotBlank(message = "museum: Музей обязателен для заполнения, не может быть пустой или состоять только из пробелов")
+        @NotNull(message = "museum: Музей обязателен для заполнения, не может быть пустой или состоять только из пробелов")
         @JsonProperty("museum")
         MuseumRef museum
 ) {
