@@ -94,6 +94,13 @@ public class RestPaintingClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/painting/{id} GET]"));
     }
 
+    /**
+     * Получение картин по ID автора с пагинацией
+     *
+     * @param id       UUID автора
+     * @param pageable параметры пагинации
+     * @return страница картин
+     */
     public @Nonnull Page<PaintingJson> getPaintingsByAuthorId(@Nonnull UUID id, @Nonnull Pageable pageable) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoPaintingBaseUri)
@@ -143,6 +150,13 @@ public class RestPaintingClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/painting POST]"));
     }
 
+    /**
+     * Обновление существующей картины
+     *
+     * @param painting обновленные данные
+     * @return обновленный объект картины {@link PaintingJson}
+     * @throws NoRestResponseException если картина не найдена или сервис недоступен
+     */
     public @Nonnull PaintingJson updatePainting(@Nonnull PaintingJson painting) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoPaintingBaseUri)
