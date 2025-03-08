@@ -78,7 +78,7 @@ public class RegisterController {
         // Добавляем пустую форму регистрации в модель
         model.addAttribute(MODEL_REG_FORM_ATTR, new RegistrationModel(null, null, null));
         // Добавляем URI фронтенд-приложения в модель
-        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
+        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/redirect");
         return REGISTRATION_VIEW_NAME;
     }
 

@@ -25,8 +25,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -92,13 +91,13 @@ public class PaintingControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {
-                                "title": "Самая лучшая картина в мире",
-                                "description": "Картину рисовали всем музеем в течении 30 лет ........",
-                                "content": "data:image/png;base64,iVBORw0KGg...",
-                                "artist": {"id": "%s"},
-                                "museum": {"id": "%s"}
-                            }""".formatted(artistId, museumId)))
+                                {
+                                    "title": "Самая лучшая картина в мире",
+                                    "description": "Картину рисовали всем музеем в течении 30 лет ........",
+                                    "content": "data:image/png;base64,iVBORw0KGg...",
+                                    "artist": {"id": "%s"},
+                                    "museum": {"id": "%s"}
+                                }""".formatted(artistId, museumId)))
                 .andExpect(status().isOk());
 
         verify(restPaintingClient).addPainting(argThat(m ->
@@ -106,43 +105,56 @@ public class PaintingControllerTest {
                         m.description().equals("Картину рисовали всем музеем в течении 30 лет ........")
         ));
     }
-//
-//    // Тест получения всех стран
-//    @Test
-//    void getAllCountries() throws Exception {
-//        Page<CountryJson> page = new PageImpl<>(List.of(new CountryJson(UUID.randomUUID(), "Россия")));
-//        when(restMuseumClient.getAllCountries(any())).thenReturn(page);
-//
-//        mockMvc.perform(get("/api/country"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content[0].name").value("Россия"));
-//    }
-//
-//    // Тест обновления музея
-//    @Test
-//    @WithMockUser(roles = "ADMIN")
-//    void updateMuseum() throws Exception {
-//        when(restMuseumClient.updateMuseum(any())).thenReturn(museum);
-//
-//        mockMvc.perform(patch("/api/museum")
-//                        .with(csrf())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("""
-//                                {
-//                                    "id": "%s",
-//                                    "title": "Обновленный Лувр",
-//                                    "description": "Новое описание",
-//                                    "city": "Париж",
-//                                    "photo": "data:image/png;base64,...",
-//                                    "country": {"id": "%s", "name": "Франция"}
-//                                }""".formatted(museumId, countryId)))
-//                .andExpect(status().isOk());
-//
-//        verify(restMuseumClient).updateMuseum(argThat(m ->
-//                m.id().equals(museumId) &&
-//                        m.description().equals("Новое описание")
-//        ));
-//    }
+
+    @Test
+    void getAllPaintings() throws Exception {
+        Page<PaintingJson> page = new PageImpl<>(List.of(
+                new PaintingJson(UUID.randomUUID(),
+                        "Самая лучшая картина в мире",
+                        "Картину рисовали всем музеем в течении 30 лет ........",
+                        "data:image/png;base64,iVBORw0KGg...",
+                        new ArtistRef(UUID.randomUUID()),
+                        new MuseumRef(UUID.randomUUID())),
+                new PaintingJson(UUID.randomUUID(),
+                        "Новая картина",
+                        "Такой картины еще не видел белый свет ........",
+                        "data:image/png;base64,iVBORw0KGg...",
+                        new ArtistRef(UUID.randomUUID()),
+                        new MuseumRef(UUID.randomUUID()))));
+
+        when(restPaintingClient.getAllPaintings(any(), eq(null))).thenReturn(page);
+
+        mockMvc.perform(get("/api/painting"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].title").value("Самая лучшая картина в мире"))
+                .andExpect(jsonPath("$.content[1].title").value("Новая картина"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updatePainting() throws Exception {
+        when(restPaintingClient.updatePainting(any())).thenReturn(painting);
+
+        mockMvc.perform(patch("/api/painting")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": "%s",
+                                    "title": "Шишки на дубу",
+                                    "description": "Таков путь ........................................",
+                                    "content": "data:image/png;base64,iVBORw0KGg...",
+                                    "artist": {"id": "%s"},
+                                    "museum": {"id": "%s"}
+                                }""".formatted(paintingId, UUID.randomUUID(), UUID.randomUUID())))
+                .andExpect(status().isOk());
+
+        verify(restPaintingClient).updatePainting(argThat(p ->
+                p.id().equals(paintingId)
+                        && p.description().equals("Таков путь ........................................")
+                        && p.title().equals("Шишки на дубу")
+        ));
+    }
 
     //  todo Тест обработки 404 ошибки
     /* java

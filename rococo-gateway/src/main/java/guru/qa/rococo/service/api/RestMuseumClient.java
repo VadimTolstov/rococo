@@ -22,6 +22,10 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * REST-клиент для работы с микросервисом музеев.
+ * Обеспечивает управление данными о музеях и странах.
+ */
 @Component
 public class RestMuseumClient {
     private final RestTemplate restTemplate;
@@ -33,6 +37,14 @@ public class RestMuseumClient {
         this.rococoMuseumBaseUri = rococoMuseumBaseUri + "/internal";
     }
 
+    /**
+     * Получает страницу музеев с фильтрацией по названию.
+     *
+     * @param pageable Параметры пагинации
+     * @param title    Фильтр по названию (может быть null)
+     * @return Страница музеев {@link Page<MuseumJson>}
+     * @throws NoRestResponseException Если ответ отсутствует
+     */
     public @Nonnull Page<MuseumJson> getAllMuseums(@Nonnull Pageable pageable,
                                                    @Nullable String title) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
@@ -96,6 +108,13 @@ public class RestMuseumClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/country GET]"));
     }
 
+    /**
+     * Добавляет новый музей.
+     *
+     * @param museum Данные музея
+     * @return Созданный музей {@link MuseumJson}
+     * @throws NoRestResponseException При ошибке связи с сервисом
+     */
     public @Nonnull MuseumJson addMuseum(@Nonnull MuseumJson museum) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoMuseumBaseUri)

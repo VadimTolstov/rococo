@@ -21,6 +21,10 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * REST-клиент для работы с микросервисом картин.
+ * Обеспечивает управление данными о картинах.
+ */
 @Component
 public class RestPaintingClient {
     private final RestTemplate restTemplate;
@@ -32,6 +36,14 @@ public class RestPaintingClient {
         this.rococoPaintingBaseUri = rococoPaintingBaseUri + "/internal";
     }
 
+    /**
+     * Получает страницу картин с фильтрацией по названию.
+     *
+     * @param pageable Параметры пагинации и сортировки
+     * @param title    Фильтр по названию (может быть null)
+     * @return Страница картин {@link Page<PaintingJson>}
+     * @throws NoRestResponseException Если ответ от сервиса отсутствует
+     */
     public @Nonnull Page<PaintingJson> getAllPaintings(@Nonnull Pageable pageable,
                                                        @Nullable String title) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder
@@ -57,6 +69,13 @@ public class RestPaintingClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/painting GET]"));
     }
 
+    /**
+     * Получает картину по уникальному идентификатору.
+     *
+     * @param id UUID картины
+     * @return Объект картины {@link PaintingJson}
+     * @throws NoRestResponseException Если картина не найдена
+     */
     public @Nonnull PaintingJson getPaintingById(@Nonnull UUID id) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoPaintingBaseUri)
@@ -95,6 +114,13 @@ public class RestPaintingClient {
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/painting/author/{id} GET]"));
     }
 
+    /**
+     * Добавляет новую картину.
+     *
+     * @param painting Данные картины
+     * @return Созданная картина {@link PaintingJson}
+     * @throws NoRestResponseException Если сервис недоступен
+     */
     public @Nonnull PaintingJson addPainting(@Nonnull PaintingJson painting) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoPaintingBaseUri)

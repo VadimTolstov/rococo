@@ -20,7 +20,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
-
+/**
+ * REST-клиент для работы с микросервисом художников.
+ * Обеспечивает управление данными о художниках.
+ */
 @Component
 public class RestArtistClient {
     private final RestTemplate restTemplate;
@@ -32,6 +35,15 @@ public class RestArtistClient {
         this.rococoArtistBaseUri = rococoArtistBaseUri + "/internal";
     }
 
+
+    /**
+     * Получает страницу художников с фильтрацией по имени.
+     *
+     * @param pageable Параметры пагинации
+     * @param name     Фильтр по имени (может быть null)
+     * @return Страница художников {@link Page<ArtistJson>}
+     * @throws NoRestResponseException Если ответ сервиса отсутствует
+     */
     public @Nonnull Page<ArtistJson> getAllArtists(@Nonnull Pageable pageable,
                                                    @Nullable String name) {
         // 1. Безопасное формирование URL с параметрами пагинации и сортировки
@@ -93,6 +105,13 @@ public class RestArtistClient {
 //                .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
 //    }
 
+    /**
+     * Добавляет нового художника.
+     *
+     * @param artist Данные художника
+     * @return Созданный художник {@link ArtistJson}
+     * @throws NoRestResponseException При ошибке связи с сервисом
+     */
     public @Nonnull ArtistJson addArtist(@Nonnull ArtistJson artist) {
         URI uri = UriComponentsBuilder
                 .fromUriString(rococoArtistBaseUri)

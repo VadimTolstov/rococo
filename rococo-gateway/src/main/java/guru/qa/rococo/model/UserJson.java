@@ -2,6 +2,7 @@ package guru.qa.rococo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.rococo.config.RococoGatewayServiceConfig;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -28,4 +29,8 @@ public record UserJson(
         @JsonProperty("avatar")
         String avatar
 ) {
+
+    public @Nonnull UserJson addUsername(@Nonnull String username) {
+        return new UserJson(id, username, firstname, lastname, avatar);
+    }
 }
