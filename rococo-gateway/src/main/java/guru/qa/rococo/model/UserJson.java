@@ -17,7 +17,7 @@ public record UserJson(
         @JsonProperty("username")
         String username,
 
-        @Size(max = 255, message = "firstname: Имя не может быть длиннее 255 символов")
+        @Size(max = 255, message = "firstname: Отчество не может быть длиннее 255 символов")
         @JsonProperty("firstname")
         String firstname,
 

@@ -96,6 +96,7 @@ class ArtistControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void addArtist() throws Exception {
         when(restArtistClient.addArtist(any(ArtistJson.class))).thenReturn(artist);
 
@@ -117,6 +118,7 @@ class ArtistControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void updateArtist() throws Exception {
         when(restArtistClient.updateArtist(any(ArtistJson.class))).thenReturn(artist);
 
