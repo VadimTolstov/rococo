@@ -23,12 +23,12 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "artist")
+@Table(name = "artist",schema = "public")
 public class ArtistEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", unique = true, nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "id", nullable = false, columnDefinition = "UUID default gen_random_uuid()")
     private UUID id;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -37,8 +37,7 @@ public class ArtistEntity implements Serializable {
     @Column(name = "biography", nullable = false, length = 2000)
     private String biography;
 
-    @Lob
-    @Column(name = "photo")
+    @Column(name = "photo",columnDefinition = "bytea")
     private byte[] photo;
 
 //    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL) todo проверить связь
