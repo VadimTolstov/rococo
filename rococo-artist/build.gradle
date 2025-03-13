@@ -1,0 +1,111 @@
+plugins {
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.google.cloud.tools.jib' version '3.4.1'  // Плагин для создания Docker-образов
+    id 'com.github.edeandrea.xjc-generation' version "1.6"  // Генерация Java-классов из XSD/WSDL
+}
+
+group = 'guru.qa'
+version = '2.0.0'
+
+dependencies {
+    // Spring Boot Basics
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+
+    // Database
+    implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
+    implementation "org.flywaydb:flyway-mysql:${project.ext.flywayVersion}"
+    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
+
+    // Web Services
+    implementation('org.springframework.boot:spring-boot-starter-web-services') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation 'org.springframework.ws:spring-ws-core'
+
+    // Utilities
+    implementation "com.tailrocks.graphql:graphql-datetime-spring-boot-starter:${project.ext.springGraphqlDateTimeVersion}"
+    implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.openApiVersion}"
+    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+
+    // XJC Generation
+    xjc "org.glassfish.jaxb:jaxb-xjc:${project.ext.jakartaJaxbVersion}"
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "com.h2database:h2:${project.ext.h2Version}"
+}
+
+xjcGeneration {
+    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
+    schemas {
+        wsdlSchema {
+            schemaFile = 'userdata.wsdl'  // Генерация классов из WSDL
+            javaPackageName = 'jaxb.userdata'
+            sourceSet = 'main'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir('src/main/java')
+            srcDir("$buildDir/generated-sources/main/xjc")  // Интеграция сгенерированного кода
+        }
+    }
+}
+
+jib {
+    container {
+        ports = ['8090']  // Экспортируемые порты
+        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
+        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()]
+        creationTime = 'USE_CURRENT_TIMESTAMP'  // Для воспроизводимости образов
+        labels = [
+                'maintainer': 'Dmitrii Tuchs @dtuchs',
+                'version'   : "${project.version}".toString()
+        ]
+    }
+    from {
+        image = "${dockerImage}"  // Базовый образ из переменных
+        platforms {
+            platform {
+                architecture = "${dockerArch}"  // Мультиархитектурные сборки
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = "${dockerHubName}/${project.name}-${System.env.PROFILE}"  // Имя образа
+        tags = ['latest', "${project.version}"]  // Тегирование версий
+    }
+}
+
+// Задачи сборки
+tasks.jib.dependsOn test  // Гарантируем выполнение тестов перед сборкой
+tasks.jibDockerBuild.dependsOn test
+
+tasks.named('bootJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE  // Обработка дублирующихся файлов
+}
+
+// Вспомогательные задачи
+tasks.register('printVersion') {
+    doLast {
+        println project.version  // Утилита для проверки версии
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'  // Детальный лог тестов
+    }
+}

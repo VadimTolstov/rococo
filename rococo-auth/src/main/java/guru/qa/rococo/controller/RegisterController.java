@@ -129,7 +129,7 @@ public class RegisterController {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         // Добавляем URI фронтенд-приложения в модель
-        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
+        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/redirect");
         return REGISTRATION_VIEW_NAME;
     }
 

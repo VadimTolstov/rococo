@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- Базовые настройки -->
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}"/>  <!-- Уровень логирования через переменную окружения -->
+    <property name="LOG_PATH" value="${LOG_PATH:-./logs/rococo-artist}"/>
+    <property name="LOG_FILE" value="${LOG_PATH}/app.log"/>  <!-- Отдельное свойство для файла -->
+
+    <!-- Аппендер для консоли -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n
+            </pattern>
+        </encoder>
+        <!-- Фильтр для исключения DEBUG в продакшене -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LOG_LEVEL}</level>
+        </filter>
+    </appender>
+
+    <!-- Аппендер для файла с ротацией -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>  <!-- Ротация по размеру -->
+            <maxHistory>30</maxHistory>      <!-- Хранение 30 дней -->
+            <totalSizeCap>1GB</totalSizeCap> <!-- Лимит дискового пространства -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} | %-5level | %logger{36} | %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Настройки логгеров -->
+    <logger name="org.springframework" level="DEBUG"/>  <!-- Снижение уровня логирования для Spring -->
+    <logger name="org.hibernate.SQL" level="DEBUG"/>   <!-- Логирование SQL-запросов -->
+
+    <!-- Корневой логгер -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

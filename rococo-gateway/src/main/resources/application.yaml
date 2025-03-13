@@ -16,49 +16,6 @@ spring:
           # URL сервера авторизации (OAuth2) для проверки JWT токенов
           issuer-uri: 'http://127.0.0.1:9000'
 
-  # Настройки подключения к базе данных
-  datasource:
-    # JDBC URL для подключения к MySQL с параметрами:
-    # - автоматическое создание БД при отсутствии
-    # - установка таймзоны UTC
-    url: 'jdbc:mysql://127.0.0.1:3306/rococo-gateway?serverTimezone=UTC&createDatabaseIfNotExist=true'
-
-    # Конфигурация пула соединений HikariCP
-    hikari:
-      connection-timeout: 20000  # Таймаут подключения (20 сек)
-      minimum-idle: 10           # Минимальное количество простаивающих соединений
-      maximum-pool-size: 30      # Максимальный размер пула
-      idle-timeout: 10000        # Таймаут простаивающего соединения (10 сек)
-      max-lifetime: 1000         # Максимальное время жизни соединения (1 сек)
-      auto-commit: true          # Автоматический коммит транзакций
-
-    # Учетные данные для подключения к БД
-    username: root
-    password: secret
-
-  # Настройки миграций Flyway
-  flyway:
-    enabled: true                # Включение Flyway
-    baseline-on-migrate: true    # Создание baseline для существующих БД
-    baseline-version: 0          # Начальная версия миграций
-    schemas: rococo-gateway      # Целевая схема БД
-    locations: classpath:db/migration/rococo-gateway  # Путь к скриптам миграций
-
-  # Конфигурация JPA и Hibernate
-  jpa:
-    hibernate:
-      ddl-auto: none  # Отключение автоматической генерации DDL
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            # Разрешение создания LOB объектов вне контекста
-            non_contextual_creation: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect  # Диалект для MySQL 8
-    show-sql: false     # Отключение логирования SQL-запросов
-    generate-ddl: true  # Разрешение генерации DDL (используется с ddl-auto: none)
-    open-in-view: false # Отключение режима "open session in view"
-
 # Настройки логирования
 logging:
   level:

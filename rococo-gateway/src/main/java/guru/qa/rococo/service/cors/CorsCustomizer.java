@@ -21,16 +21,16 @@ public class CorsCustomizer {
     /**
      * URI фронтенд-приложения, с которого разрешены запросы.
      */
-    private final String nifflerFrontUri;
+    private final String rococoFrontUri;
 
     /**
      * Конструктор для внедрения значения URI фронтенд-приложения из конфигурации.
      *
-     * @param nifflerFrontUri URI фронтенд-приложения, указанный в конфигурации.
+     * @param rococoFrontUri URI фронтенд-приложения, указанный в конфигурации.
      */
     @Autowired
-    public CorsCustomizer(@Value("${niffler-front.base-uri}") String nifflerFrontUri) {
-        this.nifflerFrontUri = nifflerFrontUri;
+    public CorsCustomizer(@Value("${rococo-front.base-uri}") String rococoFrontUri) {
+        this.rococoFrontUri = rococoFrontUri;
     }
 
     /**
@@ -56,8 +56,8 @@ public class CorsCustomizer {
                 cc.setAllowCredentials(true);
 
                 // Указываем список доменов, с которых разрешены запросы.
-                // В данном случае разрешен только домен, указанный в переменной nifflerFrontUri.
-                cc.setAllowedOrigins(List.of(nifflerFrontUri));
+                // В данном случае разрешен только домен, указанный в переменной rococoFrontUri.
+                cc.setAllowedOrigins(List.of(rococoFrontUri));
 
                 // Разрешаем все заголовки в запросах.
                 // Это позволяет клиенту отправлять любые заголовки, включая кастомные.
