@@ -2,6 +2,7 @@ package guru.qa.rococo.service;
 
 import guru.qa.rococo.data.ArtistEntity;
 import guru.qa.rococo.data.repository.ArtistRepository;
+import guru.qa.rococo.ex.BadRequestException;
 import guru.qa.rococo.ex.NotFoundException;
 import guru.qa.rococo.model.ArtistJson;
 import jakarta.annotation.Nonnull;
@@ -51,10 +52,20 @@ public class ArtistService {
 
     @Transactional
     public @Nonnull ArtistJson updateArtist(@Nonnull ArtistJson artist) {
+        if (artist.id() == null) {
+            throw new BadRequestException("id: ID художника обязателен для заполнения");
+        }
         ArtistEntity existing = artistRepository.findById(artist.id())
                 .orElseThrow(() -> new NotFoundException("Artist not found id:" + artist.id()));
-        existing.setName(artist.name());
-        existing.setBiography(artist.biography());
+
+        if (artist.name() != null) {
+            existing.setName(artist.name().trim());
+        }
+
+        if (artist.biography() != null) {
+            existing.setBiography(artist.biography().trim());
+        }
+
         if (artist.photo() != null && artist.photo().startsWith("data:image")) {
             existing.setPhoto(artist.photo().getBytes(StandardCharsets.UTF_8));
         }
