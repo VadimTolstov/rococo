@@ -23,7 +23,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"artist\"")
+@Table(name = "artist")
 public class ArtistEntity implements Serializable {
 
     @Id

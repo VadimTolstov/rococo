@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -42,6 +43,7 @@ public class RestUserDataClient {
                 .fromUriString(rococoUserBaseUri)
                 .path("/user")
                 .queryParam("username", username)
+                .encode(StandardCharsets.UTF_8)
                 .build()
                 .toUri();
 

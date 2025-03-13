@@ -49,7 +49,7 @@ public record ArtistJson(
         entity.setName(this.name.trim());
         entity.setBiography(this.biography.trim());
         entity.setPhoto(
-                this.photo != null && this.photo.isBlank() && this.photo.startsWith("data:image")
+                this.photo != null && this.photo.startsWith("data:image")
                         ? this.photo.getBytes(StandardCharsets.UTF_8)
                         : null
         );

@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 /**
@@ -57,7 +58,7 @@ public class RestArtistClient {
             uriBuilder.queryParam("name", name.trim());
         }
 
-        URI uri = uriBuilder.build().toUri();
+        URI uri = uriBuilder.encode(StandardCharsets.UTF_8).build().toUri();
 
         // 2. Выполнение запроса
         ResponseEntity<RestPage<ArtistJson>> response = restTemplate.exchange(
@@ -85,25 +86,6 @@ public class RestArtistClient {
         return Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
     }
-
-    //todo проверить как будет работать фронт с пагинацией
-//    public @Nonnull ArtistJson getArtistByName(@Nonnull String name) {
-//        URI uri = UriComponentsBuilder
-//                .fromUriString(rococoArtistBaseUri)
-//                .path("/artist")
-//                .queryParam("name", name)
-//                .build()
-//                .toUri();
-//        ResponseEntity<ArtistJson> response = restTemplate.exchange(
-//                uri,
-//                HttpMethod.GET,
-//                null,
-//                ArtistJson.class
-//        );
-//
-//        return Optional.ofNullable(response.getBody())
-//                .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/artist/{id} GET]"));
-//    }
 
     /**
      * Добавляет нового художника.

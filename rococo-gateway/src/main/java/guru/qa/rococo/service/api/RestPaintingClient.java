@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class RestPaintingClient {
             uriBuilder.queryParam("title", title.trim());
         }
 
-        URI uri = uriBuilder.build().toUri();
+        URI uri = uriBuilder.encode(StandardCharsets.UTF_8).build().toUri();
 
         ResponseEntity<RestPage<PaintingJson>> response = restTemplate.exchange(
                 uri,

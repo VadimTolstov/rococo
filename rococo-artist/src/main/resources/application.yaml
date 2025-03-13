@@ -33,8 +33,6 @@ spring:
     baseline-version: 0             # Начальная версия миграций
     schemas: rococo-artist                 # Целевая схема БД
     locations: classpath:db/migration/rococo-artist  # Путь к скриптам
-    placeholders:
-      mediumtext: MEDIUMTEXT
   # Настройки JPA и Hibernate
   jpa:
     hibernate:
