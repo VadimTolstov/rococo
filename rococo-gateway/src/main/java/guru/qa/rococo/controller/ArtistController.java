@@ -36,11 +36,6 @@ public class ArtistController {
                                           @RequestParam(name = "name", required = false) String name) {
         return restArtistClient.getAllArtists(pageable, name);
     }
-//todo проверить как будет работать фронт с пагинацией
-//    @GetMapping(params = "name")
-//    public ArtistJson getArtistByName(@RequestParam("name") String name) {
-//        return restArtistClient.getArtistByName(name);
-//    }
 
     @PostMapping
     @SecurityRequirement(name = RococoGatewayServiceConfig.OPEN_API_AUTH_SCHEME)

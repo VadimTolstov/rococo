@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" debug="${LOGBACK_DEBUG:-false}">
+
+    <!-- ========== БАЗОВЫЕ НАСТРОЙКИ ========== -->
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}"/>
+    <property name="LOG_PATH" value="${LOG_PATH:-./logs/rococo-painting}"/>
+    <property name="LOG_FILE" value="${LOG_PATH}/app.log"/>
+    <property name="ERROR_LOG_FILE" value="${LOG_PATH}/error.log"/>
+    <property name="MAX_FILE_SIZE" value="50MB"/>
+    <property name="MAX_HISTORY" value="30"/>
+    <property name="TOTAL_SIZE_CAP" value="1GB"/>
+
+    <!-- Создание директории для логов (упрощенная версия) -->
+    <if condition='property("LOG_PATH").contains("rococo-painting")'>
+        <then>
+            <mkdir dir="${LOG_PATH}"/>
+        </then>
+    </if>
+
+    <!-- ========== КОНСОЛЬНЫЙ АППЕНДЕР ========== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} | %-5level | %thread | %logger{36} | %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LOG_LEVEL}</level>
+        </filter>
+    </appender>
+
+    <!-- ========== ОСНОВНОЙ ФАЙЛОВЫЙ АППЕНДЕР (отключен для тестов) ========== -->
+    <if condition='!isDefined("spring.profiles.active") || !"test".equals(property("spring.profiles.active"))'>
+        <then>
+            <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_FILE}</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+                    <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+                    <maxHistory>${MAX_HISTORY}</maxHistory>
+                    <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+                    <cleanHistoryOnStart>true</cleanHistoryOnStart>
+                </rollingPolicy>
+                <encoder>
+                    <charset>UTF-8</charset>
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss} | %-5level | %thread | %logger{36} | %msg%n</pattern>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+    <!-- ========== КОРНЕВОЙ ЛОГГЕР ========== -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <if condition='!isDefined("spring.profiles.active") || !"test".equals(property("spring.profiles.active"))'>
+            <then>
+                <appender-ref ref="FILE"/>
+            </then>
+        </if>
+    </root>
+
+    <!-- ========== ОБРАБОТКА ОШИБОК ========== -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+</configuration>

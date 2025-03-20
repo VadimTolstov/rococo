@@ -131,6 +131,7 @@ public class ArtistServiceTest {
 
         ArgumentCaptor<ArtistEntity> captor = ArgumentCaptor.forClass(ArtistEntity.class);
         Mockito.verify(artistRepository).save(captor.capture());
+        assertThat(captor.getValue().getId()).isEqualTo(null);
         assertThat(captor.getValue().getName()).isEqualTo(name2);
         assertThat(captor.getValue().getBiography()).isEqualTo(biography2);
         assertThat(captor.getValue().getPhoto()).isEqualTo(photo2.getBytes(StandardCharsets.UTF_8));
