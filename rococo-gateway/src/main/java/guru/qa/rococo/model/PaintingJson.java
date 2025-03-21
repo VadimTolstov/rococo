@@ -45,4 +45,27 @@ public record PaintingJson(
         @JsonProperty("museum")
         MuseumRef museum
 ) {
+
+        public PaintingJson(
+                UUID id,
+                String title,
+                String description,
+                String content,
+                ArtistRef artist,
+                MuseumRef museum) {
+                this.id = id;
+                this.title = normalizeString(title);
+                this.description = normalizeString(description);
+                this.content = content;
+                this.artist = artist;
+                this.museum = museum;
+        }
+
+        private static String normalizeString(String value) {
+                if (value == null) {
+                        return null;
+                }
+                String trimmed = value.trim();
+                return trimmed.isEmpty() ? " " : trimmed;
+        }
 }

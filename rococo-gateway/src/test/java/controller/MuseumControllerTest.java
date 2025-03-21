@@ -4,6 +4,7 @@ import guru.qa.rococo.RococoGatewayApplication;
 import guru.qa.rococo.config.SecurityConfigLocal;
 import guru.qa.rococo.controller.MuseumController;
 import guru.qa.rococo.model.CountryJson;
+import guru.qa.rococo.model.GeoJson;
 import guru.qa.rococo.model.MuseumJson;
 import guru.qa.rococo.service.api.RestMuseumClient;
 import org.junit.jupiter.api.Test;
@@ -45,9 +46,8 @@ public class MuseumControllerTest {
             museumId,
             "Лувр",
             "Крупнейший художественный музей мира",
-            "Париж",
             "data:image/png;base64,iVBORw0KGg...",
-            new CountryJson(UUID.randomUUID(), "Франция")
+            new GeoJson("Париж", new CountryJson(countryId, "Франция"))
     );
 
     // Тест получения музея по ID
@@ -58,7 +58,7 @@ public class MuseumControllerTest {
         mockMvc.perform(get("/api/museum/{id}", museumId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Лувр"))
-                .andExpect(jsonPath("$.country.name").value("Франция"));
+                .andExpect(jsonPath("$.geo.country.name").value("Франция"));;
 
         verify(restMuseumClient).getMuseumById(museumId);
     }
@@ -92,15 +92,17 @@ public class MuseumControllerTest {
                                 {
                                     "title": "Лувр",
                                     "description": "Крупнейший...",
-                                    "city": "Париж",
                                     "photo": "data:image/png;base64,...",
-                                    "country": {"id": "%s", "name": "Франция"}
+                                    "geo": {
+                                        "city": "Париж",
+                                        "country": {"id": "%s", "name": "Франция"}
+                                    }
                                 }""".formatted(countryId)))
                 .andExpect(status().isOk());
 
         verify(restMuseumClient).addMuseum(argThat(m ->
                 m.title().equals("Лувр") &&
-                        m.country().name().equals("Франция")
+                        m.geo().country().name().equals("Франция") // Исправленный путь
         ));
     }
 
@@ -129,9 +131,11 @@ public class MuseumControllerTest {
                                     "id": "%s",
                                     "title": "Обновленный Лувр",
                                     "description": "Новое описание",
-                                    "city": "Париж",
                                     "photo": "data:image/png;base64,...",
-                                    "country": {"id": "%s", "name": "Франция"}
+                                    "geo": {
+                                        "city": "Париж",
+                                        "country": {"id": "%s", "name": "Франция"}
+                                    }
                                 }""".formatted(museumId, countryId)))
                 .andExpect(status().isOk());
 

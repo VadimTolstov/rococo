@@ -1,6 +1,7 @@
 package service;
 
 import guru.qa.rococo.model.CountryJson;
+import guru.qa.rococo.model.GeoJson;
 import guru.qa.rococo.model.MuseumJson;
 import guru.qa.rococo.model.page.RestPage;
 import guru.qa.rococo.service.api.RestMuseumClient;
@@ -40,9 +41,8 @@ class RestMuseumClientTest {
             UUID.randomUUID(),
             "Эрмитаж",
             "Крупнейший музей России",
-            "Санкт-Петербург",
             "data:image/jpeg;base64,...",
-            new CountryJson(UUID.randomUUID(), "Россия")
+            new GeoJson("Москва", new CountryJson(UUID.randomUUID(), "Россия"))
     );
 
     @BeforeEach

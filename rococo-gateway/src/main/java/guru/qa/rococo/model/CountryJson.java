@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record CountryJson(
-        @NotBlank(message = "country.id: ID страны обязателен для заполнения")
+        @NotNull(message = "country.id: ID страны обязателен для заполнения")
         @JsonProperty("id")
         UUID id,
 

@@ -1,6 +1,7 @@
 package guru.qa.rococo.model;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.rococo.config.RococoGatewayServiceConfig;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -58,10 +59,10 @@ public record ArtistJson(
     /**
      * Конструктор для десериализации JSON с нормализацией строковых полей.
      *
-     * @param id       UUID художника (может быть null при создании)
-     * @param name     Имя художника (после нормализации)
+     * @param id        UUID художника (может быть null при создании)
+     * @param name      Имя художника (после нормализации)
      * @param biography Биография (после нормализации)
-     * @param photo    Фотография в формате base64
+     * @param photo     Фотография в формате base64
      */
     @JsonCreator
     public ArtistJson(
@@ -70,8 +71,16 @@ public record ArtistJson(
             @JsonProperty("biography") String biography,
             @JsonProperty("photo") String photo) {
         this.id = id;
-        this.name = name;
-        this.biography = biography;
+        this.name = normalizeString(name);
+        this.biography = normalizeString(biography);
         this.photo = photo;
+    }
+
+    private static String normalizeString(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? " " : trimmed;
     }
 }
