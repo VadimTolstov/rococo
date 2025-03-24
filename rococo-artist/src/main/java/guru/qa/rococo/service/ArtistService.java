@@ -35,19 +35,19 @@ public class ArtistService {
         return entities.map(ArtistJson::fromEntity);
     }
 
-    @Transactional
-    public @Nonnull ArtistJson addArtist(@Nonnull ArtistJson artist) {
-        ArtistEntity entity = artist.toEntity();
-        entity.setId(null);
-        return ArtistJson.fromEntity(artistRepository.save(entity));
-    }
-
     @Transactional(readOnly = true)
     public @Nonnull ArtistJson getArtistById(@Nonnull UUID id) {
         return ArtistJson.fromEntity(
                 artistRepository.findById(id)
                         .orElseThrow(() -> new NotFoundException("Artist not found id:" + id))
         );
+    }
+
+    @Transactional
+    public @Nonnull ArtistJson addArtist(@Nonnull ArtistJson artist) {
+        ArtistEntity entity = artist.toEntity();
+        entity.setId(null);
+        return ArtistJson.fromEntity(artistRepository.save(entity));
     }
 
     @Transactional
