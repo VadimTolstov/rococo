@@ -6,7 +6,7 @@
 
     <!-- ========== БАЗОВЫЕ НАСТРОЙКИ ========== -->
     <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}"/>
-    <property name="LOG_PATH" value="${LOG_PATH:-./logs/rococo-painting}"/>
+    <property name="LOG_PATH" value="${LOG_PATH:-./logs/rococo-userdata}"/>
     <property name="LOG_FILE" value="${LOG_PATH}/app.log"/>
     <property name="ERROR_LOG_FILE" value="${LOG_PATH}/error.log"/>
     <property name="MAX_FILE_SIZE" value="50MB"/>
@@ -14,7 +14,7 @@
     <property name="TOTAL_SIZE_CAP" value="1GB"/>
 
     <!-- Создание директории для логов -->
-    <if condition='property("LOG_PATH").contains("rococo-painting")'>
+    <if condition='property("LOG_PATH").contains("rococo-userdata")'>
         <then>
             <mkdir dir="${LOG_PATH}"/>
         </then>
