@@ -1,12 +1,12 @@
 server:
-  port: 8284 # Порт приложения
+  port: 8285 # Порт приложения
   error:
     include:
       message: true # Показывать текст ошибок в ответах
 
 spring:
   application:
-    name: rococo-painting # Идентификатор сервиса в системе
+    name: rococo-userdata # Идентификатор сервиса в системе
   mvc:
       log-request-details: true
   # Настройки подключения к базе данных
@@ -27,7 +27,7 @@ spring:
     baseline-on-migrate: true       # Создать baseline при первой миграции
     baseline-version: 0             # Начальная версия миграций
     schemas: public                 # Целевая схема БД
-    locations: classpath:db/migration/rococo-painting # Путь к скриптам
+    locations: classpath:db/migration/rococo-userdata # Путь к скриптам
   # Настройки JPA и Hibernate
   jpa:
     hibernate:
@@ -45,7 +45,7 @@ spring:
 
 logging:
   file:
-    path: ./logs/rococo-painting
+    path: ./logs/rococo-userdata
   level:
     root: DEBUG                     # Общий уровень логирования
     org.springframework.web: DEBUG  # Логи Spring Web
@@ -68,7 +68,7 @@ spring:
 
   # Параметры подключения к локальной БД
   datasource:
-    url: 'jdbc:postgresql://localhost:5442/rococo-painting'
+    url: 'jdbc:postgresql://localhost:5442/rococo-userdata'
     username: postgres
     password: secret
 rococo-artist:
@@ -91,7 +91,7 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
   # Параметры подключения к БД в Docker-сети
   datasource:
-    url: 'jdbc:postgresql://rococo-all-db:5442/rococo-painting'
+    url: 'jdbc:postgresql://rococo-all-db:5442/rococo-userdata'
     username: postgres
     password: secret
 rococo-artist:
