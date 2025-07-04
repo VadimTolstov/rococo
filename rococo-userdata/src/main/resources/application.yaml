@@ -68,7 +68,7 @@ spring:
 
   # Параметры подключения к локальной БД
   datasource:
-    url: 'jdbc:postgresql://localhost:5442/rococo-userdata'
+    url: 'jdbc:postgresql://localhost:5432/rococo-userdata'
     username: postgres
     password: secret
 rococo-artist:

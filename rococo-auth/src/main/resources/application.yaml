@@ -65,7 +65,7 @@ spring:
   kafka:
     bootstrap-servers: 'localhost:9092'
   datasource:
-    url: 'jdbc:postgresql://localhost:5442/rococo-auth'
+    url: 'jdbc:postgresql://localhost:5432/rococo-auth'
     username: postgres
     password: secret
 rococo-front:

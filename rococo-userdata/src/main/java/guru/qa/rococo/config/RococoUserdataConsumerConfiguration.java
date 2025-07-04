@@ -1,5 +1,6 @@
 package guru.qa.rococo.config;
 
+import guru.qa.rococo.model.UserJson;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -41,9 +42,9 @@ public class RococoUserdataConsumerConfiguration {
      */
 
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory(SslBundles sslBundles) {
+    public ConsumerFactory<String, UserJson> consumerFactory(SslBundles sslBundles) {
         // Настройка JSON-десериализатора
-        final JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
+        final JsonDeserializer<UserJson> jsonDeserializer = new JsonDeserializer<>();
         // Разрешение десериализации из любых пакетов (осторожно в production!)
         jsonDeserializer.addTrustedPackages("*");
 
@@ -55,7 +56,7 @@ public class RococoUserdataConsumerConfiguration {
                 // 2. Десериализатор для ключей сообщений (String)
                 new StringDeserializer(),
 
-                // 3. Десериализатор для значений сообщений (JSON в Object)
+                // 3. Десериализатор для значений сообщений (JSON в UserJson)
                 jsonDeserializer
         );
     }
@@ -67,14 +68,14 @@ public class RococoUserdataConsumerConfiguration {
      * @return фабрика слушателей сообщений
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(SslBundles sslBundles) {
+    public ConcurrentKafkaListenerContainerFactory<String, UserJson> kafkaListenerContainerFactory(SslBundles sslBundles) {
         // Создание фабрики контейнеров
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
+        ConcurrentKafkaListenerContainerFactory<String, UserJson> concurrentKafkaListenerContainerFactory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         // Настройка фабрики потребителей
-        factory.setConsumerFactory(consumerFactory(sslBundles));
+        concurrentKafkaListenerContainerFactory.setConsumerFactory(consumerFactory(sslBundles));
 
-        return factory;
+        return concurrentKafkaListenerContainerFactory;
     }
 }

@@ -70,7 +70,7 @@ spring:
   
   # Параметры подключения к локальной БД
   datasource:
-    url: 'jdbc:postgresql://localhost:5442/rococo-artist'
+    url: 'jdbc:postgresql://localhost:5432/rococo-artist'
     username: postgres
     password: secret
 
@@ -89,6 +89,6 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
   # Параметры подключения к БД в Docker-сети
   datasource:
-    url: 'jdbc:postgresql://rococo-all-db:5442/rococo-artist'
+    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-artist'
     username: postgres
     password: secret
