@@ -51,6 +51,7 @@ logging:
     org.springframework.web: DEBUG  # Логи Spring Web
     org.springframework.security: DEBUG  # Логи безопасности
     org.springframework.security.oauth2: DEBUG  # Логи OAuth2
+    org.springframework.kafka: INFO
 
 ---
 # Конфигурация для локальной разработки
@@ -65,7 +66,12 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
-
+  # Параметры подключения к Kafka
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+    consumer:
+      group-id: 'userdata'
+      auto-offset-reset: earliest
   # Параметры подключения к локальной БД
   datasource:
     url: 'jdbc:postgresql://localhost:5432/rococo-userdata'
@@ -89,6 +95,12 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  # Параметры подключения к Kafka в Docker-сети
+  kafka:
+    bootstrap-servers: 'kafka:9092'
+    consumer:
+      group-id: 'userdata'
+      auto-offset-reset: earliest
   # Параметры подключения к БД в Docker-сети
   datasource:
     url: 'jdbc:postgresql://rococo-all-db:5442/rococo-userdata'

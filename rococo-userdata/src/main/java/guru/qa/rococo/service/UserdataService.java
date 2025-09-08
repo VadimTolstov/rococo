@@ -38,7 +38,7 @@ public class UserdataService {
      */
     @Transactional
     @KafkaListener(
-            topics = "userdata",  // Название топика Kafka
+            topics = "users",  // Название топика Kafka
             groupId = "userdata"  // Идентификатор группы потребителей
             //containerFactory ="kafkaListenerContainerFactory" // (подразумевается по умолчанию)
     )
