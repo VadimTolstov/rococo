@@ -4,6 +4,7 @@ import guru.qa.rococo.config.RococoGatewayServiceConfig;
 import guru.qa.rococo.model.UserJson;
 import guru.qa.rococo.service.api.RestUserDataClient;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class UserDataController {
      * @return Полный профиль пользователя {@link UserJson}
      */
     @GetMapping
-    public UserJson getUser(@AuthenticationPrincipal Jwt principal) {
+    public UserJson getUser(@AuthenticationPrincipal @Nonnull Jwt principal) {
         String username = principal.getClaim("sub");
         LOG.debug("Requesting current user data for: {}", username);
         return restUserDataClient.getUser(username);
@@ -61,8 +62,8 @@ public class UserDataController {
      * @throws jakarta.validation.ConstraintViolationException При невалидных данных
      */
     @PatchMapping
-    public UserJson updateUser(@AuthenticationPrincipal Jwt principal,
-                               @Valid @RequestBody UserJson user) {
+    public UserJson updateUser(@AuthenticationPrincipal @Nonnull Jwt principal,
+                               @Valid @RequestBody @Nonnull UserJson user) {
         String username = principal.getClaim("sub");
         LOG.info("Updating user profile for: {}", username);
 
