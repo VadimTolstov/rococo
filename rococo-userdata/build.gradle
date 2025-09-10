@@ -13,12 +13,12 @@ plugins {
 group = 'guru.qa'
 version = '2.0.0'
 
-/
+/**
  * Зависимости проекта:
  * - Spring Boot Starter: Веб, JPA, валидация, GraphQL
  * - Базы данных: PostgreSQL, H2 (для тестов)
  * - Инструменты: Lombok, Flyway, SpringDoc OpenAPI
- */
+ **/
 dependencies {
     // Основные зависимости Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -70,7 +70,8 @@ dependencies {
     testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }
 
-/
+
+/**
  * Конфигурация генерации Java классов из WSDL
  * - Генерирует классы в пакет jaxb.userdata
  * - Использует кодировку UTF-8
@@ -84,4 +85,67 @@ xjcGeneration {
             sourceSet = 'main'                 // Набор исходников для генерации
         }
     }
+}
+
+/**
+ * Настройка исходных директорий:
+ * - Добавляет сгенерированные XJC классы в исходный код
+ */
+sourceSets {
+    main {
+        java {
+            srcDir('src/main/java')
+            srcDir("$buildDir/generated-sources/main/xjc") // Генерируемые классы
+        }
+    }
+}
+
+/**
+ * Конфигурация Docker-образа через Jib
+ */
+jib {
+    container {
+        ports = ['8090'] // Открываемый порт
+        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"] // Активация профиля
+        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()] // Секреты
+        creationTime = 'USE_CURRENT_TIMESTAMP' // Временная метка образа
+        labels = [ // Метаданные
+                   'maintainer': 'Dmitrii Tuchs @dtuchs',
+                   'version'   : "${project.version}".toString()
+        ]
+    }
+    from {
+        image = "${project.ext.dockerImage}" // Базовый образ
+        platforms {
+            platform {
+                architecture = "${project.ext.dockerArch}" // Архитектура
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}" // Имя образа
+        tags = ['latest', "${project.version}"] // Теги
+    }
+}
+
+// Зависимости задач сборки
+tasks.jib.dependsOn test
+tasks.jibDockerBuild.dependsOn test
+
+// Стратегия обработки дубликатов в JAR
+tasks.named('bootJar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Задача для вывода версии проекта
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+// Настройка тестов
+tasks.named('test') {
+    useJUnitPlatform()
 }

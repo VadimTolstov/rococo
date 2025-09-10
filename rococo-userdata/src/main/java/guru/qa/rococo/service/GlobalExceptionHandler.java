@@ -3,6 +3,7 @@ package guru.qa.rococo.service;
 
 import guru.qa.rococo.ex.BadRequestException;
 import guru.qa.rococo.ex.NotFoundException;
+import guru.qa.rococo.ex.SameUsernameException;
 import guru.qa.rococo.model.ErrorJson;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,13 +76,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex      перехваченное исключение, содержащее информацию об ошибке
      * @param request HTTP-запрос, в котором произошло исключение
      * @return ResponseEntity с объектом {@link ErrorJson} и статусом  {@link HttpStatus} BAD_REQUEST
-     * @see ErrorJson
      * @example Пример ответа:
      * {
-     *   "error": "Bad Request",
-     *   "message": "Invalid request parameters",
-     *   "path": "/api/endpoint"
+     * "error": "Bad Request",
+     * "message": "Invalid request parameters",
+     * "path": "/api/endpoint"
      * }
+     * @see ErrorJson
      */
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorJson> handleBadRequestException(@Nonnull BadRequestException ex,
@@ -103,9 +104,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @return ResponseEntity с объектом {@link ErrorJson} и статусом  {@link HttpStatus} NOT_FOUND
      * @example Пример ответа:
      * {
-     *   "error": "Not Found",
-     *   "message": "User not found",
-     *   "path": "/api/user/123"
+     * "error": "Not Found",
+     * "message": "User not found",
+     * "path": "/api/user/123"
      * }
      */
     @ExceptionHandler(NotFoundException.class)
@@ -134,6 +135,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return withStatus("Internal error", HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
+
+    @ExceptionHandler(SameUsernameException.class)
+    public ResponseEntity<ErrorJson> handleSameUsernameException(@Nonnull SameUsernameException ex,
+                                                                 @Nonnull HttpServletRequest request) {
+        LOG.warn("Same username attempt: {}", ex.getMessage());
+        return withStatus(
+                "Bad Request",
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                request
+        );
+    }
+
     /**
      * Создает ответ с ошибкой в стандартном формате.
      *
@@ -157,7 +171,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         request.getRequestURI() // URI запроса
                 ));
     }
-
 
 
 }

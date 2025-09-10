@@ -80,7 +80,7 @@ public class UserdataService {
         UserEntity userEntity = userdataRepository.findById(user.id())
                 .orElseThrow(() -> new NotFoundException("id: Пользователь не найден по id: " + user.id()));
 
-        if (!Objects.equals(user.username(), userEntity.getUsername())) {
+        if (user.username() != null && !Objects.equals(user.username(), userEntity.getUsername())) {
             userdataRepository.findByUsername(user.username()).ifPresent(u -> {
                 throw new SameUsernameException("username: Имя пользователя '" + user.username() + "' уже занято.");
             });
@@ -99,9 +99,12 @@ public class UserdataService {
 
     @Transactional(readOnly = true)
     public @Nonnull UserJson getUser(@Nonnull String username) {
+        if (username.isBlank()) {
+            throw new BadRequestException("Username не должен быть пустой или содержать одни пробелы");
+        }
         return userdataRepository.findByUsername(username)
                 .map(UserJson::fromEntity).orElseThrow(
-                () -> new NotFoundException("Пользователь с username = '" + username + "' не найден.")
-        );
+                        () -> new NotFoundException("Пользователь с username = '" + username + "' не найден.")
+                );
     }
 }

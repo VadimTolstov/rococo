@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +22,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -52,21 +55,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                            @Nonnull HttpHeaders headers,
                                                                            @Nonnull HttpStatusCode status,
                                                                            @Nonnull WebRequest request) {
-        return ResponseEntity
-                .status(status)
-                .body(new ErrorJson(
-                        appName + ": Entity validation error", // Тип ошибки
-                        HttpStatus.resolve(status.value()).getReasonPhrase(), // Стандартное описание статуса
-                        status.value(), // HTTP-статус код
-                        // Собираем сообщения об ошибках валидации в одну строку
-                        ex.getBindingResult()
-                                .getFieldErrors()
-                                .stream()
-                                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                                .collect(Collectors.joining(", ")),
-                        // URI запроса, вызвавшего ошибку
-                        ((ServletWebRequest) request).getRequest().getRequestURI()
-                ));
+        // Собираем все ошибки валидации в список
+        List<String> validationErrors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.toList());
+
+        // Создаем расширенный ErrorJson с массивом ошибок
+        ErrorJson errorResponse = new ErrorJson(
+                appName + ": Validation error",
+                HttpStatus.resolve(status.value()).getReasonPhrase(),
+                status.value(),
+                "Validation failed. Check 'errors' field for details", // общее сообщение
+                validationErrors, // массив отдельных ошибок
+                LocalDateTime.now().toString(),
+                ((ServletWebRequest) request).getRequest().getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
     }
 
     /**
@@ -85,7 +92,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpServerErrorException.ServiceUnavailable.class
     })
     public ResponseEntity<ErrorJson> handleRestTemplateExceptions(@Nonnull HttpClientErrorException ex,
-                                                                  @Nonnull HttpServletRequest request) {
+                                                                          @Nonnull HttpServletRequest request) {
         LOG.warn("### REST Exception caught in Gateway: {}", ex.getMessage());
         return handleForwardedException(ex, request);
     }
@@ -99,9 +106,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(NoRestResponseException.class)
     public ResponseEntity<ErrorJson> handleApiNoResponseException(@Nonnull RuntimeException ex,
-                                                                  @Nonnull HttpServletRequest request) {
+                                                                          @Nonnull HttpServletRequest request) {
         LOG.warn("### No REST Response ", ex);
-        return withStatus("Ошибка API", HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+        return withEnhancedStatus("API Error", HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
     }
 
     /**
@@ -113,13 +120,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorJson> handleUnexpectedException(@Nonnull Exception ex,
-                                                               @Nonnull HttpServletRequest request) {
+                                                                       @Nonnull HttpServletRequest request) {
         LOG.error("### Internal Server Error ", ex);
-        return withStatus("Внутренняя ошибка", HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
+        return withEnhancedStatus("Internal Error", HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
     /**
-     * Создает ответ с ошибкой в стандартном формате.
+     * Создает ответ с ошибкой в расширенном формате.
      *
      * @param type    Тип ошибки (для отображения в интерфейсе)
      * @param status  HTTP статус
@@ -127,19 +134,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param request HTTP запрос
      * @return Ответ с заполненным объектом ErrorJson
      */
-    private @Nonnull ResponseEntity<ErrorJson> withStatus(@Nonnull String type,
-                                                          @Nonnull HttpStatus status,
-                                                          @Nonnull String message,
-                                                          @Nonnull HttpServletRequest request) {
-        return ResponseEntity
-                .status(status)
-                .body(new ErrorJson(
-                        appName + ": " + type, // Тип ошибки с именем приложения
-                        status.getReasonPhrase(), // Стандартное описание статуса
-                        status.value(), // HTTP-код
-                        message, // Детализированное сообщение
-                        request.getRequestURI() // URI запроса
-                ));
+    private @Nonnull ResponseEntity<ErrorJson> withEnhancedStatus(@Nonnull String type,
+                                                                          @Nonnull HttpStatus status,
+                                                                          @Nonnull String message,
+                                                                          @Nonnull HttpServletRequest request) {
+        ErrorJson errorResponse = new ErrorJson(
+                appName + ": " + type,
+                status.getReasonPhrase(),
+                status.value(),
+                message,
+                List.of(message), // помещаем сообщение также в массив errors
+                LocalDateTime.now().toString(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(errorResponse);
     }
 
     /**
@@ -152,17 +161,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @Nonnull
     private ResponseEntity<ErrorJson> handleForwardedException(@Nonnull HttpClientErrorException ex,
-                                                               @Nonnull HttpServletRequest request) {
+                                                                       @Nonnull HttpServletRequest request) {
         // Десериализация тела ошибки из удаленного сервиса
         ErrorJson originalError = ex.getResponseBodyAs(ErrorJson.class);
-        return ResponseEntity
-                .status(originalError.status())
-                .body(new ErrorJson(
-                        originalError.type(), // Сохраняем оригинальный тип
-                        originalError.title(), // Сохраняем оригинальный заголовок
-                        originalError.status(), // Сохраняем оригинальный статус
-                        originalError.detail(), // Сохраняем оригинальные детали
-                        request.getRequestURI() // URI текущего запроса
-                ));
+
+        ErrorJson enhancedError = new ErrorJson(
+                originalError.type(),
+                originalError.title(),
+                originalError.status(),
+                originalError.detail(),
+                List.of(originalError.detail()), // создаем массив из деталей ошибки
+                LocalDateTime.now().toString(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(originalError.status()).body(enhancedError);
     }
 }
