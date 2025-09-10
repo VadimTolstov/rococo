@@ -7,7 +7,9 @@ import guru.qa.rococo.ex.NotFoundException;
 import guru.qa.rococo.ex.SameUsernameException;
 import guru.qa.rococo.model.UserJson;
 import jakarta.annotation.Nonnull;
+import lombok.NonNull;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.codehaus.commons.nullanalysis.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +74,7 @@ public class UserdataService {
     }
 
     @Transactional
-    public @Nonnull UserJson update(@Nonnull UserJson user) {
+    public @NonNull UserJson update(@NonNull UserJson user) {
         if (user.id() == null) {
             throw new BadRequestException("id: ID пользователя обязателен для обновления данных о пользователе");
         }
@@ -98,7 +100,7 @@ public class UserdataService {
     }
 
     @Transactional(readOnly = true)
-    public @Nonnull UserJson getUser(@Nonnull String username) {
+    public @NonNull UserJson getUser(@NonNull String username) {
         if (username.isBlank()) {
             throw new BadRequestException("Username не должен быть пустой или содержать одни пробелы");
         }

@@ -97,13 +97,13 @@ public class PaintingServiceTest {
 
         artistJson = new ArtistJson(artistId, artistName, artistBiography, artistPhoto);
         country = new CountryJson(countryId, countryName);
-        museumJson = new MuseumJson(museumId, museumTitle, museumDescription, museumCity, new GeoJson("Москва",new CountryJson(UUID.randomUUID(),"Россия")));
+        museumJson = new MuseumJson(museumId, museumTitle, museumDescription, museumCity, new GeoJson("Москва", new CountryJson(UUID.randomUUID(), "Россия")));
         artistRef = new ArtistRef(artistId);
         museumRef = new MuseumRef(museumId);
         paintingRequestJson = new PaintingRequestJson(paintingId, paintingTitle, paintingDescription, paintingContent, artistRef, museumRef);
 
         artistJson2 = new ArtistJson(artistId2, "Новый художник", "Новая биография", "data:image/png;base64,iVBORw0KGgo");
-        museumJson2 = new MuseumJson(museumId2, "Новый музей", "Новая история музея", "data:image/png;base64,iVBORw0",new GeoJson("Банког",new CountryJson(UUID.randomUUID(), "Тайланд")));
+        museumJson2 = new MuseumJson(museumId2, "Новый музей", "Новая история музея", "data:image/png;base64,iVBORw0", new GeoJson("Банког", new CountryJson(UUID.randomUUID(), "Тайланд")));
 
         paintingEntity2 = new PaintingEntity();
         paintingEntity2.setId(paintingId);
@@ -143,7 +143,7 @@ public class PaintingServiceTest {
 
     @Test
     void getPaintingByIdShouldThrowExceptionForInvalidId() {
-        UUID nonExistentId = UUID.randomUUID();
+        final UUID nonExistentId = UUID.randomUUID();
         NotFoundException exception = assertThrows(
                 NotFoundException.class,
                 () -> paintingService.getPaintingById(nonExistentId)
@@ -418,10 +418,11 @@ public class PaintingServiceTest {
 
         Mockito.verify(paintingRepository).save(any(PaintingEntity.class));
     }
+
     @Test
     void updatePaintingShouldCheckArtistExistence() {
         PaintingRequestJson request = PaintingRequestJson.fromEntity(paintingEntity);
-       Mockito.when(paintingRepository.findById(paintingId)).thenReturn(Optional.of(paintingEntity));
+        Mockito.when(paintingRepository.findById(paintingId)).thenReturn(Optional.of(paintingEntity));
         Mockito.when(restArtistClient.getArtistById(any())).thenThrow(NotFoundException.class);
 
         assertThatThrownBy(() -> paintingService.updatePainting(request))
