@@ -108,10 +108,13 @@ public class MuseumService {
 
     // Вспомогательные методы
     private void validateRequest(@Nonnull MuseumJson museum) {
-        if (museum.geo() == null || museum.geo().city() == null || museum.geo().city().isBlank()) {
+        if (museum.title() == null || museum.title().isBlank()) {
+            throw new BadRequestException("Название музея не должно быть пустым или содержать одни пробелы");
+        } else if (museum.description() == null || museum.description().isBlank()) {
+            throw new BadRequestException("Описание музея не должно быть пустым или содержать одни пробелы");
+        } else if (museum.geo() == null || museum.geo().city() == null || museum.geo().city().isBlank()) {
             throw new BadRequestException("Город обязателен");
-        }
-        if (museum.geo().country() == null || (museum.geo().country().id() == null && museum.geo().country().name() == null)) {
+        } else if (museum.geo().country() == null || (museum.geo().country().id() == null && museum.geo().country().name() == null)) {
             throw new BadRequestException("Укажите ID или название страны");
         }
     }

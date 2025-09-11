@@ -1,0 +1,3 @@
+INSERT INTO country (id, name) VALUES
+('111e4567-e89b-12d3-a456-426614174000', 'France'),
+('222e4567-e89b-12d3-a456-426614174001', 'Italy');
