@@ -1,0 +1,297 @@
+buildscript {
+    ext {
+        grpcVersion = '1.66.0'
+        junitVersion = '5.13.4'
+        assertJVersion = '3.26.3'
+        allureVersion = '2.29.0'
+        selenideVersion = '7.9.4'
+        okhttp3Version = '5.1.0'
+        retrofitVersion = '3.0.0'
+        logbackVersion = '1.4.11'
+        slf4jVersion = '2.0.9'
+        springJdbcVersion = '6.1.12'
+        springCryptoVersion = '6.3.1'
+        p6spyVersion = '3.9.1'
+        hibernateVersion = '6.6.0.Final'
+        kafkaClientsVersion = '3.8.0'
+        saajVersion = '3.0.4'
+        jakartaJaxbVersion = '4.0.2'
+        springDataCommonsVersion = '3.3.3'
+        atomicosVersion = '6.0.0'
+        wiremockVersion = '3.0.1'
+        fakerVersion = '1.0.2'
+        ashotVersion = '1.5.4'
+        apollographqlVersion = '0.0.2'
+        userdataWsdlUrl = System.getProperty("test.env") == "docker"
+                ? "http://userdata.niffler.dc:8089/ws/userdata.wsdl"
+                : "http://127.0.0.1:8089/ws/userdata.wsdl"
+        gatewayIntrospectionUrl = System.getProperty("test.env") == "docker"
+                ? "http://gateway.niffler.dc:8090/graphql"
+                : "http://127.0.0.1:8090/graphql"
+    }
+}
+
+plugins {
+    id 'io.qameta.allure' version '2.12.0'
+    id 'io.qameta.allure-adapter' version '2.12.0'
+    id 'com.github.edeandrea.xjc-generation' version '1.6'
+    id 'com.apollographql.apollo' version '4.3.2'
+}
+
+group = 'guru.qa'
+version = '2.0.1'
+
+allure {
+    version.set("${allureVersion}")
+    adapter {
+        aspectjVersion.set("1.9.22")
+        aspectjWeaver.set(true)
+    }
+}
+
+// Объявляем конфигурации для зависимостей Gradle
+configurations {
+    jaxb  // Создаем новую конфигурацию с именем 'jaxb' для хранения зависимостей, связанных с JAXB
+}
+
+// Регистрируем новую задачу с именем 'genJaxb'
+tasks.register('genJaxb') {
+    // Определяем дополнительные свойства задачи:
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"  // Путь для сгенерированных исходных файлов
+    ext.classesDir = "${buildDir}/classes/jaxb"           // Путь для скомпилированных классов
+
+    // Указываем, что каталог classesDir является выходным для этой задачи
+    // (это важно для инкрементальных сборок)
+    outputs.dir classesDir
+
+    // Блок doLast выполняется при запуске задачи (после её конфигурации)
+    doLast {
+        // Получаем URL WSDL схемы из свойств проекта
+        def schema = project.ext.userdataWsdlUrl
+
+        // Используем Ant-задачи для генерации и компиляции кода
+        project.ant {
+            // Регистрируем Ant-задачу xjc (XML-to-Java компилятор)
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
+                    classpath: configurations.jaxb.asPath  // Указываем classpath из конфигурации jaxb
+
+            // Создаем директории, если они не существуют
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            // Запускаем XJC для генерации Java-классов из WSDL
+            xjc(destdir: sourcesDir,        // Выходная директория для сгенерированных файлов
+                    schema: schema,             // URL WSDL схемы
+                    package: "guru.qa.jaxb.userdata") {  // Целевой Java-пакет
+                arg(value: "-wsdl")         // Указываем, что на входе WSDL (не XSD)
+                // Указываем, какие файлы создает задача (для инкрементальных сборок)
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            // Компилируем сгенерированные Java-файлы
+            javac(destdir: classesDir,      // Выходная директория для классов
+                    source: 17,              // Версия исходного кода Java
+                    target: 17,               // Целевая версия JVM
+                    debug: true,             // Включаем отладочную информацию
+                    debugLevel: "lines,vars,source",  // Уровень детализации отладочной информации
+                    classpath: configurations.jaxb.asPath) {  // Classpath для компиляции
+                src(path: sourcesDir)       // Указываем исходную директорию
+                include(name: "**/*.java") // Включаем все Java-файлы
+                include(name: "*.java")
+            }
+
+            // Копируем все не-Java файлы из sourcesDir в classesDir
+            // (например, ресурсы или другие файлы, сгенерированные XJC)
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")  // Исключаем Java-файлы
+                }
+            }
+        }
+    }
+}
+
+apollo {
+    service("niffler") {
+        generateKotlinModels.set(false)
+        packageName.set("guru.qa")
+        srcDir("src/test/graphql")
+        mapScalar("Date", "java.util.Date")
+        introspection {
+            endpointUrl.set("$gatewayIntrospectionUrl")
+            schemaFile.set(file("src/test/graphql/schema.graphqls"))
+        }
+        outputDirConnection {
+            connectToJavaSourceSet("test")
+        }
+    }
+}
+
+// Блок sourceSets определяет исходные наборы для проекта
+sourceSets {
+    test {    // Конфигурация набора исходников для тестов
+        java {
+            // 1. Основная директория с тестами (стандартное расположение)
+            //    Содержит рукописные unit- и integration-тесты
+            srcDir('src/test/java')
+            // 2. Директория с классами, сгенерированными XJC (JAXB) для тестов
+            //    Содержит Java-классы, автоматически созданные из XSD/WSDL схем
+            //    $buildDir - стандартная gradle-директория для сгенерированных файлов
+            srcDir("$buildDir/generated-sources/jaxb")
+            // 3. Директория с классами, сгенерированными Apollo/Niffler
+            //    GraphQL-классы или специфичные для проекта модели
+            srcDir("$buildDir/generated/source/apollo/niffler")
+        }
+    }
+}
+
+dependencies {
+    // Logs
+    testImplementation "ch.qos.logback:logback-classic:${logbackVersion}"
+    testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    // JUnit
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    // REST
+    testImplementation "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
+    testImplementation "com.squareup.okhttp3:okhttp-urlconnection:${okhttp3Version}"
+    testImplementation("com.squareup.retrofit2:retrofit:${retrofitVersion}") {
+        exclude group: "com.squareup.okhttp3"
+    }
+    testImplementation("com.squareup.retrofit2:converter-jackson:${retrofitVersion}") {
+        exclude group: "com.squareup.okhttp3"
+    }
+    testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
+    // GraphQL
+    testImplementation "com.apollographql.java:client:${apollographqlVersion}"
+    testImplementation "com.apollographql.java:rx2:${apollographqlVersion}"
+    testImplementation 'com.apollographql.adapters:apollo-adapters-core:0.7.0'
+    // DB
+    testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
+    testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
+    testImplementation "com.atomikos:transactions-jta:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-hibernate4:${atomicosVersion}:jakarta"
+    testImplementation "com.atomikos:transactions-jdbc:${atomicosVersion}"
+    testImplementation "p6spy:p6spy:${p6spyVersion}"
+    testImplementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    testImplementation "org.springframework.security:spring-security-crypto:${springCryptoVersion}"
+    // Allure
+    testImplementation "io.qameta.allure:allure-attachments:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
+        exclude group: "org.junit.jupiter"
+    }
+    testImplementation("io.qameta.allure:allure-selenide:${allureVersion}") {
+        exclude group: 'com.codeborne'
+    }
+    testImplementation "io.qameta.allure:allure-okhttp3:${allureVersion}"
+    testImplementation "io.qameta.allure:allure-grpc:${allureVersion}"
+    // WEB
+    testImplementation "com.codeborne:selenide:${selenideVersion}"
+    // Utils
+    testImplementation "ru.yandex.qatools.ashot:ashot:${ashotVersion}"
+    testImplementation("com.github.javafaker:javafaker:${fakerVersion}") {
+        exclude group: 'org.yaml'
+    }
+    testImplementation 'commons-io:commons-io:2.20.0'
+    testImplementation 'com.google.code.findbugs:jsr305:3.0.2'
+    testImplementation 'com.github.vertical-blank:sql-formatter:2.0.5'
+    testImplementation 'com.github.h-thurow:simple-jndi:0.25.0'
+    testImplementation "org.assertj:assertj-core:${assertJVersion}"
+
+    // gRPC
+    testImplementation "io.grpc:grpc-api:${project.ext.grpcVersion}"
+    testImplementation "io.grpc:grpc-stub:${project.ext.grpcVersion}"
+    testImplementation "io.grpc:grpc-netty:${project.ext.grpcVersion}"
+    testImplementation "com.google.protobuf:protobuf-java:${project.ext.protobufVersion}"
+    testImplementation "com.google.protobuf:protobuf-java-util:${project.ext.protobufVersion}"
+    compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5' // Java 9+ compatibility - Do NOT update to 2.0.0
+
+    testImplementation project(':niffler-grpc-common')
+
+    // SOAP
+    testImplementation "com.sun.xml.messaging.saaj:saaj-impl:${saajVersion}"
+    testImplementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaJaxbVersion}"
+// Конфигурация зависимостей JAXB (Java Architecture for XML Binding)
+// Все зависимости добавляются в специальную конфигурацию 'jaxb',
+// которая была объявлена ранее в блоке configurations {}
+
+// 1. JAXB XJC (XML Compiler) - инструмент для генерации Java-классов из XSD схем
+//    org.glassfish.jaxb - реализация от GlassFish (Jakarta EE)
+//    xjc используется в задаче genJaxb для генерации кода
+    jaxb "org.glassfish.jaxb:jaxb-xjc:${jakartaJaxbVersion}"
+
+// 2. JAXB Runtime - реализация времени выполнения для работы с XML
+//    Необходима для маршалинга/анмаршалинга XML в runtime
+    jaxb "org.glassfish.jaxb:jaxb-runtime:${jakartaJaxbVersion}"
+
+// 3. Реализация JAXB от Sun/Oracle (legacy)
+//    Обеспечивает совместимость со старыми версиями JAXB
+    jaxb "com.sun.xml.bind:jaxb-impl:${jakartaJaxbVersion}"
+
+// 4. Ядро JAXB - низкоуровневые функции биндинга
+//    Обработка аннотаций, внутренние механизмы
+    jaxb "com.sun.xml.bind:jaxb-core:${jakartaJaxbVersion}"
+
+// Настройка порядка выполнения задач:
+// Указываем, что задача компиляции Java (compileJava) зависит
+// от задачи генерации JAXB-классов (genJaxb)
+// Это гарантирует, что:
+// 1. Сначала выполнится генерация классов из XSD/WSDL
+// 2. Затем сгенерированные классы будут скомпилированы
+// 3. Без этой настройки компиляция может начаться до генерации кода
+    compileJava.dependsOn(tasks.named("genJaxb"))
+
+    // Kafka
+    testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
+
+    // Wiremock
+    testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
+    testImplementation "com.github.tomakehurst:wiremock-standalone:${wiremockVersion}"
+
+    // Lombok
+    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+tasks.named { it == "generateNifflerApolloSources" }.configureEach {
+    dependsOn("downloadNifflerApolloSchemaFromIntrospection")
+}
+
+test {
+    // Передаёт все системные свойства в тестовый процесс
+    options {
+        systemProperties(System.getProperties())
+    }
+    // Включает вывод стандартных потоков (System.out/err) в консоль
+    testLogging.showStandardStreams = true
+    // Форматирование исключений: полный стектрейс
+    testLogging.exceptionFormat = 'full'
+    // Использование JUnit 5 с исключением тестов по тегам
+    useJUnitPlatform {
+        excludeTags("EMPTY_DB", "FULL_DB")
+    }
+    // Порядок выполнения: задача test должна запускаться ПОСЛЕ задачи dbEmpty
+    shouldRunAfter("dbEmpty")
+}
+
+tasks.register("dbEmpty", Test) {
+    useJUnitPlatform {
+        includeTags "EMPTY_DB" // Только тесты с тегом EMPTY_DB
+    }
+}
+
+tasks.register("dbFull", Test) {
+    useJUnitPlatform {
+        includeTags "FULL_DB" // Только тесты с тегом FULL_DB
+    }
+    shouldRunAfter(test) // Запускается ПОСЛЕ основной задачи test
+}

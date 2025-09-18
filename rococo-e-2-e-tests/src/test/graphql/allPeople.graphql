@@ -1,0 +1,38 @@
+query AllPeople($page:Int!, $size:Int!, $sort: [String!], $searchQuery:String) {
+    allPeople(page: $page, size: $size, sort: $sort, searchQuery: $searchQuery) {
+        edges {
+            node {
+                id
+                username
+                friends(page: $page, size: $size) { #1 уровень (допустимая вложенность)
+                    edges {
+                        node{
+                            id,
+                            username
+                            friends(page: $page, size: $size) { # 2 уровень (допустимая вложенность)
+                                edges {
+                                    node{
+                                        id,
+                                        username
+                                        friends(page: $page, size: $size) { # 3 уровень (НЕ допустимая вложенность)
+                                            edges {
+                                                node{
+                                                    id,
+                                                    username
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pageInfo {
+            hasPreviousPage
+            hasNextPage
+        }
+    }
+}
