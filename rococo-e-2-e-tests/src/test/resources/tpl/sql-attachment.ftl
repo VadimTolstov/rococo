@@ -1,5 +1,5 @@
 <html>
-<#-- @ftlvariable name="data" type="guru.qa.niffler.data.logging.SqlAttachmentData" -->
+<#-- @ftlvariable name="data" type="guru.qa.rococo.data.logging.SqlAttachmentData" -->
 <head>
     <meta http-equiv="content-type" content="text/html; charset = UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">

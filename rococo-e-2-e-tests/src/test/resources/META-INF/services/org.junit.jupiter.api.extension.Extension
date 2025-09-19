@@ -1,5 +1,5 @@
-guru.qa.niffler.jupiter.extension.CookieJarExtension
-guru.qa.niffler.jupiter.extension.DatabasesExtension
-guru.qa.niffler.jupiter.extension.TestsMethodContextExtension
-guru.qa.niffler.jupiter.extension.AllureBackendLogsExtension
-guru.qa.niffler.jupiter.extension.AllureResultsDockerExtension
+guru.qa.rococo.jupiter.extension.CookieJarExtension
+guru.qa.rococo.jupiter.extension.DatabasesExtension
+guru.qa.rococo.jupiter.extension.TestsMethodContextExtension
+guru.qa.rococo.jupiter.extension.AllureBackendLogsExtension
+guru.qa.rococo.jupiter.extension.AllureResultsDockerExtension
