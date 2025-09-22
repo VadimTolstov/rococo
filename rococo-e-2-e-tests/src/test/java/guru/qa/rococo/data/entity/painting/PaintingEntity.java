@@ -1,11 +1,12 @@
 package guru.qa.rococo.data.entity.painting;
 
+import guru.qa.rococo.model.rest.painting.PaintingJson;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,7 +22,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "painting",schema = "public")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "painting", schema = "public")
 public class PaintingEntity implements Serializable {
 
     /**
