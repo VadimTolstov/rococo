@@ -11,29 +11,4 @@ public record GeoJson(
         @JsonProperty("city") String city,
         @JsonProperty("country") CountryJson country
 ) {
-
-    /**
-     * Преобразует GeoEntity в GeoJson.
-     *
-     * @param entity Сущность GeoEntity.
-     * @return Объект GeoJson.
-     */
-    public static @NonNull GeoJson fromEntity(@NonNull GeoEntity entity) {
-        return new GeoJson(
-                entity.getCity(),
-                CountryJson.fromEntity(entity.getCountry())
-        );
-    }
-
-    /**
-     * Преобразует GeoJson в GeoEntity.
-     *
-     * @return Объект GeoEntity.
-     */
-    public @NonNull GeoEntity toEntity() {
-        GeoEntity entity = new GeoEntity();
-        entity.setCity(city);
-        entity.setCountry(country.toEntity());
-        return entity;
-    }
 }

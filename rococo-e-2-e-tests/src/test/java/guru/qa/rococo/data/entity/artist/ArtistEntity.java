@@ -1,7 +1,9 @@
 package guru.qa.rococo.data.entity.artist;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -21,7 +23,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "artist",schema = "public")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "artist", schema = "public")
 public class ArtistEntity implements Serializable {
 
     @Id
@@ -35,7 +39,7 @@ public class ArtistEntity implements Serializable {
     @Column(name = "biography", nullable = false, length = 2000)
     private String biography;
 
-    @Column(name = "photo",columnDefinition = "bytea")
+    @Column(name = "photo", columnDefinition = "bytea")
     private byte[] photo;
 
 

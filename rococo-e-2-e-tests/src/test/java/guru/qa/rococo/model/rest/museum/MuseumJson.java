@@ -17,37 +17,4 @@ public record MuseumJson(
         @JsonProperty("photo") String photo,
         @JsonProperty("geo") GeoJson geo
 ) {
-
-    /**
-     * Преобразует MuseumEntity в MuseumJson.
-     *
-     * @param entity Сущность MuseumEntity.
-     * @return Объект MuseumJson.
-     */
-    public static @NonNull MuseumJson fromEntity(@NonNull MuseumEntity entity) {
-        return new MuseumJson(
-                entity.getId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getPhoto() != null && entity.getPhoto().length > 0
-                        ? new String(entity.getPhoto(), StandardCharsets.UTF_8)
-                        : null,
-                GeoJson.fromEntity(entity.getGeo())
-        );
-    }
-
-    /**
-     * Преобразует MuseumJson в MuseumEntity.
-     *
-     * @return Объект MuseumEntity.
-     */
-    public @NonNull MuseumEntity toEntity() {
-        MuseumEntity entity = new MuseumEntity();
-        entity.setId(this.id);
-        entity.setTitle(this.title);
-        entity.setDescription(this.description);
-        entity.setPhoto(this.photo != null ? this.photo.getBytes(StandardCharsets.UTF_8) : null);
-        entity.setGeo(this.geo != null ? this.geo.toEntity() : null);
-        return entity;
-    }
 }

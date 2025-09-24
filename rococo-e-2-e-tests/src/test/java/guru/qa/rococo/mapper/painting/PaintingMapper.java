@@ -1,4 +1,4 @@
-package guru.qa.rococo.mapper;
+package guru.qa.rococo.mapper.painting;
 
 import guru.qa.rococo.data.entity.painting.PaintingEntity;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
