@@ -26,7 +26,7 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.boot.autoconfigure: INFO
   file:
-    name: 'gateway.log'  # Имя файла для сохранения логов
+    path: ./logs/rococo-gateway
 
 # Кастомные настройки приложения
 rococo-userdata:
