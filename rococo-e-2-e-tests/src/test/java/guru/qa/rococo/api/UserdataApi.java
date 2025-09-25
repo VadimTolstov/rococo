@@ -1,4 +1,4 @@
-package guru.qa.rococo;
+package guru.qa.rococo.api;
 
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import lombok.NonNull;
