@@ -24,15 +24,4 @@ public record AuthUserJson(
         @JsonProperty("credentialsNonExpired")
         Boolean credentialsNonExpired) {
 
-    public static @Nonnull AuthUserJson fromEntity(@Nonnull AuthUserEntity entity) {
-        return new AuthUserJson(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getPassword(),
-                entity.getEnabled(),
-                entity.getAccountNonExpired(),
-                entity.getAccountNonLocked(),
-                entity.getCredentialsNonExpired()
-        );
-    }
 }

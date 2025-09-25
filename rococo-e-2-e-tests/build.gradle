@@ -49,68 +49,6 @@ allure {
     }
 }
 
-// Объявляем конфигурации для зависимостей Gradle
-configurations {
-    jaxb  // Создаем новую конфигурацию с именем 'jaxb' для хранения зависимостей, связанных с JAXB
-}
-
-// Регистрируем новую задачу с именем 'genJaxb'
-tasks.register('genJaxb') {
-    // Определяем дополнительные свойства задачи:
-    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"  // Путь для сгенерированных исходных файлов
-    ext.classesDir = "${buildDir}/classes/jaxb"           // Путь для скомпилированных классов
-
-    // Указываем, что каталог classesDir является выходным для этой задачи
-    // (это важно для инкрементальных сборок)
-    outputs.dir classesDir
-
-    // Блок doLast выполняется при запуске задачи (после её конфигурации)
-    doLast {
-        // Получаем URL WSDL схемы из свойств проекта
-        def schema = project.ext.userdataWsdlUrl
-
-        // Используем Ant-задачи для генерации и компиляции кода
-        project.ant {
-            // Регистрируем Ant-задачу xjc (XML-to-Java компилятор)
-            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask",
-                    classpath: configurations.jaxb.asPath  // Указываем classpath из конфигурации jaxb
-
-            // Создаем директории, если они не существуют
-            mkdir(dir: sourcesDir)
-            mkdir(dir: classesDir)
-
-            // Запускаем XJC для генерации Java-классов из WSDL
-            xjc(destdir: sourcesDir,        // Выходная директория для сгенерированных файлов
-                    schema: schema,             // URL WSDL схемы
-                    package: "guru.qa.jaxb.userdata") {  // Целевой Java-пакет
-                arg(value: "-wsdl")         // Указываем, что на входе WSDL (не XSD)
-                // Указываем, какие файлы создает задача (для инкрементальных сборок)
-                produces(dir: sourcesDir, includes: "**/*.java")
-            }
-
-            // Компилируем сгенерированные Java-файлы
-            javac(destdir: classesDir,      // Выходная директория для классов
-                    source: 17,              // Версия исходного кода Java
-                    target: 17,               // Целевая версия JVM
-                    debug: true,             // Включаем отладочную информацию
-                    debugLevel: "lines,vars,source",  // Уровень детализации отладочной информации
-                    classpath: configurations.jaxb.asPath) {  // Classpath для компиляции
-                src(path: sourcesDir)       // Указываем исходную директорию
-                include(name: "**/*.java") // Включаем все Java-файлы
-                include(name: "*.java")
-            }
-
-            // Копируем все не-Java файлы из sourcesDir в classesDir
-            // (например, ресурсы или другие файлы, сгенерированные XJC)
-            copy(todir: classesDir) {
-                fileset(dir: sourcesDir, erroronmissingdir: false) {
-                    exclude(name: "**/*.java")  // Исключаем Java-файлы
-                }
-            }
-        }
-    }
-}
-
 apollo {
     service("niffler") {
         generateKotlinModels.set(false)
@@ -207,39 +145,6 @@ dependencies {
 
 //    testImplementation project(':niffler-grpc-common')
 
-    // SOAP
-    testImplementation "com.sun.xml.messaging.saaj:saaj-impl:${saajVersion}"
-    testImplementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaJaxbVersion}"
-// Конфигурация зависимостей JAXB (Java Architecture for XML Binding)
-// Все зависимости добавляются в специальную конфигурацию 'jaxb',
-// которая была объявлена ранее в блоке configurations {}
-
-// 1. JAXB XJC (XML Compiler) - инструмент для генерации Java-классов из XSD схем
-//    org.glassfish.jaxb - реализация от GlassFish (Jakarta EE)
-//    xjc используется в задаче genJaxb для генерации кода
-    jaxb "org.glassfish.jaxb:jaxb-xjc:${jakartaJaxbVersion}"
-
-// 2. JAXB Runtime - реализация времени выполнения для работы с XML
-//    Необходима для маршалинга/анмаршалинга XML в runtime
-    jaxb "org.glassfish.jaxb:jaxb-runtime:${jakartaJaxbVersion}"
-
-// 3. Реализация JAXB от Sun/Oracle (legacy)
-//    Обеспечивает совместимость со старыми версиями JAXB
-    jaxb "com.sun.xml.bind:jaxb-impl:${jakartaJaxbVersion}"
-
-// 4. Ядро JAXB - низкоуровневые функции биндинга
-//    Обработка аннотаций, внутренние механизмы
-    jaxb "com.sun.xml.bind:jaxb-core:${jakartaJaxbVersion}"
-
-// Настройка порядка выполнения задач:
-// Указываем, что задача компиляции Java (compileJava) зависит
-// от задачи генерации JAXB-классов (genJaxb)
-// Это гарантирует, что:
-// 1. Сначала выполнится генерация классов из XSD/WSDL
-// 2. Затем сгенерированные классы будут скомпилированы
-// 3. Без этой настройки компиляция может начаться до генерации кода
-    compileJava.dependsOn(tasks.named("genJaxb"))
-
     // Kafka
     testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
 
@@ -248,8 +153,8 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-standalone:${wiremockVersion}"
 
     // Lombok
-    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     testCompileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -262,9 +167,6 @@ tasks.register('printVersion') {
     }
 }
 
-tasks.named { it == "generateNifflerApolloSources" }.configureEach {
-    dependsOn("downloadNifflerApolloSchemaFromIntrospection")
-}
 
 test {
     // Передаёт все системные свойства в тестовый процесс

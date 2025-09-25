@@ -14,7 +14,7 @@ public class ArtistMapper {
      * @param entity Сущность ArtistEntity.
      * @return Объект ArtistJson.
      */
-    public static @NonNull ArtistJson toJson(@NonNull ArtistEntity entity) {
+    public  @NonNull ArtistJson toJson(@NonNull ArtistEntity entity) {
         return new ArtistJson(
                 entity.getId(),
                 entity.getName(),

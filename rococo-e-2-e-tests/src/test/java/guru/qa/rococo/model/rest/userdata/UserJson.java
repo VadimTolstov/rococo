@@ -22,25 +22,4 @@ public record UserJson(
         @JsonProperty("avatar")
         String avatar
 ) {
-    public static @Nonnull UserJson fromEntity(@Nonnull UserEntity entity) {
-        return new UserJson(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getFirstname(),
-                entity.getLastname(),
-                entity.getAvatar() != null && entity.getAvatar().length > 0
-                        ? new String(entity.getAvatar(), StandardCharsets.UTF_8)
-                        : null
-        );
-    }
-
-    public static @Nonnull UserEntity toEntity(@Nonnull UserJson json) {
-        return new UserEntity(
-                json.id,
-                json.username,
-                json.firstname,
-                json.lastname,
-                json.avatar.getBytes(StandardCharsets.UTF_8)
-        );
-    }
 }
