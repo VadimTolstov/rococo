@@ -32,6 +32,7 @@ subprojects {
         springGraphqlDateTimeVersion = '6.0.0'
         openApiVersion = '2.6.0'
         jakartaJaxbVersion = '4.0.5'
+        mapstructVersion = '1.5.5.Final'
         wsdl4jVersion = '1.6.3'
         protobufVersion = '3.25.3'
         grpcVersion = '1.63.0'

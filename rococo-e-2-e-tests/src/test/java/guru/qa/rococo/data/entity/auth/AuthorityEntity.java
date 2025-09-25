@@ -50,12 +50,4 @@ public class AuthorityEntity implements Serializable {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
-
-    public static @Nonnull AuthorityEntity fromJson(@Nonnull AuthorityJson authority) {
-        return new AuthorityEntity(
-                authority.id(),
-                AuthUserEntity.fromJson(authority.userId()),
-                authority.authority()
-        );
-    }
 }
