@@ -14,5 +14,5 @@ public interface UserdataApi {
     Call<UserJson> getUser(@Query("username") @NonNull String username);
 
     @PATCH("/internal/user")
-    Call<UserJson> patchUser(@Body @NonNull UserJson user);
+    Call<UserJson> updateUser(@Body @NonNull UserJson user);
 }

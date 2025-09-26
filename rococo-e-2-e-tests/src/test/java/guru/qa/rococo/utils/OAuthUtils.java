@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @ParametersAreNonnullByDefault
-public class OauthUtils {
+public class OAuthUtils {
     private static final int CODE_VERIFIER_LENGTH = 128; // Длина code_verifier в байтах
 
     /**

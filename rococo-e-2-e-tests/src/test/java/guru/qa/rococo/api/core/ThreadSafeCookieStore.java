@@ -7,11 +7,11 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
 
-public enum ThreadSafeCookiesStore implements CookieStore {
+public enum ThreadSafeCookieStore implements CookieStore {
     INSTANCE;
 
     private final ThreadLocal<CookieStore> threadSafeCookiesStore = ThreadLocal.withInitial(
-            ThreadSafeCookiesStore::inMemoryCookiesStore
+            ThreadSafeCookieStore::inMemoryCookiesStore
     );
 
     private static CookieStore inMemoryCookiesStore() {

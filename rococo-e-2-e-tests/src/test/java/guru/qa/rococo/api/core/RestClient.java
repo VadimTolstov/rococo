@@ -67,7 +67,7 @@ public abstract class RestClient {
         okHttpBuilder.cookieJar(
                 new JavaNetCookieJar(
                         new CookieManager(
-                                ThreadSafeCookiesStore.INSTANCE,
+                                ThreadSafeCookieStore.INSTANCE,
                                 CookiePolicy.ACCEPT_ALL
                         )
                 )
@@ -99,6 +99,14 @@ public abstract class RestClient {
 
         public EmtyRestClient(String baseUrl, Converter.Factory factory) {
             super(baseUrl, factory);
+        }
+
+        public EmtyRestClient(String baseUrl, HttpLoggingInterceptor.Level level) {
+            super(baseUrl, level);
+        }
+
+        public EmtyRestClient(String baseUrl, Converter.Factory factory, HttpLoggingInterceptor.Level level) {
+            super(baseUrl, factory, level);
         }
 
         public EmtyRestClient(String baseUrl, boolean followRedirect, Converter.Factory factory, HttpLoggingInterceptor.Level level, Interceptor... interceptors) {
