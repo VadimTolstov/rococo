@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
 
 
-  @ApiLogin(password = "12345",username = "books2")
+  @ApiLogin(password = "12345",username = "Adica")
   @Test
   public void firstTest(UserJson userJson) {
     System.out.println(userJson);

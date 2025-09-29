@@ -2,7 +2,6 @@ package guru.qa.rococo.jupiter.extension;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
-import guru.qa.rococo.api.UserdataApi;
 import guru.qa.rococo.api.core.ThreadSafeCookieStore;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.jupiter.annotation.ApiLogin;
@@ -55,15 +54,22 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
             }
             userToLogin = userFromUserExtension;
           } else {
-
+            //todo если мы хотим залогиниться уже существующем пользователем? или всегда делаем нового
+            //todo передали пользователя мы его создаем ? или он должен быть в системе уже?
 //            UserJson userJson = userdataApiClient.getUser(apiLogin.username());
 //            if (userJson == null) {
-//              //todo если мы хотим залогиниться уже существующем пользователем? или всегда делаем нового
+//
 //            }
-            final UserJson fakeUser = authApiClient.createUser(
-                apiLogin.username(),
-                apiLogin.password()
-            ).withPassword(apiLogin.password());
+
+//            final UserJson fakeUser = authApiClient.createUser(
+//                apiLogin.username(),
+//                apiLogin.password()
+//            ).withPassword(apiLogin.password());
+
+            final UserJson fakeUser = UserJson.builder()
+                .username(apiLogin.username())
+                .password(apiLogin.password())
+                .build();
 
             if (userFromUserExtension != null) {
               throw new IllegalStateException("@User не должен быть над тестом если у  @ApiLogin заполнен username или password!");

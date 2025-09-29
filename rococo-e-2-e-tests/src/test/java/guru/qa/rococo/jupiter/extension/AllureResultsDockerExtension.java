@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 public class AllureResultsDockerExtension implements SuiteExtension {
     private final boolean isDocker = "docker".equals(System.getProperty("test.env"));
     private final AllureApiClient allureApiClient = new AllureApiClient();
-    private final String PROJECT_ID = "niffler-ng-8";
-    private final String ALLURE_RESULTS_DIRECTORY = "./niffler-e-2-e-tests/build/allure-results";
+    private final String PROJECT_ID = "rococo";
+    private final String ALLURE_RESULTS_DIRECTORY = "./rococo-e-2-e-tests/build/allure-results";
 
     @Override
     public void beforeSuite(ExtensionContext context) {
