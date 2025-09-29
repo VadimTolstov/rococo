@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class AllureBackendLogsExtension implements SuiteExtension {
 
-    public static final String caseName = "Niffler backend logs";
+    public static final String caseName = "Rococo backend logs";
 
     @SneakyThrows
     @Override
@@ -20,11 +20,12 @@ public class AllureBackendLogsExtension implements SuiteExtension {
         final String caseId = UUID.randomUUID().toString();
         allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(caseName));
         allureLifecycle.startTestCase(caseId);
-        addLogAttachment("Niffler-auth log", "./logs/niffler-auth/app.log");
-        addLogAttachment("Niffler-currency log", "./logs/niffler-currency/app.log");
-        addLogAttachment("Niffler-gateway log", "./logs/niffler-gateway/app.log");
-        addLogAttachment("Niffler-spend log", "./logs/niffler-spend/app.log");
-        addLogAttachment("Niffler-userdata log", "./logs/niffler-userdata/app.log");
+        addLogAttachment("Rococo-auth log", "./logs/rococo-auth/app.log");
+        addLogAttachment("Rococo-artist log", "./logs/rococo-artist/app.log");
+        addLogAttachment("Rococo-gateway log", "./logs/rococo-gateway/app.log");
+        addLogAttachment("Rococo-museum log", "./logs/rococo-museum/app.log");
+        addLogAttachment("Rococo-userdata log", "./logs/rococo-userdata/app.log");
+        addLogAttachment("Rococo-painting log", "./logs/rococo-painting/app.log");
         allureLifecycle.stopTestCase(caseId);
         allureLifecycle.writeTestCase(caseId);
     }

@@ -19,74 +19,74 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class UserExtension implements BeforeEachCallback, ParameterResolver {
 
-    public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
+  public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
 
-    private final AuthClient authClient = new AuthApiClient();
-    private final UserdataClient userdataClient = new UserdataApiClient();
+  private final AuthClient authClient = new AuthApiClient();
+  private final UserdataClient userdataClient = new UserdataApiClient();
+  private final String PASSWORD = "12345";
 
+  @Override
+  @Step("Создаем пользователе перед началом теста")
+  public void beforeEach(ExtensionContext context) {
+    AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
+        .ifPresent(userAnno -> Allure.step("Найдена аннотация User над тестом", () -> {
+          {
+            if ("".equals(userAnno.username())) {
+              final String username = RandomDataUtils.randomUsername();
+              final String password = "".equals(userAnno.password()) ? PASSWORD : userAnno.password();
+              UserJson user = authClient.createUser(
+                  username,
+                  password
+              ).withPassword(password);
 
-    @Override
-    @Step("Создаем пользователе перед началом теста")
-    public void beforeEach(ExtensionContext context) {
-        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), User.class)
-                .ifPresent(userAnno -> Allure.step("Найдена аннотация User над тестом", () -> {
-                    {
-                        if ("".equals(userAnno.username())) {
-                            final String username = RandomDataUtils.randomUsername();
+              var userBuilder = user.toBuilder();
+              boolean needToUpdate = false;
 
-                            UserJson user = authClient.createUser(
-                                    username,
-                                    userAnno.password()
-                            );
+              if (!StringUtils.isBlank(userAnno.firstname())) {
+                userBuilder.firstname(userAnno.firstname());
+                needToUpdate = true;
+              }
+              if (!StringUtils.isBlank(userAnno.lastname())) {
+                userBuilder.lastname(userAnno.lastname());
+                needToUpdate = true;
+              }
+              if (!StringUtils.isBlank(userAnno.avatar())) {
+                userBuilder.avatar(userAnno.avatar());
+                needToUpdate = true;
+              }
 
-                            var userBuilder = user.toBuilder();
-                            boolean needToUpdate = false;
+              if (needToUpdate) {
+                user = userdataClient.updateUser(userBuilder.build());
+              }
 
-                            if (!StringUtils.isBlank(userAnno.firstname())) {
-                                userBuilder.firstname(userAnno.firstname());
-                                needToUpdate = true;
-                            }
-                            if (!StringUtils.isBlank(userAnno.lastname())) {
-                                userBuilder.lastname(userAnno.lastname());
-                                needToUpdate = true;
-                            }
-                            if (!StringUtils.isBlank(userAnno.avatar())) {
-                                userBuilder.avatar(userAnno.avatar());
-                                needToUpdate = true;
-                            }
+              setUser(user);
+            }
+          }
+        }));
+  }
 
-                            if (needToUpdate) {
-                                user = userdataClient.updateUser(userBuilder.build());
-                            }
+  public static void setUser(UserJson user) {
+    final ExtensionContext context = TestsMethodContextExtension.context();
+    context.getStore(NAMESPACE).put(
+        context.getUniqueId(),
+        user
+    );
+  }
 
-                            setUser(user);
-                        }
-                    }
-                }));
-    }
+  @Override
+  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
+      ParameterResolutionException {
+    return parameterContext.getParameter().getType().isAssignableFrom(UserJson.class);
+  }
 
-    public static void setUser(UserJson user) {
-        final ExtensionContext context = TestsMethodContextExtension.context();
-        context.getStore(NAMESPACE).put(
-                context.getUniqueId(),
-                user
-        );
-    }
+  @Override
+  public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
+      ParameterResolutionException {
+    return getUser();
+  }
 
-    @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
-            ParameterResolutionException {
-        return parameterContext.getParameter().getType().isAssignableFrom(UserJson.class);
-    }
-
-    @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws
-            ParameterResolutionException {
-        return createdUser();
-    }
-
-    public static @Nullable UserJson createdUser() {
-        final ExtensionContext context = TestsMethodContextExtension.context();
-        return context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
-    }
+  public static @Nullable UserJson getUser() {
+    final ExtensionContext context = TestsMethodContextExtension.context();
+    return context.getStore(NAMESPACE).get(context.getUniqueId(), UserJson.class);
+  }
 }

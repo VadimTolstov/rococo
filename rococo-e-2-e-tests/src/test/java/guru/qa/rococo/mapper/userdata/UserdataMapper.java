@@ -22,7 +22,8 @@ public class UserdataMapper {
                 entity.getLastname(),
                 entity.getAvatar() != null && entity.getAvatar().length > 0
                         ? new String(entity.getAvatar(), StandardCharsets.UTF_8)
-                        : null
+                        : null,
+            ""
         );
     }
 

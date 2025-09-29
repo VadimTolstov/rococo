@@ -1,7 +1,7 @@
 package guru.qa.rococo.service.impl;
 
 import guru.qa.rococo.api.UserdataApi;
-import guru.qa.rococo.api.core.ApiTestBase;
+import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.model.rest.userdata.UserJson;
@@ -11,7 +11,7 @@ import lombok.NonNull;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.hc.core5.http.HttpStatus;
 
-public class UserdataApiClient extends ApiTestBase implements UserdataClient {
+public class UserdataApiClient implements UserdataClient, RequestExecutor {
     private static final Config CFG = Config.getInstance();
 
     private final UserdataApi userdataApi;

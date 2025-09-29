@@ -2,14 +2,16 @@ package guru.qa.rococo.jupiter.extension;
 
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
+import guru.qa.rococo.api.UserdataApi;
 import guru.qa.rococo.api.core.ThreadSafeCookieStore;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.jupiter.annotation.ApiLogin;
 import guru.qa.rococo.jupiter.annotation.Token;
-import guru.qa.rococo.model.TestData;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.MainPage;
+import guru.qa.rococo.service.UserdataClient;
 import guru.qa.rococo.service.impl.AuthApiClient;
+import guru.qa.rococo.service.impl.UserdataApiClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
@@ -25,6 +27,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
 
   private final AuthApiClient authApiClient = new AuthApiClient();
+  private final UserdataClient userdataApiClient = new UserdataApiClient();
   private final boolean setupBrowser;
 
   private ApiLoginExtension(boolean setupBrowser) {
@@ -45,29 +48,33 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
         .ifPresent(apiLogin -> {
 
           final UserJson userToLogin;
-          final UserJson userFromUserExtension = UserExtension.createdUser();
+          final UserJson userFromUserExtension = UserExtension.getUser();
           if ("".equals(apiLogin.username()) || "".equals(apiLogin.password())) {
             if (userFromUserExtension == null) {
-              throw new IllegalStateException("@User must be present in case that @ApiLogin is empty!");
+              throw new IllegalStateException("Если мы указали пустой @ApiLogin то @User обязательно должен быть над тестом!");
             }
             userToLogin = userFromUserExtension;
           } else {
-            UserJson fakeUser = new UserJson(
+
+//            UserJson userJson = userdataApiClient.getUser(apiLogin.username());
+//            if (userJson == null) {
+//              //todo если мы хотим залогиниться уже существующем пользователем? или всегда делаем нового
+//            }
+            final UserJson fakeUser = authApiClient.createUser(
                 apiLogin.username(),
-                new TestData(
-                    apiLogin.password()
-                )
-            );
+                apiLogin.password()
+            ).withPassword(apiLogin.password());
+
             if (userFromUserExtension != null) {
-              throw new IllegalStateException("@User must not be present in case that @ApiLogin contains username or password!");
+              throw new IllegalStateException("@User не должен быть над тестом если у  @ApiLogin заполнен username или password!");
             }
             UserExtension.setUser(fakeUser);
             userToLogin = fakeUser;
           }
 
-          final String token = authApiClient.login(
+          final String token = authApiClient.singIn(
               userToLogin.username(),
-              userToLogin.testData().password()
+              userToLogin.password()
           );
           setToken(token);
           if (setupBrowser) {
@@ -111,7 +118,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
   public static Cookie getJsessionIdCookie() {
     return new Cookie(
         "JSESSIONID",
-            ThreadSafeCookieStore.INSTANCE.cookieValue("JSESSIONID")
+        ThreadSafeCookieStore.INSTANCE.cookieValue("JSESSIONID")
     );
   }
 }

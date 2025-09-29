@@ -3,8 +3,8 @@ package guru.qa.rococo.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Stopwatch;
 import guru.qa.rococo.api.AuthApi;
-import guru.qa.rococo.api.core.ApiTestBase;
 import guru.qa.rococo.api.core.CodeInterceptor;
+import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.api.core.ThreadSafeCookieStore;
 import guru.qa.rococo.config.Config;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import static guru.qa.rococo.api.core.TokenName.CSRF;
 
 @Slf4j
-public class AuthApiClient extends ApiTestBase implements AuthClient {
+public class AuthApiClient implements AuthClient, RequestExecutor {
     private static final Config CFG = Config.getInstance();
     private static final String CLIENT_ID = "client";
     private static final String RESPONSE_TYPE = "code";
@@ -79,7 +79,7 @@ public class AuthApiClient extends ApiTestBase implements AuthClient {
         while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
             try {
                 UserJson userJson = userdataApiClient.getUser(username);
-                if (userJson != null && userJson.id() != null) {
+                if (userJson != null || userJson.id() != null) {
                     return userJson; // Пользователь найден, возвращаем
                 } else {
                     Thread.sleep(100); // Ожидаем перед следующей проверкой
