@@ -1,25 +1,27 @@
 package guru.qa.rococo.page;
 
-import com.codeborne.selenide.SelenideElement;
-
+import guru.qa.rococo.page.component.CardsMain;
+import guru.qa.rococo.page.component.Header;
 import io.qameta.allure.Step;
+import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class MainPage extends BasePage<MainPage> {
+  protected CardsMain cardsMain = new CardsMain();
+  protected Header header = new Header();
 //    protected final SearchField searchField = new SearchField();
 //    protected final StatComponent statComponent = new StatComponent();
 //    protected final SpendingTable spendingTable = new SpendingTable();
 
-    public static final String URL = CFG.frontUrl();
+  public static final String URL = CFG.frontUrl();
 
-    private final SelenideElement tableHistoryOfSpendings = $("#spendings");
+  @Step("Перейти на страницу 'Картины'")
 
+  @Step("Перейти на страницу 'Художники'")
+
+  @Step("Перейти на страницу 'Музей'")
 //    @Nonnull
 //    public StatComponent getStatComponent() {
 //        statComponent.getSelf().scrollIntoView(true);
@@ -38,10 +40,11 @@ public class MainPage extends BasePage<MainPage> {
 //        return spendingTable;
 //    }
 
-    @Step("Проверяем, что загрузилась главная страница")
-    @Override
-    public MainPage checkThatPageLoaded() {
-        tableHistoryOfSpendings.shouldHave(visible);
-        return this;
-    }
+  @NonNull
+  @Step("Проверяем, что загрузилась главная страница")
+  @Override
+  public MainPage checkThatPageLoaded() {
+    cardsMain.checkDisplayMain();
+    return this;
+  }
 }

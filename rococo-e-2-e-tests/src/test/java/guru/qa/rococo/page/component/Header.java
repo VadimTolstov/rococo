@@ -2,14 +2,16 @@ package guru.qa.rococo.page.component;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.rococo.page.MainPage;
-import guru.qa.rococo.page.ProfileModal;
+import guru.qa.rococo.page.*;
 import io.qameta.allure.Step;
+import lombok.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+@ParametersAreNonnullByDefault
 public class Header extends BaseComponent<Header> {
 
   public Header() {
@@ -25,43 +27,49 @@ public class Header extends BaseComponent<Header> {
   private final SelenideElement avatarImage = self.$("img.avatar-image, svg.avatar-initials");
   private final SelenideElement profileButton = self.$("figure").parent();
 
-
+  @NonNull
   @Step("Нажать на логотип")
   public MainPage clickLogo() {
     logo.click();
     return new MainPage();
   }
 
+  @NonNull
   @Step("Нажать на кнопку 'Картины'")
-  public MainPage clickPaintingsLink() {
+  public PaintingPage clickPaintingsLink() {
     paintingsLink.click();
-    return new MainPage();
+    return new PaintingPage();
   }
 
+  @NonNull
   @Step("Нажать на кнопку 'Художники'")
-  public MainPage clickArtistsLink() {
+  public ArtistPage clickArtistsLink() {
     artistsLink.click();
-    return new MainPage();
+    return new ArtistPage();
   }
 
+  @NonNull
   @Step("Нажать на кнопку 'Музеи'")
-  public MainPage clickMuseumsLink() {
+  public MuseumPage clickMuseumsLink() {
     museumsLink.click();
-    return new MainPage();
+    return new MuseumPage();
   }
 
+  @NonNull
   @Step("Нажать на switch светлая/темная тема")
   public MainPage clickSwitch() {
     lightSwitch.click();
     return new MainPage();
   }
 
+  @NonNull
   @Step("Нажать на кнопку 'Войти'")
-  public MainPage clickLoginButton() {
+  public LoginPage clickLoginButton() {
     loginButton.click();
-    return new MainPage();
+    return new LoginPage();
   }
 
+  @NonNull
   @Step("Открыть профиль пользователя")
   public ProfileModal openProfile() {
     profileButton.shouldBe(Condition.visible)
@@ -69,18 +77,20 @@ public class Header extends BaseComponent<Header> {
     return new ProfileModal();
   }
 
+  @NonNull
   @Step("Проверить, что пользователь авторизован")
   public Header assertAuthorized() {
     profileButton.shouldBe(exist);
     return this;
   }
 
+  @NonNull
   @Step("Проверить, что пользователь не авторизован")
-  public Header assertUnauthorized(){
+  public Header assertUnauthorized() {
     profileButton.shouldBe(not(visible));
     loginButton.shouldBe(visible);
     return this;
   }
 
-  //todo Check avatar image метод для теста
+  //todo Check avatar image метод для скриншотТеста
 }

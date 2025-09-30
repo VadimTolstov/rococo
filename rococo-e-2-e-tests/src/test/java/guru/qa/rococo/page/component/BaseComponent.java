@@ -2,6 +2,7 @@ package guru.qa.rococo.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
+import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -14,6 +15,7 @@ public class BaseComponent<T extends BaseComponent<?>> {
     this.self = self;
   }
 
+  @NonNull
   public <B> B toPage(Class<B> clazz) {
     try {
       return clazz.getDeclaredConstructor().newInstance();

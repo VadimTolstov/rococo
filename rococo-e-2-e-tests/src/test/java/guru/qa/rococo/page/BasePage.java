@@ -7,6 +7,7 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.config.Config;
 import io.qameta.allure.Step;
 import lombok.Getter;
+import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -23,13 +24,14 @@ public abstract class BasePage<T extends BasePage<?>> {
 
   public abstract T checkThatPageLoaded();
 
+  @NonNull
   @Step("Проверка отображения сообщения: {message}")
   @SuppressWarnings("unchecked")
   public T checkAlert(String message) {
     alert.shouldHave(Condition.visible).shouldHave(Condition.text(message));
     return (T) this;
   }
-
+  @NonNull
   @Step("Проверка отображения сообщения об ошибке: {expectedText}")
   @SuppressWarnings("unchecked")
   public T checkErrorMessage(String... expectedText) {
@@ -37,5 +39,4 @@ public abstract class BasePage<T extends BasePage<?>> {
     return (T) this;
   }
 
-  //   private final Header headerComponent = new Header();
 }
