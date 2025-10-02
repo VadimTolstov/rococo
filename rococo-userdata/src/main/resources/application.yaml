@@ -47,11 +47,11 @@ logging:
   file:
     path: ./logs/rococo-userdata
   level:
-    root: DEBUG                     # Общий уровень логирования
-    org.springframework.web: DEBUG  # Логи Spring Web
-    org.springframework.security: DEBUG  # Логи безопасности
-    org.springframework.security.oauth2: DEBUG  # Логи OAuth2
-    org.springframework.kafka: INFO
+    root: ERROR                     # Общий уровень логирования
+    org.springframework.web: ERROR  # Логи Spring Web
+    org.springframework.security: ERROR  # Логи безопасности
+    org.springframework.security.oauth2: ERROR  # Логи OAuth2
+    org.springframework.kafka: ERROR
 
 ---
 # Конфигурация для локальной разработки

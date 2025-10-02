@@ -1,0 +1,42 @@
+package guru.qa.rococo.page.detail;
+
+import com.codeborne.selenide.SelenideElement;
+import guru.qa.rococo.condition.PaintingDetailCondition;
+import guru.qa.rococo.model.rest.painting.PaintingJson;
+import guru.qa.rococo.page.BasePage;
+import io.qameta.allure.Step;
+import lombok.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.image.BufferedImage;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
+@ParametersAreNonnullByDefault
+public class PaintingDetailPage extends BasePage<PaintingDetailPage> {
+
+  private final SelenideElement pageContainer = $("#appShell");
+  private final SelenideElement imagePainting = pageContainer.$("#page-content");
+  private final SelenideElement cardPainting = imagePainting.$(".card-header");
+
+  @Override
+  public PaintingDetailPage checkThatPageLoaded() {
+    cardPainting.shouldBe(visible);
+    return this;
+  }
+
+  @NonNull
+  @Step("Проверяем полностью карточку картины {title}")
+  public PaintingDetailPage hasPainting(PaintingJson painting) {
+    pageContainer.shouldHave(PaintingDetailCondition.hasPainting(painting));
+    return this;
+  }
+
+  @NonNull
+  @Step("Сравниваем изображение в карточке Картин")
+  public PaintingDetailPage checkImages(BufferedImage images) {
+    compareImage(imagePainting, images);
+    return this;
+  }
+}

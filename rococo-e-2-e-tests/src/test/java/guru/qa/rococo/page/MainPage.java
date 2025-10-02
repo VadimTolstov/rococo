@@ -1,50 +1,72 @@
 package guru.qa.rococo.page;
 
-import guru.qa.rococo.page.component.CardsMain;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
 import io.qameta.allure.Step;
+import lombok.Getter;
 import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.util.List;
+
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class MainPage extends BasePage<MainPage> {
-  protected CardsMain cardsMain = new CardsMain();
-  protected Header header = new Header();
-//    protected final SearchField searchField = new SearchField();
-//    protected final StatComponent statComponent = new StatComponent();
-//    protected final SpendingTable spendingTable = new SpendingTable();
-
   public static final String URL = CFG.frontUrl();
 
-  @Step("Перейти на страницу 'Картины'")
+  private final SelenideElement pageContainer = $("#page");
+  private final SelenideElement paintingsLink = pageContainer.$("a[href='/painting']");
+  private final SelenideElement artistsLink = pageContainer.$("a[href='/artist']");
+  private final SelenideElement museumsLink = pageContainer.$("a[href='/museum']");
+  private final SelenideElement title = pageContainer.$$("p").findBy(text("Ваши любимые картины и художники всегда рядом"));
 
-  @Step("Перейти на страницу 'Художники'")
-
-  @Step("Перейти на страницу 'Музей'")
-//    @Nonnull
-//    public StatComponent getStatComponent() {
-//        statComponent.getSelf().scrollIntoView(true);
-//        return statComponent;
-//    }
-//
-//    @Nonnull
-//    public SearchField getSearchField() {
-//        statComponent.getSelf().scrollIntoView(true);
-//        return searchField;
-//    }
-//
-//    @Nonnull
-//    public SpendingTable getSpendingTable() {
-//        spendingTable.getSelf().scrollIntoView(true);
-//        return spendingTable;
-//    }
+  @Getter
+  protected final Header header = new Header();
 
   @NonNull
   @Step("Проверяем, что загрузилась главная страница")
   @Override
   public MainPage checkThatPageLoaded() {
-    cardsMain.checkDisplayMain();
+    header.getSelf().shouldHave(visible, Duration.ofSeconds(10))
+        .shouldHave(Condition.text("Ro"))
+        .shouldHave(Condition.text("coco"));
+    paintingsLink.shouldBe(visible).shouldBe(clickable);
+    artistsLink.shouldBe(visible).shouldBe(clickable);
+    museumsLink.shouldBe(visible).shouldBe(clickable);
+    title.shouldBe(visible).shouldHave(exactText("Ваши любимые картины и художники всегда рядом"));
+    return this;
+  }
+
+  @NonNull
+  @Step("Нажать на кнопку 'Картины'")
+  public PaintingPage clickPaintingsLink() {
+    paintingsLink.click();
+    return new PaintingPage().checkThatPageLoaded();
+  }
+
+  @NonNull
+  @Step("Нажать на кнопку 'Художники'")
+  public ArtistPage clickArtistsLink() {
+    artistsLink.click();
+    return new ArtistPage();
+  }
+
+  @NonNull
+  @Step("Нажать на кнопку 'Музеи'")
+  public MuseumPage clickMuseumsLink() {
+    museumsLink.click();
+    return new MuseumPage();
+  }
+
+  @NonNull
+  @Step("Сравниваем изображение на главной странице")
+  public MainPage checkImages(BufferedImage... images) {
+    compareImages(List.of(paintingsLink, artistsLink, museumsLink), images);
     return this;
   }
 }

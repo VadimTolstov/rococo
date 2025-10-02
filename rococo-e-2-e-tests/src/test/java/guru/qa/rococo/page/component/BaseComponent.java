@@ -7,7 +7,7 @@ import lombok.NonNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class BaseComponent<T extends BaseComponent<?>> {
+public abstract class BaseComponent<T extends BaseComponent<?>> {
   @Getter
   protected final SelenideElement self;
 

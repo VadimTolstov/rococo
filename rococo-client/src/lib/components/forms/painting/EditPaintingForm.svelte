@@ -46,26 +46,26 @@
             });
             content = await blobToBase64(file) as string;
         }
-        validateForm(title, description, painting?.artist?.id ?? authorId);
-        if(!Object.values($paintingFormErrorStore).some(v => v.length > 0)) {
-            const res = await apiClient.updatePainting({
-                id,
-                title,
-                description,
-                content,
-                artist: {
-                    id: authorId,
-                },
-                museum: {
-                    id: museumId,
-                }});
+        validateForm(title, description, authorId);
+                if(!Object.values($paintingFormErrorStore).some(v => v.length > 0)) {
+                    const res = await apiClient.updatePainting({
+                        id,
+                        title,
+                        description,
+                        content,
+                        artist: {
+                            id: authorId,
+                        },
+                        museum: {
+                            id: museumId,
+                        }});
 
-            if($modalStore[0].response) {
-                $modalStore[0].response(res);
+                    if($modalStore[0].response) {
+                        $modalStore[0].response(res);
+                    }
+                    modalStore.close();
+                }
             }
-            modalStore.close();
-        }
-    }
 
 </script>
 

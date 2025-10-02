@@ -3,7 +3,9 @@ package guru.qa.rococo.test;
 import com.codeborne.selenide.Selenide;
 import guru.qa.rococo.jupiter.annotation.ApiLogin;
 import guru.qa.rococo.jupiter.annotation.User;
+import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.model.rest.userdata.UserJson;
+import guru.qa.rococo.page.MainPage;
 import org.junit.jupiter.api.Test;
 
 public class MainTest {
@@ -11,10 +13,18 @@ public class MainTest {
 
   @ApiLogin(password = "12345",username = "Adica")
   @Test
-  public void firstTest(UserJson userJson) {
-    System.out.println(userJson);
-    System.out.println("ПАРОЛЬ !!!!!!!!!!! = " + userJson.password());
-    Selenide.open("http://127.0.0.1:3000/");
-    Selenide.sleep(3000);
+  public void firstTest() {
+    PaintingJson painting = new PaintingJson(
+        null, // id
+        "Female nude", // title
+        "Картина «Обнаженная» была написана Пьером Ренуаром в 1876 году. Это одна из многочисленных работ художника, изображающих его видение истинной женской красоты. Полотно выполнено по всем правилам импрессионизма.", // description
+        null, // content (base64 изображения)
+        null, // artist
+        null  // museum
+    );
+    Selenide.open(MainPage.URL, MainPage.class)
+        .clickPaintingsLink()
+        .openDetailPage(painting.title())
+        .hasPainting(painting);
   }
 }

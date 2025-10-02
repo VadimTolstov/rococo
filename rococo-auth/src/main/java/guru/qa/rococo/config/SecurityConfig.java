@@ -31,85 +31,87 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration
 public class SecurityConfig {
 
-    // Кастомизатор CORS
-    private final CorsCustomizer corsCustomizer;
+  // Кастомизатор CORS
+  private final CorsCustomizer corsCustomizer;
 
-    // Окружение (профили) приложения
-    private final Environment environment;
+  // Окружение (профили) приложения
+  private final Environment environment;
 
-    /**
-     * Конструктор для внедрения зависимостей.
-     *
-     * @param corsCustomizer Кастомизатор CORS.
-     * @param environment    Окружение (профили) приложения.
-     */
-    @Autowired
-    public SecurityConfig(CorsCustomizer corsCustomizer, Environment environment) {
-        this.corsCustomizer = corsCustomizer;
-        this.environment = environment;
+  /**
+   * Конструктор для внедрения зависимостей.
+   *
+   * @param corsCustomizer Кастомизатор CORS.
+   * @param environment    Окружение (профили) приложения.
+   */
+  @Autowired
+  public SecurityConfig(CorsCustomizer corsCustomizer, Environment environment) {
+    this.corsCustomizer = corsCustomizer;
+    this.environment = environment;
+  }
+
+  /**
+   * Настройка SecurityFilterChain для приложения.
+   * Этот метод определяет правила безопасности для HTTP-запросов, включая настройки CORS,
+   * CSRF-защиты, аутентификации, авторизации и обработки исключений.
+   *
+   * @param http Объект HttpSecurity для настройки безопасности.
+   * @return SecurityFilterChain для приложения.
+   * @throws Exception Если произошла ошибка при настройке безопасности.
+   */
+  @Bean
+  public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    // Применяем кастомизацию CORS
+    corsCustomizer.corsCustomizer(http);
+
+    // Добавляем фильтр для логирования запросов в локальном и staging окружении
+    if (environment.acceptsProfiles(Profiles.of("local", "staging"))) {
+      http.addFilterBefore(new SpecificRequestDumperFilter(
+          new RequestDumperFilter(),
+          "/login", "/oauth2/.*"
+      ), DisableEncodeUrlFilter.class);
     }
 
-    /**
-     * Настройка SecurityFilterChain для приложения.
-     * Этот метод определяет правила безопасности для HTTP-запросов, включая настройки CORS,
-     * CSRF-защиты, аутентификации, авторизации и обработки исключений.
-     *
-     * @param http Объект HttpSecurity для настройки безопасности.
-     * @return SecurityFilterChain для приложения.
-     * @throws Exception Если произошла ошибка при настройке безопасности.
-     */
-    @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        // Применяем кастомизацию CORS
-        corsCustomizer.corsCustomizer(http);
-
-        // Добавляем фильтр для логирования запросов в локальном и staging окружении
-        if (environment.acceptsProfiles(Profiles.of("local", "staging"))) {
-            http.addFilterBefore(new SpecificRequestDumperFilter(
-                    new RequestDumperFilter(),
-                    "/login", "/oauth2/.*"
-            ), DisableEncodeUrlFilter.class);
-        }
-
-        return http.authorizeHttpRequests(customizer -> customizer
-                        // Разрешаем доступ к определенным URL без аутентификации
-                        .requestMatchers(
-                                antMatcher("/register"),
-                                antMatcher("/error"),
-                                antMatcher("/images/**"),
-                                antMatcher("/styles/**"),
-                                antMatcher("/fonts/**"),
-                                antMatcher("/actuator/health")
-                        ).permitAll()
-                        // Все остальные запросы требуют аутентификации
-                        .anyRequest()
-                        .authenticated()
-                )
-                // Настройка CSRF-защиты
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-                )
-                // Добавляем фильтр для работы с CSRF-токенами
-                .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class)
-                // Настройка формы входа
-                .formLogin(login -> login
-                        .loginPage("/login")
-                        .permitAll())
-                // Настройка выхода из системы
-                .logout(logout -> logout
-                        .logoutRequestMatcher(antMatcher("/logout"))
-                        .deleteCookies("JSESSIONID", "XSRF-TOKEN")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                )
-                // Настройка обработки исключений
-                .exceptionHandling(customizer -> customizer
-                        .accessDeniedPage("/error")
-                )
-                // Настройка управления сессиями
-                .sessionManagement(sm -> sm.invalidSessionUrl("/login"))
-                .build();
-    }
+    return http.authorizeHttpRequests(customizer -> customizer
+            // Разрешаем доступ к определенным URL без аутентификации
+            .requestMatchers(
+                antMatcher("/register"),
+                antMatcher("/error"),
+                antMatcher("/images/**"),
+                antMatcher("/styles/**"),
+                antMatcher("/fonts/**"),
+                antMatcher("/actuator/health"),
+                // ДОБАВЛЕНО: Разрешаем доступ к .well-known без аутентификации
+                antMatcher("/.well-known/**")
+            ).permitAll()
+            // Все остальные запросы требуют аутентификации
+            .anyRequest()
+            .authenticated()
+        )
+        // Настройка CSRF-защиты
+        .csrf(csrf -> csrf
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+        )
+        // Добавляем фильтр для работы с CSRF-токенами
+        .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class)
+        // Настройка формы входа
+        .formLogin(login -> login
+            .loginPage("/login")
+            .permitAll())
+        // Настройка выхода из системы
+        .logout(logout -> logout
+            .logoutRequestMatcher(antMatcher("/logout"))
+            .deleteCookies("JSESSIONID", "XSRF-TOKEN")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+        )
+        // Настройка обработки исключений
+        .exceptionHandling(customizer -> customizer
+            .accessDeniedPage("/error")
+        )
+        // Настройка управления сессиями
+        .sessionManagement(sm -> sm.invalidSessionUrl("/login"))
+        .build();
+  }
 }

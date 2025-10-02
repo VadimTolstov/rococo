@@ -19,12 +19,12 @@ spring:
 # Настройки логирования
 logging:
   level:
-    root: INFO  # Базовый уровень логирования
+    root: ERROR   # Базовый уровень логирования
     # Детальное логирование для Spring компонентов
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
-    org.springframework.boot.autoconfigure: INFO
+    org.springframework.web: ERROR
+    org.springframework.security: ERROR
+    org.springframework.security.oauth2: ERROR
+    org.springframework.boot.autoconfigure: ERROR
   file:
     path: ./logs/rococo-gateway
 
