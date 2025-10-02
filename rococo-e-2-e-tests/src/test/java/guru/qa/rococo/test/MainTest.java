@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
 
 
-  @ApiLogin(password = "12345",username = "Adica")
+ // @ApiLogin(password = "12345",username = "test")
   @Test
   public void firstTest() {
     PaintingJson painting = new PaintingJson(
@@ -24,7 +24,7 @@ public class MainTest {
     );
     Selenide.open(MainPage.URL, MainPage.class)
         .clickPaintingsLink()
-        .openDetailPage(painting.title())
+        .openDetailPage("Female nude")
         .hasPainting(painting);
   }
 }

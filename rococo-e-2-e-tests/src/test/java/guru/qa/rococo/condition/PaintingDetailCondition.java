@@ -9,7 +9,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class PaintingDetailCondition extends WebElementCondition {
 
   private static final String IMAGE_SELECTOR = "img[src*='data:image'], img.my-4.mx-auto.w-full";
@@ -30,7 +32,7 @@ public class PaintingDetailCondition extends WebElementCondition {
 
   @Nonnull
   @Override
-  public CheckResult check(@NonNull Driver driver, WebElement element) {
+  public CheckResult check(Driver driver, WebElement element) {
     if (!element.isDisplayed()) {
       return CheckResult.rejected("Element is not visible", element);
     }
@@ -64,7 +66,7 @@ public class PaintingDetailCondition extends WebElementCondition {
     }
 
     // проверка авторизации
-    boolean isUserAuthorized = isUserAuthorized(driver);
+    boolean isUserAuthorized = isUserAvatarVisible(driver);
 
     // Проверяем кнопку редактирования
     WebElement editButton = findElementByText(element, EDIT_BUTTON_TEXT);
@@ -82,29 +84,14 @@ public class PaintingDetailCondition extends WebElementCondition {
     return CheckResult.accepted();
   }
 
-  private boolean isUserAuthorized(Driver driver) {
-    // Способ 1: Ищем аватар пользователя (фигура с изображением)
-    boolean hasAvatar = isElementVisibleInDocument(driver, USER_AVATAR_SELECTOR);
-
-    // Способ 2: Проверяем что НЕТ кнопки "Войти"
-    boolean hasLoginButton = isElementWithTextVisibleInDocument(driver, LOGIN_BUTTON_TEXT);
-
-    // Пользователь авторизован если есть аватар ИЛИ нет кнопки входа
-    return hasAvatar || !hasLoginButton;
+  private boolean isUserAvatarVisible(Driver driver) {
+    //есть ли аватар пользователя
+    return isElementVisibleInDocument(driver, USER_AVATAR_SELECTOR);
   }
 
   private boolean isElementVisibleInDocument(Driver driver, String cssSelector) {
     try {
       WebElement element = driver.getWebDriver().findElement(By.cssSelector(cssSelector));
-      return element != null && element.isDisplayed();
-    } catch (org.openqa.selenium.NoSuchElementException e) {
-      return false;
-    }
-  }
-
-  private boolean isElementWithTextVisibleInDocument(Driver driver, String text) {
-    try {
-      WebElement element = driver.getWebDriver().findElement(By.xpath("//*[normalize-space(text())='" + text + "']"));
       return element != null && element.isDisplayed();
     } catch (org.openqa.selenium.NoSuchElementException e) {
       return false;
