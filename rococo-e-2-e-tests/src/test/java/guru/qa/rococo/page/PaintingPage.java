@@ -32,7 +32,7 @@ public class PaintingPage extends BasePage<PaintingPage> {
   protected final SearchField searchField = new SearchField();
 
   @NonNull
-  @Step("Проверяем, что загрузилась страница с картинами")
+  @Step("Проверяем, что загрузилась страница с картинами.")
   @Override
   public PaintingPage checkThatPageLoaded() {
     title.shouldBe(visible, Duration.ofSeconds(10))
@@ -42,33 +42,34 @@ public class PaintingPage extends BasePage<PaintingPage> {
   }
 
   @NonNull
-  @Step("Найти картину через поиск по тексту {query} и перейти в ее описание по названию {paintingName}")
-  public PaintingDetailPage searchAndOpenPainting(String query, String paintingName) {
-    searchField.searchThroughButton(query);
+  @Step("Найти картину через поиск по тексту {paintingName} и перейти в ее описание.")
+  public PaintingDetailPage searchAndOpenPainting(String paintingName) {
+    searchField.searchThroughButton(paintingName);
     return openDetailPage(paintingName);
   }
 
   @NonNull
-  @Step("Кликнуть по картине {name} и перейти в ее описание")
+  @Step("Кликнуть по картине {name} и перейти в ее описание.")
   public PaintingDetailPage openDetailPage(String name) {
-    paintings.findBy(exactText(name))
-        .shouldBe(visible.because("Картина '" + name + "' не видна на странице"))
+    final SelenideElement element = paintings.findBy(exactText(name));
+    scrollToElement(element);
+    element.shouldBe(visible.because("Картина '" + name + "' не видна на странице"))
         .shouldBe(interactable.because("Картина '" + name + "' не доступна для клика"))
         .click();
     return new PaintingDetailPage().checkThatPageLoaded();
   }
 
   @NonNull
-  @Step("Сравниваем изображение на странице 'Картины'")
+  @Step("Сравниваем изображение на странице 'Картины'.")
   public PaintingPage checkImages(BufferedImage... images) {
     compareImages(paintings.stream().toList(), images);
     return this;
   }
 
   @NonNull
-  @Step("Нажать на кнопку 'Добавить картину'")
+  @Step("Нажать на кнопку 'Добавить картину'.")
   public PaintingForm clickAddPaintingButton() {
     addPaintingButton.shouldBe(visible).click();
-    return new PaintingForm();
+    return new PaintingForm().checkThatComponentLoaded();
   }
 }
