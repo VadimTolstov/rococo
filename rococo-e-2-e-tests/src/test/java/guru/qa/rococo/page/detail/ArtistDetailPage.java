@@ -3,9 +3,12 @@ package guru.qa.rococo.page.detail;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.rococo.condition.ArtistDetailCondition;
 import guru.qa.rococo.condition.PaintingDetailCondition;
+import guru.qa.rococo.model.rest.artist.ArtistJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.page.BasePage;
+import guru.qa.rococo.page.form.ArtistForm;
 import guru.qa.rococo.page.form.PaintingForm;
 import io.qameta.allure.Step;
 import lombok.NonNull;
@@ -35,12 +38,12 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> {
     return this;
   }
 
-//  @NonNull todo
-//  @Step("Проверяем полностью карточку картины .")
-//  public ArtistDetailPage checkDetailPainting(PaintingJson painting) {
-//    pageContainer.shouldHave(PaintingDetailCondition.hasPainting(painting));
-//    return this;
-//  }
+  @NonNull
+  @Step("Проверяем полностью карточку картины .")
+  public ArtistDetailPage checkDetailPainting(ArtistJson artistJson) {
+    pageContainer.shouldHave(ArtistDetailCondition.hasPainting(artistJson));
+    return this;
+  }
 
   @NonNull
   @Step("Сравниваем изображение Художника.")
@@ -65,8 +68,8 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> {
 
   @NonNull
   @Step("Нажать на кнопку 'Редактировать'")
-  public PaintingForm clickEdit() {
+  public ArtistForm clickEdit() {
     buttonEdit.shouldBe(visible).click();
-    return new PaintingForm().checkThatComponentLoaded();
+    return new ArtistForm().checkThatComponentLoaded();
   }
 }

@@ -3,6 +3,7 @@ package guru.qa.rococo.test;
 import com.codeborne.selenide.Selenide;
 import guru.qa.rococo.jupiter.annotation.ApiLogin;
 import guru.qa.rococo.jupiter.annotation.User;
+import guru.qa.rococo.model.rest.artist.ArtistJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.MainPage;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
 
 
- // @ApiLogin(password = "12345",username = "test")
+  @ApiLogin(password = "12345", username = "test")
   @Test
   public void firstTest() {
     PaintingJson painting = new PaintingJson(
@@ -28,20 +29,18 @@ public class MainTest {
         .checkDetailPainting(painting);
   }
 
-  // @ApiLogin(password = "12345",username = "test")
+   @ApiLogin(password = "12345",username = "test")
   @Test
-  public void firstTest2() {
-    PaintingJson painting = new PaintingJson(
-        null, // id
-        "Female nude", // title
-        "Картина «Обнаженная» была написана Пьером Ренуаром в 1876 году. Это одна из многочисленных работ художника, изображающих его видение истинной женской красоты. Полотно выполнено по всем правилам импрессионизма.", // description
-        null, // content (base64 изображения)
-        null, // artist
-        null  // museum
+  public void artistTest() {
+    ArtistJson artist = new ArtistJson(
+        null,
+        "Ренуар",
+        "Французский живописец, график и скульптор, один из основных представителей импрессионизма.",
+        null
     );
     Selenide.open(MainPage.URL, MainPage.class)
-        .clickPaintingsLink()
-        .openDetailPage("Female nude")
-        .checkDetailPainting(painting);
+        .clickArtistsLink()
+        .openDetailPage(artist.name())
+        .checkDetailPainting(artist);
   }
 }

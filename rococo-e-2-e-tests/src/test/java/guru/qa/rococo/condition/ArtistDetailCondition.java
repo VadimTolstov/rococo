@@ -3,7 +3,7 @@ package guru.qa.rococo.condition;
 import com.codeborne.selenide.CheckResult;
 import com.codeborne.selenide.Driver;
 import com.codeborne.selenide.WebElementCondition;
-import guru.qa.rococo.model.rest.painting.PaintingJson;
+import guru.qa.rococo.model.rest.artist.ArtistJson;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -11,21 +11,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class PaintingDetailCondition extends WebElementCondition {
+public class ArtistDetailCondition extends WebElementCondition {
 
   private static final String IMAGE_SELECTOR = "#page-content img";
   private static final String USER_AVATAR_SELECTOR = "#shell-header figure, #shell-header img[src*='data:image']";
   private static final String EDIT_BUTTON_TEXT = "Редактировать";
+  private static final String ADD_BUTTON_TEXT = "Добавить картину";
 
-  private final PaintingJson painting;
+  private final ArtistJson artistJson;
 
-  public PaintingDetailCondition(PaintingJson painting) {
-    super("painting card");
-    this.painting = painting;
+  public ArtistDetailCondition(ArtistJson artistJson) {
+    super("artist card");
+    this.artistJson = artistJson;
   }
 
-  public static PaintingDetailCondition hasPainting(PaintingJson painting) {
-    return new PaintingDetailCondition(painting);
+  public static ArtistDetailCondition hasPainting(ArtistJson artistJson) {
+    return new ArtistDetailCondition(artistJson);
   }
 
   @Nonnull
@@ -36,25 +37,25 @@ public class PaintingDetailCondition extends WebElementCondition {
     }
 
     // Проверяем заголовок
-    WebElement titleElement = findElementByText(element, painting.title());
+    WebElement titleElement = findElementByText(element, artistJson.name());
     if (titleElement == null) {
-      return CheckResult.rejected("Title element not found. Expected: '" + painting.title() + "'", element);
+      return CheckResult.rejected("Title element not found. Expected: '" + artistJson.name() + "'", element);
     }
 
     String actualTitle = titleElement.getText().trim();
-    if (!painting.title().equals(actualTitle)) {
-      return CheckResult.rejected("Title doesn't match. Expected: '" + painting.title() + "', Actual: '" + actualTitle + "'", element);
+    if (!artistJson.name().equals(actualTitle)) {
+      return CheckResult.rejected("Title doesn't match. Expected: '" + artistJson.name() + "', Actual: '" + actualTitle + "'", element);
     }
 
     // Проверяем описание
-    WebElement descriptionElement = findElementByText(element, painting.description());
+    WebElement descriptionElement = findElementByText(element, artistJson.biography());
     if (descriptionElement == null) {
-      return CheckResult.rejected("Description element not found. Expected: '" + painting.description() + "'", element);
+      return CheckResult.rejected("Description element not found. Expected: '" + artistJson.biography() + "'", element);
     }
 
     String actualDescription = descriptionElement.getText().trim();
-    if (!painting.description().equals(actualDescription)) {
-      return CheckResult.rejected("Description doesn't match. Expected: '" + painting.description() + "', Actual: '" + actualDescription + "'", element);
+    if (!artistJson.biography().equals(actualDescription)) {
+      return CheckResult.rejected("Description doesn't match. Expected: '" + artistJson.biography() + "', Actual: '" + actualDescription + "'", element);
     }
 
     // Проверяем картинку
@@ -70,8 +71,12 @@ public class PaintingDetailCondition extends WebElementCondition {
     WebElement editButton = findElementByText(element, EDIT_BUTTON_TEXT);
     boolean isEditButtonVisible = editButton != null && editButton.isDisplayed();
 
+    // Проверяем кнопку добавить картину
+    WebElement addButton = findElementByText(element, ADD_BUTTON_TEXT);
+    boolean isAddButtonVisible = addButton != null && addButton.isDisplayed();
+
     // Логика проверки кнопки редактирования
-    if (!isUserAuthorized && isEditButtonVisible) {
+    if (!isUserAuthorized && isEditButtonVisible && isAddButtonVisible) {
       return CheckResult.rejected("Edit button should not be visible when user is not authorized", element);
     }
 
@@ -115,7 +120,7 @@ public class PaintingDetailCondition extends WebElementCondition {
   @Nonnull
   @Override
   public String toString() {
-    return String.format("painting card with title '%s', description '%s'",
-        painting.title(), painting.description());
+    return String.format("artist card with name '%s', biography '%s'",
+        artistJson.name(), artistJson.biography());
   }
 }
