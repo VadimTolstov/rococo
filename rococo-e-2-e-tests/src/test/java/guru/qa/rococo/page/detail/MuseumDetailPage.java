@@ -1,10 +1,10 @@
 package guru.qa.rococo.page.detail;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.rococo.condition.PaintingDetailCondition;
-import guru.qa.rococo.model.rest.painting.PaintingJson;
+import guru.qa.rococo.condition.MuseumDetailCondition;
+import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.page.BasePage;
-import guru.qa.rococo.page.form.PaintingForm;
+import guru.qa.rococo.page.form.MuseumForm;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
@@ -18,36 +18,36 @@ import static com.codeborne.selenide.Selenide.$;
 public class MuseumDetailPage extends BasePage<MuseumDetailPage> {
 
   private final SelenideElement pageContainer = $("#appShell");
-  private final SelenideElement imagePainting = pageContainer.$("#page-content");
-  private final SelenideElement cardPainting = imagePainting.$(".card-header");
-  private final SelenideElement buttonEdit = pageContainer.$("[data-testid='edit-painting']");
+  private final SelenideElement imageMuseum = pageContainer.$("#page-content");
+  private final SelenideElement cardMuseum = imageMuseum.$(".card-header");
+  private final SelenideElement buttonEdit = pageContainer.$("[data-testid='edit-museum']");
 
   @Override
   @NonNull
-  @Step("Проверяем, что загрузилась страница с подробной информацией о картине.")
+  @Step("Проверяем, что загрузилась страница с подробной информацией о Музее.")
   public MuseumDetailPage checkThatPageLoaded() {
-    cardPainting.shouldBe(visible);
+    cardMuseum.shouldBe(visible);
     return this;
   }
 
   @NonNull
-  @Step("Проверяем полностью карточку картины.")
-  public MuseumDetailPage checkDetailPainting(PaintingJson painting) {
-    pageContainer.shouldHave(PaintingDetailCondition.hasPainting(painting));
+  @Step("Проверяем полностью карточку Музея.")
+  public MuseumDetailPage checkDetailMuseum(MuseumJson museum) {
+    pageContainer.shouldHave(MuseumDetailCondition.hasPainting(museum));
     return this;
   }
 
   @NonNull
-  @Step("Сравниваем изображение в карточке картины.")
+  @Step("Сравниваем изображение в карточке Музея.")
   public MuseumDetailPage checkImage(BufferedImage images) {
-    compareImage(imagePainting, images);
+    compareImage(imageMuseum, images);
     return this;
   }
 
   @NonNull
   @Step("Нажать на кнопку 'Редактировать'")
-  public PaintingForm clickEdit() {
+  public MuseumForm clickEdit() {
     buttonEdit.shouldBe(visible).click();
-    return new PaintingForm().checkThatComponentLoaded();
+    return new MuseumForm().checkThatComponentLoaded();
   }
 }

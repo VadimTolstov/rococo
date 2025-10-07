@@ -2,10 +2,11 @@ package guru.qa.rococo.test;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.rococo.jupiter.annotation.ApiLogin;
-import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
+import guru.qa.rococo.model.rest.museum.CountryJson;
+import guru.qa.rococo.model.rest.museum.GeoJson;
+import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
-import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.MainPage;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ public class MainTest {
         .checkDetailPainting(painting);
   }
 
-   @ApiLogin(password = "12345",username = "test")
+  @ApiLogin(password = "12345", username = "test")
   @Test
   public void artistTest() {
     ArtistJson artist = new ArtistJson(
@@ -42,5 +43,21 @@ public class MainTest {
         .clickArtistsLink()
         .openDetailPage(artist.name())
         .checkDetailPainting(artist);
+  }
+
+  @ApiLogin(password = "12345", username = "test")
+  @Test
+  public void museumTest() {
+    MuseumJson museumJson = new MuseumJson(
+        null,
+        "Третьяковка",
+        "Государственная Третьяковская галерея — российский государственный художественный музей в Москве, созданный на основе исторических коллекций купцов братьев Павла и Сергея Михайловичей Третьяковых; одно из крупнейших в мире собраний русского изобразительного искусства.",
+        null,
+        new GeoJson("Москва", new CountryJson(null, "Россия"))
+    );
+    Selenide.open(MainPage.URL, MainPage.class)
+        .clickMuseumsLink()
+        .openDetailPage(museumJson.title())
+        .checkDetailMuseum(museumJson);
   }
 }

@@ -3,10 +3,9 @@ package guru.qa.rococo.page.form;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.rococo.model.rest.painting.PaintingJson;
-import guru.qa.rococo.page.PaintingPage;
+import guru.qa.rococo.model.rest.museum.MuseumJson;
+import guru.qa.rococo.page.MuseumPage;
 import guru.qa.rococo.page.component.BaseComponent;
-import guru.qa.rococo.page.detail.ArtistDetailPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
@@ -21,64 +20,51 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
     super($(".modal-form"));
   }
 
-  private final SelenideElement inputName = self.$("[name='title']");
+  private final SelenideElement inputTitle = self.$("[name='title']");
   private final SelenideElement inputDescription = self.$("[name='description']");
-  private final SelenideElement inputContent = self.$("input[type='file']");
-  private final SelenideElement buttonSavePainting = self.$("[type='submit']");
+  private final SelenideElement inputPhoto = self.$("input[type='file']");
+  private final SelenideElement buttonSaveMuseum = self.$("[type='submit']");
   private final SelenideElement buttonCloseForm = self.$("[type='button']");
-  private final ElementsCollection listArtist = self.$$("select[name='authorId'] option");
-  private final ElementsCollection listMuseum = self.$$("select[name='museumId'] option");
+  private final ElementsCollection listCountry = self.$$("select[name='countryId'] option");
+  private final SelenideElement inputCity = self.$("[name='city']");
 
   @NonNull
-  @Step("Добавляем новую картину.")
-  public PaintingPage addPainting(PaintingJson painting) {
+  @Step("Добавляем новый Музей.")
+  public MuseumPage addMuseum(MuseumJson museum) {
     return checkThatComponentLoaded()
-        .setName(painting.title())
-        .setContent(painting.content())
-        .setArtist(painting.artist().name())
-        .setDescription(painting.description())
-        .setMuseum(painting.museum().title())
-        .clickButtonAddPainting(PaintingPage.class);
+        .setTitle(museum.title())
+        .setCountry(museum.geo().country().name())
+        .setCity(museum.geo().city())
+        .setPhoto(museum.photo())
+        .setDescription(museum.description())
+        .clickButtonAddPainting(MuseumPage.class);
   }
 
   @NonNull
-  @Step("Добавляем новую картину на странице с подробной информацией о художнике.")
-  public ArtistDetailPage addPaintingOnArtistDetailPage(PaintingJson painting) {
-    return checkThatComponentLoaded()
-        .setName(painting.title())
-        .setContent(painting.content())
-        .setDescription(painting.description())
-        .setMuseum(painting.museum().title())
-        .clickButtonAddPainting(ArtistDetailPage.class);
-  }
-
-  @NonNull
-  @Step("Проверяем, что форма создания/редактирования картины отображается.")
+  @Step("Проверяем, что форма создания/редактирования музея отображается.")
   public MuseumForm checkThatComponentLoaded() {
     getSelf().shouldBe(Condition.visible);
     return this;
   }
 
   @NonNull
-  @Step("Заполняем поле 'Название картины' {name}.")
-  public MuseumForm setName(String name) {
-    inputName.setValue(name);
+  @Step("Заполняем поле 'Название музея' {name}.")
+  public MuseumForm setTitle(String name) {
+    inputTitle.setValue(name);
     return this;
   }
 
   @NonNull
-  @Step("Загружаем изображение картины из {path}.")
-  public MuseumForm setContent(String path) {
-    inputContent.uploadFromClasspath(path);
+  @Step("Загружаем изображение музея из {path}.")
+  public MuseumForm setPhoto(String path) {
+    inputPhoto.uploadFromClasspath(path);
     return this;
   }
 
   @NonNull
-  @Step("Выбираем автора {artist}.")
-  public MuseumForm setArtist(String artist) {
-    listArtist.findBy(Condition.exactText(artist))
-        .scrollIntoView(true)
-        .click();
+  @Step("Заполняем поле 'Укажите город' {city}.")
+  public MuseumForm setCity(String city) {
+    inputCity.setValue(city);
     return this;
   }
 
@@ -90,9 +76,9 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   }
 
   @NonNull
-  @Step("Выбираем музей {museum}.")
-  public MuseumForm setMuseum(String museum) {
-    listMuseum.findBy(Condition.exactText(museum))
+  @Step("Выбираем страну {country}.")
+  public MuseumForm setCountry(String country) {
+    listCountry.findBy(Condition.exactText(country))
         .scrollIntoView(true)
         .click();
     return this;
@@ -101,7 +87,7 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   @NonNull
   @Step("Нажимаем кнопку 'Добавить'.")
   public <B> B clickButtonAddPainting(Class<B> clazz) {
-    buttonSavePainting.click();
+    buttonSaveMuseum.click();
     self.should(Condition.disappear);
     return toPage(clazz);
   }

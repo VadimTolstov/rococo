@@ -51,7 +51,7 @@ public class MuseumPage extends BasePage<MuseumPage> {
   @NonNull
   @Step("Кликнуть по музею {name} и перейти в его описание.")
   public MuseumDetailPage openDetailPage(String name) {
-    final SelenideElement element = museums.findBy(exactText(name));
+    final SelenideElement element = museums.findBy(text(name));
     scrollToElement(element);
     element.shouldBe(visible.because("Музей '" + name + "' не виден на странице"))
         .shouldBe(interactable.because("Музей '" + name + "' не доступен для клика"))
