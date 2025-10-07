@@ -39,7 +39,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> {
   }
 
   @NonNull
-  @Step("Проверяем полностью карточку картины .")
+  @Step("Проверяем полностью карточку Художника .")
   public ArtistDetailPage checkDetailPainting(ArtistJson artistJson) {
     pageContainer.shouldHave(ArtistDetailCondition.hasPainting(artistJson));
     return this;

@@ -6,6 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
 import guru.qa.rococo.page.component.SearchField;
 import guru.qa.rococo.page.detail.ArtistDetailPage;
+import guru.qa.rococo.page.form.ArtistForm;
 import io.qameta.allure.Step;
 import lombok.Getter;
 import lombok.NonNull;
@@ -36,8 +37,7 @@ public class ArtistPage extends BasePage<ArtistPage> {
   @Step("Проверяем, что загрузилась страница с художниками.")
   @Override
   public ArtistPage checkThatPageLoaded() {
-    title.shouldBe(visible, Duration.ofSeconds(10))
-        .shouldHave(exactText("Художники"));
+    title.shouldBe(visible, Duration.ofSeconds(10));
     searchField.getSelf().shouldBe(visible);
     return this;
   }
@@ -69,8 +69,8 @@ public class ArtistPage extends BasePage<ArtistPage> {
 
   @NonNull
   @Step("Нажать на кнопку 'Добавить художника'.")
-  public ArtistDetailPage clickAddPaintingButton() {
+  public ArtistForm clickAddPaintingButton() {
     addArtistButton.shouldBe(visible).click();
-    return new ArtistDetailPage().checkThatPageLoaded();
+    return new ArtistForm().checkThatComponentLoaded();
   }
 }

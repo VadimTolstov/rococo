@@ -1,7 +1,6 @@
 package guru.qa.rococo.page.form;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
 import guru.qa.rococo.page.ArtistPage;
@@ -20,13 +19,11 @@ public class ArtistForm extends BaseComponent<ArtistForm> {
     super($(".modal-form"));
   }
 
-  private final SelenideElement inputName = self.$("[name='title']");
-  private final SelenideElement inputBiography = self.$("[name='description']");
+  private final SelenideElement inputName = self.$("[name='name']");
+  private final SelenideElement inputBiography = self.$("[name='biography']");
   private final SelenideElement inputPhoto = self.$("input[type='file']");
   private final SelenideElement buttonSaveArtist = self.$("[type='submit']");
-  private final SelenideElement buttonCloseForm = self.$("[type='submit']");
-  private final ElementsCollection listArtist = self.$$("select[name='authorId'] option");
-  private final ElementsCollection listMuseum = self.$$("select[name='museumId'] option");
+  private final SelenideElement buttonCloseForm = self.$("[type='button']");
 
   @NonNull
   @Step("Добавляем нового художника.")

@@ -15,9 +15,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
-public class PaintingForm extends BaseComponent<PaintingForm> {
+public class MuseumForm extends BaseComponent<MuseumForm> {
 
-  public PaintingForm() {
+  public MuseumForm() {
     super($(".modal-form"));
   }
 
@@ -54,28 +54,28 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
 
   @NonNull
   @Step("Проверяем, что форма создания/редактирования картины отображается.")
-  public PaintingForm checkThatComponentLoaded() {
+  public MuseumForm checkThatComponentLoaded() {
     getSelf().shouldBe(Condition.visible);
     return this;
   }
 
   @NonNull
   @Step("Заполняем поле 'Название картины' {name}.")
-  public PaintingForm setName(String name) {
+  public MuseumForm setName(String name) {
     inputName.setValue(name);
     return this;
   }
 
   @NonNull
   @Step("Загружаем изображение картины из {path}.")
-  public PaintingForm setContent(String path) {
+  public MuseumForm setContent(String path) {
     inputContent.uploadFromClasspath(path);
     return this;
   }
 
   @NonNull
   @Step("Выбираем автора {artist}.")
-  public PaintingForm setArtist(String artist) {
+  public MuseumForm setArtist(String artist) {
     listArtist.findBy(Condition.exactText(artist))
         .scrollIntoView(true)
         .click();
@@ -84,14 +84,14 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
 
   @NonNull
   @Step("Заполняем поле 'Описание картины' {description}.")
-  public PaintingForm setDescription(String description) {
+  public MuseumForm setDescription(String description) {
     inputDescription.setValue(description);
     return this;
   }
 
   @NonNull
   @Step("Выбираем музей {museum}.")
-  public PaintingForm setMuseum(String museum) {
+  public MuseumForm setMuseum(String museum) {
     listMuseum.findBy(Condition.exactText(museum))
         .scrollIntoView(true)
         .click();

@@ -23,7 +23,7 @@ public class PaintingPage extends BasePage<PaintingPage> {
   public static final String URL = CFG.frontUrl() + "/painting";
 
   private final SelenideElement pageContainer = $("#page");
-  private final SelenideElement title = pageContainer.$$("h2").findBy(text("Картины"));
+  private final SelenideElement title = pageContainer.$$("h2").findBy(exactText("Картины"));
   private final ElementsCollection paintings = pageContainer.$$(".grid li");
   private final SelenideElement addPaintingButton = pageContainer.$$("button").findBy(Condition.exactText("Добавить картину"));
   @Getter
@@ -35,8 +35,7 @@ public class PaintingPage extends BasePage<PaintingPage> {
   @Step("Проверяем, что загрузилась страница с картинами.")
   @Override
   public PaintingPage checkThatPageLoaded() {
-    title.shouldBe(visible, Duration.ofSeconds(10))
-        .shouldHave(exactText("Картины"));
+    title.shouldBe(visible, Duration.ofSeconds(10));
     searchField.getSelf().shouldBe(visible);
     return this;
   }
