@@ -14,14 +14,15 @@ import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class LoginPage extends BasePage<LoginPage> {
-  public static final String URL = CFG.frontUrl() + "/login";
+  public static final String URL = CFG.authUrl() + "login";
 
   private final SelenideElement pageContainer = $(".content");
   private final SelenideElement inputUserName = pageContainer.$("input[name='username']");
   private final SelenideElement inputPassword = pageContainer.$("input[name='password']");
   private final SelenideElement buttonComeIn = pageContainer.$("button[class='form__submit']");
   private final SelenideElement title = pageContainer.$(".form__header");
-  private final SelenideElement errorMessageElement = pageContainer.$(" .form__error");
+  private final SelenideElement errorMessageElement = pageContainer.$(".form__error");
+  private final SelenideElement hrefRegisterPage = pageContainer.$("[href='/register']");
   private final String errorMessage = "Неверные учетные данные пользователя";
 
   @NonNull
@@ -32,6 +33,14 @@ public class LoginPage extends BasePage<LoginPage> {
     title.shouldHave(text("Ro"))
         .$("span").shouldHave(text("coco"));
     return this;
+  }
+
+  @NonNull
+  @Step("Авторизоваться пользователем с именем {userName} и паролем {password}")
+  public <T extends BasePage<?>> T doLogin(T expectedPage, String userName, String password) {
+    return setUserName(userName)
+        .setPassword(password)
+        .clickComeIn(expectedPage);
   }
 
   @NonNull
@@ -57,13 +66,9 @@ public class LoginPage extends BasePage<LoginPage> {
 
   @NonNull
   @Step("Кликнуть по кнопке 'Войти'.")
-  public <T> T clickComeIn(Class<T> clazz) {
+  public <T extends BasePage<?>> T clickComeIn(T expectedPage) {
     buttonComeIn.shouldBe(visible).click();
-    try {
-      return clazz.getDeclaredConstructor().newInstance();
-    } catch (Exception e) {
-      throw new RuntimeException("Cannot create instance of " + clazz, e);
-    }
+    return expectedPage;
   }
 
   @NonNull
@@ -71,5 +76,12 @@ public class LoginPage extends BasePage<LoginPage> {
   public LoginPage checkErrorMessage() {
     checkErrorMessage(errorMessageElement, errorMessage);
     return this;
+  }
+
+  @NonNull
+  @Step("Кликнуть по ссылке 'Зарегистрироваться'.")
+  public <T extends BasePage<?>> T clickHrefRegisterPage(T expectedPage) {
+    hrefRegisterPage.shouldBe(visible).click();
+    return expectedPage;
   }
 }

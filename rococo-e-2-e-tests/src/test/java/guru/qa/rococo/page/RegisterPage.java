@@ -7,7 +7,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class RegisterPage extends BasePage<RegisterPage> {
-  public static final String URL = CFG.frontUrl() + "/register";
+  public static final String URL = CFG.frontUrl() + "register";
 
   @NonNull
   @Step("Проверяем, что загрузилась страница регистрации")

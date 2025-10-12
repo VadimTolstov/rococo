@@ -49,22 +49,6 @@ allure {
     }
 }
 
-apollo {
-    service("niffler") {
-        generateKotlinModels.set(false)
-        packageName.set("guru.qa")
-        srcDir("src/test/graphql")
-        mapScalar("Date", "java.util.Date")
-        introspection {
-            endpointUrl.set("$gatewayIntrospectionUrl")
-            schemaFile.set(file("src/test/graphql/schema.graphqls"))
-        }
-        outputDirConnection {
-            connectToJavaSourceSet("test")
-        }
-    }
-}
-
 // Блок sourceSets определяет исходные наборы для проекта
 sourceSets {
     test {    // Конфигурация набора исходников для тестов
@@ -99,10 +83,7 @@ dependencies {
         exclude group: "com.squareup.okhttp3"
     }
     testImplementation "org.springframework.data:spring-data-commons:${springDataCommonsVersion}"
-    // GraphQL
-    testImplementation "com.apollographql.java:client:${apollographqlVersion}"
-    testImplementation "com.apollographql.java:rx2:${apollographqlVersion}"
-    testImplementation 'com.apollographql.adapters:apollo-adapters-core:0.7.0'
+
     // DB
     testImplementation "org.springframework:spring-jdbc:${springJdbcVersion}"
     testImplementation "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
@@ -135,15 +116,15 @@ dependencies {
     testImplementation 'com.github.h-thurow:simple-jndi:0.25.0'
     testImplementation "org.assertj:assertj-core:${assertJVersion}"
 
-    // gRPC
-    testImplementation "io.grpc:grpc-api:${project.ext.grpcVersion}"
-    testImplementation "io.grpc:grpc-stub:${project.ext.grpcVersion}"
-    testImplementation "io.grpc:grpc-netty:${project.ext.grpcVersion}"
-    testImplementation "com.google.protobuf:protobuf-java:${project.ext.protobufVersion}"
-    testImplementation "com.google.protobuf:protobuf-java-util:${project.ext.protobufVersion}"
-    compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5' // Java 9+ compatibility - Do NOT update to 2.0.0
-
-//    testImplementation project(':niffler-grpc-common')
+//    // gRPC
+//    testImplementation "io.grpc:grpc-api:${project.ext.grpcVersion}"
+//    testImplementation "io.grpc:grpc-stub:${project.ext.grpcVersion}"
+//    testImplementation "io.grpc:grpc-netty:${project.ext.grpcVersion}"
+//    testImplementation "com.google.protobuf:protobuf-java:${project.ext.protobufVersion}"
+//    testImplementation "com.google.protobuf:protobuf-java-util:${project.ext.protobufVersion}"
+//    compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5' // Java 9+ compatibility - Do NOT update to 2.0.0
+//
+////    testImplementation project(':niffler-grpc-common')
 
     // Kafka
     testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"

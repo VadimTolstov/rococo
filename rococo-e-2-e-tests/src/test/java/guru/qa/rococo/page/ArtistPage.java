@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class ArtistPage extends BasePage<ArtistPage> {
-  public static final String URL = CFG.frontUrl() + "/artist";
+  public static final String URL = CFG.frontUrl() + "artist";
 
   private final SelenideElement pageContainer = $("#page");
   private final SelenideElement title = pageContainer.$("h2");

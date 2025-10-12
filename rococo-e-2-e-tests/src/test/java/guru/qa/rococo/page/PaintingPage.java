@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class PaintingPage extends BasePage<PaintingPage> {
-  public static final String URL = CFG.frontUrl() + "/painting";
+  public static final String URL = CFG.frontUrl() + "painting";
 
   private final SelenideElement pageContainer = $("#page");
   private final SelenideElement title = pageContainer.$$("h2").findBy(exactText("Картины"));

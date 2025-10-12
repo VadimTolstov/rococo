@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class MuseumPage extends BasePage<MuseumPage> {
-  public static final String URL = CFG.frontUrl() + "/museum";
+  public static final String URL = CFG.frontUrl() + "museum";
 
   private final SelenideElement pageContainer = $("#page");
   private final SelenideElement title = pageContainer.$$("h2").findBy(exactText("Музеи"));
