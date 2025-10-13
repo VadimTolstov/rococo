@@ -24,7 +24,7 @@ public abstract class BasePage<T extends BasePage<?>> {
   protected static final Config CFG = Config.getInstance();
 
   protected final SelenideElement alert = $(".MuiAlert-message");
-  protected final ElementsCollection alert2 = $$(".form__error");
+  protected final ElementsCollection errorListElement = $$(".form__error");
 
   public abstract T checkThatPageLoaded();
 
@@ -40,7 +40,7 @@ public abstract class BasePage<T extends BasePage<?>> {
   @Step("Проверка отображения сообщения об ошибке: {expectedText}")
   @SuppressWarnings("unchecked")
   public T checkErrorMessage(String... expectedText) {
-    alert2.shouldHave(CollectionCondition.textsInAnyOrder(expectedText));
+    errorListElement.shouldHave(CollectionCondition.textsInAnyOrder(expectedText));
     return (T) this;
   }
 

@@ -5,20 +5,31 @@ import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.LoginPage;
 import guru.qa.rococo.page.MainPage;
+import guru.qa.rococo.page.RegisterPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class LoginPageTest {
+public class RegisterPageTest {
+
+//  @Test
+//  @DisplayName("Регистрация нового пользователя")
+//  void successRegistration() {
+//    Selenide.open(MainPage.URL, MainPage.class)
+//        .getHeader()
+//        .clickLoginButton()
+//        .doLogin(new MainPage(), user.username(), user.password())
+//        .checkThatPageLoaded();
+//  }
 
   @User
   @Test
-  @DisplayName("Авторизация пользователя")
+  @DisplayName("Регистрация пользователя с зарегистрированным логином")
   void userAuthorization(UserJson user) {
-    Selenide.open(MainPage.URL, MainPage.class)
-        .getHeader()
-        .clickLoginButton()
-        .doLogin(new MainPage(), user.username(), user.password())
-        .checkThatPageLoaded();
+    String as = """
+        """;
+    Selenide.open(RegisterPage.URL, RegisterPage.class)
+        .doRegister(new RegisterPage(), user.username(), user.password())
+        .checkErrorMessage(String.format("Username `%s` already exists", user.username()));
   }
 
   @Test
