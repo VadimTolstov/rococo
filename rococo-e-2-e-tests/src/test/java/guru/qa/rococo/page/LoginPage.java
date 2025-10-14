@@ -8,8 +8,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
@@ -23,6 +22,7 @@ public class LoginPage extends BasePage<LoginPage> {
   private final SelenideElement title = pageContainer.$(".form__header");
   private final SelenideElement errorMessageElement = pageContainer.$(".form__error");
   private final SelenideElement hrefRegisterPage = pageContainer.$("[href='/register']");
+  private final SelenideElement passwordButton = pageContainer.$(".form__password-button");
   private final String errorMessage = "Неверные учетные данные пользователя";
 
   @NonNull
@@ -83,5 +83,18 @@ public class LoginPage extends BasePage<LoginPage> {
   public <T extends BasePage<?>> T clickHrefRegisterPage(T expectedPage) {
     hrefRegisterPage.shouldBe(visible).click();
     return expectedPage;
+  }
+
+  @Step("Показать Password")
+  public LoginPage openPassword() {
+    passwordButton.click();
+    return this;
+  }
+
+  @Step("Проверяем, что у полей Password отключено маскирование")
+  public LoginPage checkPassword() {
+    openPassword();
+    passwordButton.shouldHave(cssClass("form__password-button_active"), visible);
+    return this;
   }
 }

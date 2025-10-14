@@ -23,7 +23,7 @@ import static guru.qa.rococo.condition.ScreenshotConditions.image;
 public abstract class BasePage<T extends BasePage<?>> {
   protected static final Config CFG = Config.getInstance();
 
-  protected final SelenideElement alert = $(".MuiAlert-message");
+  protected final SelenideElement alert = $(".content");
   protected final ElementsCollection errorListElement = $$(".form__error");
 
   public abstract T checkThatPageLoaded();

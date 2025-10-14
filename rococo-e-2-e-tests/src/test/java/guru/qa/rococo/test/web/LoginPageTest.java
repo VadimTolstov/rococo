@@ -1,13 +1,21 @@
 package guru.qa.rococo.test.web;
 
 import com.codeborne.selenide.Selenide;
+import guru.qa.rococo.jupiter.annotation.ScreenShotTest;
 import guru.qa.rococo.jupiter.annotation.User;
+import guru.qa.rococo.jupiter.annotation.meta.WebTest;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.LoginPage;
 import guru.qa.rococo.page.MainPage;
+import guru.qa.rococo.page.RegisterPage;
+import guru.qa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.awt.image.BufferedImage;
+
+@WebTest
+@DisplayName("Тесты страницы логина")
 public class LoginPageTest {
 
   @User
@@ -24,32 +32,72 @@ public class LoginPageTest {
   @Test
   @DisplayName("Авторизация незарегистрированного пользователя")
   void authorizationOfAnUnregisteredUser() {
+    final String username = RandomDataUtils.randomUsername();
+    final String password = RandomDataUtils.randomPassword();
     Selenide.open(MainPage.URL, MainPage.class)
         .getHeader()
         .clickLoginButton()
-        .doLogin(new LoginPage(), "Smitty", "133jkdDJF")
+        .doLogin(new LoginPage(), username, password)
         .checkErrorMessage();
   }
 
-  @User
-  @Test//todo заменить на страницу регистрации
-  @DisplayName("Переход на страницу регистрации")
-  void userAuthorizationWithInvalidPassword(UserJson user) {
+  @Test
+  @DisplayName("Переход на страницу регистрации по ссылке 'Зарегистрироваться'.")
+  void goToTheRegistrationPage() {
     Selenide.open(MainPage.URL, MainPage.class)
         .getHeader()
         .clickLoginButton()
-        .clickHrefRegisterPage(new LoginPage());
+        .clickHrefRegisterPage(new RegisterPage());
   }
 
-  @Test//todo
-  @DisplayName("Отключение маскирование у Password")
+  @Test
+  @DisplayName("Отключение маскирования у Password")
   void disablingPasswordMasking() {
-
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .clickLoginButton()
+        .setPassword("123456")
+        .checkPassword();
   }
 
-  @Test//todo скриншот тест картинки
-  @DisplayName("Сравнить изображение на странице LoginPage")
-  void disablingPasswordMasking2() {
+  @ScreenShotTest(expected = "login/hermitage.png")
+  @DisplayName("На странице логина есть изображение эрмитажа")
+  void thereIsAnImageOfTheHermitageOnTheLoginPage(BufferedImage expected) {
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .clickLoginButton()
+        .checkImages(expected);
+  }
 
+  @Test
+  @DisplayName("Если 'Имя пользователя' пустое, то отображается ошибка")
+  void whenUsernameIsEmptyThenErrorNotification() {
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .clickLoginButton()
+        .doLogin(new LoginPage(), " ", "123456")
+        .checkErrorMessage();
+  }
+
+  @Test
+  @User
+  @DisplayName("Если пароль пустой, то отображается ошибка")
+  void whenPasswordIsEmptyThenErrorNotification(UserJson user) {
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .clickLoginButton()
+        .doLogin(new LoginPage(), user.username(), " ")
+        .checkErrorMessage();
+  }
+
+  @Test
+  @User
+  @DisplayName("Если пароль неверный, то отображается ошибка")
+  void whenPasswordIsIncorrectThenErrorNotification(UserJson user) {
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .clickLoginButton()
+        .doLogin(new LoginPage(), user.username(), "dsfedds24323")
+        .checkErrorMessage();
   }
 }

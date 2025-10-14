@@ -5,12 +5,10 @@ import io.qameta.allure.Step;
 import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-
 import java.awt.image.BufferedImage;
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
@@ -25,7 +23,10 @@ public class RegisterPage extends BasePage<RegisterPage> {
   private final SelenideElement title = pageContainer.$(".form__header");
   private final SelenideElement errorMessageElement = pageContainer.$(".form__error");
   private final SelenideElement buttonRegister = pageContainer.$("button[class='form__submit']");
+  private final SelenideElement buttonRedirectMainPage = pageContainer.$("a.form__submit");
+  private final SelenideElement messageSuccessfulRegistration = pageContainer.$(".form__subheader");
   private final String errorMessage = "Неверные учетные данные пользователя";
+  private final String messageRegistration = "Добро пожаловать в Ro";
 
 
   @NonNull
@@ -40,11 +41,19 @@ public class RegisterPage extends BasePage<RegisterPage> {
 
   @NonNull
   @Step("Регистрация пользователем с именем {userName} и паролем {password}")
-  public <T extends BasePage<?>> T doRegister(T expectedPage, String userName, String password) {
+  public RegisterPage doRegister(String userName, String password) {
     return setUserName(userName)
         .setPassword(password)
         .setPasswordSubmit(password)
-        .clickComeIn(expectedPage);
+        .clickComeIn();
+  }
+
+  @NonNull
+  @Step("Регистрация пользователем с именем {userName} и паролем {password} и переход на страницу MainPage")
+  public LoginPage doRegisterAndToMainPage(String userName, String password) {
+    return doRegister(userName, password)
+        .checkMessageSuccessfulRegistration()
+        .clickButtonToMainPAge();
   }
 
   @NonNull
@@ -77,15 +86,31 @@ public class RegisterPage extends BasePage<RegisterPage> {
 
   @NonNull
   @Step("Кликнуть по кнопке 'Войти'.")
-  public <T extends BasePage<?>> T clickComeIn(T expectedPage) {
+  public RegisterPage clickComeIn() {
     buttonRegister.shouldBe(visible).click();
-    return expectedPage;
+    return this;
   }
 
   @NonNull
   @Step("Кликнуть по ссылке 'Войти'.")
-  public <T extends BasePage<?>> T clickHrefLoginPage(T expectedPage) {
+  public LoginPage clickHrefLoginPage() {
     hrefLoginPage.shouldBe(visible).click();
-    return expectedPage;
+    return new LoginPage().checkThatPageLoaded();
+  }
+
+  @NonNull
+  @Step("Проверяем, сообщение об успешной регистрации.")
+  public RegisterPage checkMessageSuccessfulRegistration() {
+    messageSuccessfulRegistration
+        .shouldBe(visible)
+        .shouldHave(exactOwnText(messageRegistration));
+    return this;
+  }
+
+  @NonNull
+  @Step("Кликнуть по кнопке 'Войти в систему'.")
+  public LoginPage clickButtonToMainPAge() {
+    buttonRedirectMainPage.shouldBe(visible).click();
+    return new LoginPage().checkThatPageLoaded();
   }
 }

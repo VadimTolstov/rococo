@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@ExtendWith({UserExtension.class})
 
 public @interface User {
   String username() default "";
