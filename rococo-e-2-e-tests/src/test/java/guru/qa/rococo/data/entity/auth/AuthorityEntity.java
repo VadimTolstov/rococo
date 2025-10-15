@@ -1,7 +1,5 @@
 package guru.qa.rococo.data.entity.auth;
 
-import guru.qa.rococo.model.Authority;
-import guru.qa.rococo.model.rest.auth.AuthorityJson;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;

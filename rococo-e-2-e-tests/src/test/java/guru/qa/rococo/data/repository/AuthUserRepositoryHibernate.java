@@ -1,8 +1,7 @@
-package guru.qa.rococo.data.repository.impl.hibernate;
+package guru.qa.rococo.data.repository;
 
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.data.entity.auth.AuthUserEntity;
-import guru.qa.rococo.data.repository.AuthUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
