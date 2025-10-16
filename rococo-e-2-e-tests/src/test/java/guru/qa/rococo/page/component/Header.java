@@ -2,11 +2,13 @@ package guru.qa.rococo.page.component;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.rococo.condition.ScreenshotConditions;
 import guru.qa.rococo.page.*;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.image.BufferedImage;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
@@ -33,28 +35,28 @@ public class Header extends BaseComponent<Header> {
   @Step("Нажать на логотип")
   public MainPage clickLogo() {
     logo.click();
-    return new MainPage();
+    return new MainPage().checkThatPageLoaded();
   }
 
   @NonNull
   @Step("Нажать на кнопку 'Картины'")
   public PaintingPage clickPaintingsLink() {
     paintingsLink.click();
-    return new PaintingPage();
+    return new PaintingPage().checkThatPageLoaded();
   }
 
   @NonNull
   @Step("Нажать на кнопку 'Художники'")
   public ArtistPage clickArtistsLink() {
     artistsLink.click();
-    return new ArtistPage();
+    return new ArtistPage().checkThatPageLoaded();
   }
 
   @NonNull
   @Step("Нажать на кнопку 'Музеи'")
   public MuseumPage clickMuseumsLink() {
     museumsLink.click();
-    return new MuseumPage();
+    return new MuseumPage().checkThatPageLoaded();
   }
 
   @NonNull
@@ -102,5 +104,10 @@ public class Header extends BaseComponent<Header> {
     return this;
   }
 
-  //todo Check avatar image метод для скриншотТеста
+  @NonNull
+  @Step("Проверяем изображение аватара")
+  public Header checkImgAvatar(BufferedImage expected) {
+    avatarImage.shouldBe(ScreenshotConditions.image(expected));
+    return this;
+  }
 }
