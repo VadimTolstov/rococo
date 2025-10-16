@@ -13,7 +13,7 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public class SearchField extends BaseComponent<SearchField> {
   public SearchField() {
-    super($("input[title='Искать картины...']"));
+    super($("input[type='search']"));
   }
 
   private final SelenideElement searchButton = self.parent().$("img[alt='Иконка поиска']");

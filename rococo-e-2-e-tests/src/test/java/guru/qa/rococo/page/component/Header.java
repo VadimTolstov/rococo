@@ -22,10 +22,12 @@ public class Header extends BaseComponent<Header> {
   private final SelenideElement paintingsLink = self.$("nav.list-nav a[href='/painting']");
   private final SelenideElement artistsLink = self.$("nav.list-nav a[href='/artist']");
   private final SelenideElement museumsLink = self.$("nav.list-nav a[href='/museum']");
-  private final SelenideElement lightSwitch = self.$("div.lightswitch-track]");
+  private final SelenideElement lightSwitch = self.$("div.lightswitch-track");
   private final SelenideElement loginButton = self.$("button.btn.variant-filled-primary");
   private final SelenideElement avatarImage = self.$("img.avatar-image, svg.avatar-initials");
   private final SelenideElement profileButton = self.$("figure").parent();
+  private final SelenideElement switchWhiteTheme = $("div[aria-checked='true']");
+
 
   @NonNull
   @Step("Нажать на логотип")
@@ -57,8 +59,16 @@ public class Header extends BaseComponent<Header> {
 
   @NonNull
   @Step("Нажать на switch светлая/темная тема")
-  public MainPage clickSwitch() {
-    lightSwitch.click();
+  public MainPage clickSwitchIsWhiteTheme(boolean isWhiteTheme) {
+    if (isWhiteTheme) {
+      if (!switchWhiteTheme.isDisplayed()) {
+        lightSwitch.click();
+      }
+      return new MainPage();
+    }
+    if (switchWhiteTheme.isDisplayed()) {
+      lightSwitch.click();
+    }
     return new MainPage();
   }
 
