@@ -35,7 +35,11 @@ public interface HibernateRepository<T> {
 
   @NonNull
   default Optional<T> findByParam(Object param, String paramName) {
-    final String query = String.format("SELECT e FROM %s e WHERE e.%s = :value", getEntityClass().getSimpleName(), paramName);
+    final String query = String.format(
+        "SELECT e FROM %s e WHERE e.%s = :value",
+        getEntityClass().getSimpleName(),
+        paramName
+    );
     return em().createQuery(query, getEntityClass())
         .setParameter("value", param)
         .getResultStream()
@@ -48,8 +52,10 @@ public interface HibernateRepository<T> {
       return Collections.emptyList();
     }
 
-    final String query = String.format("SELECT e FROM %s e WHERE e.id IN (:uuids)", getEntityClass().getSimpleName());
-
+    final String query = String.format(
+        "SELECT e FROM %s e WHERE e.id IN (:uuids)",
+        getEntityClass().getSimpleName()
+    );
     return em().createQuery(query, getEntityClass())
         .setParameter("uuids", getUuids(uuids))
         .getResultList();
@@ -61,7 +67,10 @@ public interface HibernateRepository<T> {
     }
 
     em().joinTransaction();
-    String query = String.format("DELETE FROM %s e WHERE e.id IN :uuids", getEntityClass().getSimpleName());
+    String query = String.format(
+        "DELETE FROM %s e WHERE e.id IN :uuids",
+        getEntityClass().getSimpleName()
+    );
     em().createQuery(query)
         .setParameter("uuids", getUuids(uuids))
         .executeUpdate();
