@@ -10,15 +10,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-
 public @interface User {
   String username() default "";
-
   String firstname() default "";
-
   String lastname() default "";
-
   String avatar() default "";
-
   String password() default "";
 }

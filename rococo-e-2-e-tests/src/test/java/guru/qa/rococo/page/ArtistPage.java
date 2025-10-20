@@ -25,7 +25,7 @@ public class ArtistPage extends BasePage<ArtistPage> {
   private final SelenideElement pageContainer = $("#page");
   private final SelenideElement title = pageContainer.$("h2");
   private final ElementsCollection artist = pageContainer.$$(".grid li");
-  private final SelenideElement addArtistButton = pageContainer.$$("button").findBy(Condition.exactText("Добавить художника"));
+  private final SelenideElement addArtistButton = pageContainer.$("button[class='btn variant-filled-primary ml-4']");
 
 
   @Getter
@@ -72,5 +72,10 @@ public class ArtistPage extends BasePage<ArtistPage> {
   public ArtistForm clickAddPaintingButton() {
     addArtistButton.shouldBe(visible).click();
     return new ArtistForm().checkThatComponentLoaded();
+  }
+
+  @Step("Проверяем, что кнопки 'Добавить художника' нет.")
+  public void checkNoAddPaintingButton() {
+    addArtistButton.shouldNot(exist);
   }
 }

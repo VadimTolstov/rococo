@@ -1,6 +1,6 @@
 package guru.qa.rococo.jupiter.annotation;
 
-import org.junit.jupiter.api.Test;
+import guru.qa.rococo.model.rest.museum.Country;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,8 +9,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Test
-public @interface ScreenShotTest {
-    String expected();
-    boolean rewriteExpected() default false;
+public @interface Museum {
+  String title() default "";
+  String description() default "";
+  String photo() default "";
+  Country country() default Country.RUSSIA;
+  String city() default "";
 }

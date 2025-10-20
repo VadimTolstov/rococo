@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 
 @WebTest
 @ParametersAreNonnullByDefault
+@DisplayName("Тесты на Header")
 public class HeaderTest {
 
   @Test
