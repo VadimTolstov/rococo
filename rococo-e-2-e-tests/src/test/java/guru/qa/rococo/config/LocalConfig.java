@@ -85,6 +85,12 @@ enum LocalConfig implements Config {
 
     @NotNull
     @Override
+    public String imageContentBaseDir() {
+        return "img/content/";
+    }
+
+    @NotNull
+    @Override
     public String allureDockerServiceUrl() {
         return "http://127.0.0.1:5050/";
     }

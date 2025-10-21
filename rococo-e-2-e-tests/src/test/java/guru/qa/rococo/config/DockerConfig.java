@@ -92,4 +92,10 @@ enum DockerConfig implements Config {
     public String screenshotBaseDir() {
         return "screenshots/selenoid/";
     }
+
+    @NotNull
+    @Override
+    public String imageContentBaseDir() {
+        return "img/content/";
+    }
 }

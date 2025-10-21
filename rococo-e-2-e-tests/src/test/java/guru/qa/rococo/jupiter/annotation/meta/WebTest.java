@@ -1,9 +1,6 @@
 package guru.qa.rococo.jupiter.annotation.meta;
 
-import guru.qa.rococo.jupiter.extension.ApiLoginExtension;
-import guru.qa.rococo.jupiter.extension.BrowserExtension;
-import guru.qa.rococo.jupiter.extension.ScreenShotTestExtension;
-import guru.qa.rococo.jupiter.extension.UserExtension;
+import guru.qa.rococo.jupiter.extension.*;
 import io.qameta.allure.junit5.AllureJunit5;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -19,6 +16,7 @@ import java.lang.annotation.Target;
     AllureJunit5.class,
     UserExtension.class,
     ApiLoginExtension.class,
-    ScreenShotTestExtension.class})
+    ScreenShotTestExtension.class,
+    ArtistExtension.class})
 public @interface WebTest {
 }
