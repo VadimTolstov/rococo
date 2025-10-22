@@ -1,4 +1,4 @@
-package guru.qa.rococo.service.impl;
+package guru.qa.rococo.service.api;
 
 import guru.qa.rococo.api.UserdataApi;
 import guru.qa.rococo.api.core.RequestExecutor;

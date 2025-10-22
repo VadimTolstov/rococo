@@ -5,7 +5,7 @@ import guru.qa.rococo.jupiter.annotation.Artist;
 import guru.qa.rococo.jupiter.annotation.Content;
 import guru.qa.rococo.model.TestContent;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
-import guru.qa.rococo.service.ArtistApiClient;
+import guru.qa.rococo.service.api.ArtistApiClient;
 import guru.qa.rococo.service.ArtistClient;
 import guru.qa.rococo.utils.PhotoConverter;
 import guru.qa.rococo.utils.RandomDataUtils;

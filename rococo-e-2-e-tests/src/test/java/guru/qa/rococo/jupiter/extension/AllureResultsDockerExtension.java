@@ -2,7 +2,7 @@ package guru.qa.rococo.jupiter.extension;
 
 import guru.qa.rococo.model.allure.AllureResult;
 import guru.qa.rococo.model.allure.AllureResults;
-import guru.qa.rococo.service.impl.AllureApiClient;
+import guru.qa.rococo.service.api.AllureApiClient;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.IOException;

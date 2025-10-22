@@ -12,8 +12,11 @@ public interface ArtistClient {
 
   ArtistJson createArtist(@NonNull ArtistJson artist);
 
-  RestResponsePage<ArtistJson> getListArtists(@Nullable String name,
-                                              @Nullable Integer page,
-                                              @Nullable Integer size,
-                                              @Nullable String sort);
+  ArtistJson updateArtist(@NonNull ArtistJson artist);
+
+  RestResponsePage<ArtistJson> getListArtists(
+      @Nullable String name,
+      @Nullable Integer page,
+      @Nullable Integer size,
+      @Nullable String sort);
 }

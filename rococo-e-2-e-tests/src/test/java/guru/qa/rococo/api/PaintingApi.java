@@ -9,7 +9,7 @@ import retrofit2.http.*;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public interface Painting {
+public interface PaintingApi {
 
     @GET("/internal/painting/{paintingId}")
     Call<PaintingJson> getPainting(@Path("paintingId") @NonNull UUID paintingId);
@@ -31,7 +31,7 @@ public interface Painting {
     );
 
     @POST("/internal/painting")
-    Call<PaintingJson> postPainting(@Body @NonNull PaintingJson paintingJson);
+    Call<PaintingJson> addPainting(@Body @NonNull PaintingJson paintingJson);
 
     @PATCH("/internal/painting")
     Call<PaintingJson> patchPainting(@Body @NonNull PaintingJson paintingJson);

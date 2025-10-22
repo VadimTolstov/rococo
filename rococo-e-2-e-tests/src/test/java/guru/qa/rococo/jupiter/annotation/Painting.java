@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface Painting {
   String title() default "";
   String description() default "";
-  Artist artist() default @Artist;
-  Museum museum() default @Museum;
+  String artist() default "";
+  String museum() default "";
 }

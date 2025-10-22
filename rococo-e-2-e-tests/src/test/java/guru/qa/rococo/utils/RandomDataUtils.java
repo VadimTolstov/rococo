@@ -33,6 +33,14 @@ public class RandomDataUtils {
     return faker.lorem().paragraph();
   }
 
+  public static @Nonnull String city() {
+    return faker.address().city();
+  }
+
+  public static @Nonnull String museum() {
+    return faker.university().name() + " Museum";
+  }
+
   public static @Nonnull String randomSentence(int wordsCount) {
     if (wordsCount <= 0) {
       throw new IllegalArgumentException("Words count must be greater than zero");
@@ -44,11 +52,11 @@ public class RandomDataUtils {
     return faker.internet().password(3, 10);
   }
 
-  public static byte[] randomImage(String folderName){
+  public static byte[] randomImage(String folderName) {
     return loadImageAsBytes(randomFilePath(folderName));
   }
 
-  public static String randomImageString(String folderName){
+  public static String randomImageString(String folderName) {
     return PhotoConverter.loadImageAsString(randomFilePath(folderName));
   }
 

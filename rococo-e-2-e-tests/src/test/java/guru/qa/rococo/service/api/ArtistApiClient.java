@@ -1,4 +1,4 @@
-package guru.qa.rococo.service;
+package guru.qa.rococo.service.api;
 
 import guru.qa.rococo.api.ArtistApi;
 import guru.qa.rococo.api.core.RequestExecutor;
@@ -7,6 +7,7 @@ import guru.qa.rococo.config.Config;
 import guru.qa.rococo.ex.ApiException;
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
+import guru.qa.rococo.service.ArtistClient;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -58,6 +59,23 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
     return execute(artistApi.createArtist(artist), HttpStatus.SC_OK);
   }
 
+  /**
+   * Обновляет данные существующего художника в системе.
+   * Отправляет PATCH-запрос к API с обновленными данными художника.
+   * Обновляет только переданные поля, сохраняя остальные данные неизменными.
+   *
+   * @param artist объект {@link ArtistJson} с обновляемыми данными художника.
+   *               Должен содержать идентификатор существующего художника и поля для обновления
+   * @return обновленный объект {@link ArtistJson} с актуальными данными из системы
+   * @throws ApiException если запрос завершился ошибкой или данные невалидны
+   * @throws NullPointerException если переданный artist равен null
+   * @throws IllegalArgumentException если идентификатор художника отсутствует или имеет неверный формат
+   */
+  @Step("Обновляем данные художника = {artist}")
+  @Override
+  public @NonNull ArtistJson updateArtist(@NonNull ArtistJson artist) {
+    return execute(artistApi.updateArtist(artist), HttpStatus.SC_OK);
+  }
 
   /**
    * Получает список художников с поддержкой фильтрации, пагинации и сортировки.

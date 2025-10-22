@@ -1,4 +1,4 @@
-package guru.qa.rococo.service.impl;
+package guru.qa.rococo.service.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Stopwatch;
