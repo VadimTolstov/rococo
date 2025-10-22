@@ -32,4 +32,6 @@ public class SearchField extends BaseComponent<SearchField> {
     searchButton.shouldBe(visible).shouldBe(clickable).click();
     return this;
   }
+
+
 }

@@ -16,7 +16,8 @@ import java.lang.annotation.Target;
     AllureJunit5.class,
     UserExtension.class,
     ApiLoginExtension.class,
-    ScreenShotTestExtension.class,
-    ArtistExtension.class})
+    ArtistExtension.class,
+    ScreenShotTestExtension.class
+    })
 public @interface WebTest {
 }

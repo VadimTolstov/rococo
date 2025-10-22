@@ -74,7 +74,8 @@ public class ArtistExtension implements BeforeEachCallback, ParameterResolver {
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return extensionContext.getRequiredTestMethod().isAnnotationPresent(Content.class);
+    return extensionContext.getRequiredTestMethod().isAnnotationPresent(Content.class) &&
+        parameterContext.getParameter().getType().isAssignableFrom(TestContent.class);
   }
 
   @Override

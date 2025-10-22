@@ -1,6 +1,7 @@
 package guru.qa.rococo.page.component;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.condition.ScreenshotConditions;
 import guru.qa.rococo.page.*;
@@ -61,17 +62,17 @@ public class Header extends BaseComponent<Header> {
 
   @NonNull
   @Step("Нажать на switch светлая/темная тема")
-  public MainPage clickSwitchIsWhiteTheme(boolean isWhiteTheme) {
+  public  <T> T clickSwitchIsWhiteTheme(boolean isWhiteTheme, Class<T> expected) {
     if (isWhiteTheme) {
       if (!switchWhiteTheme.isDisplayed()) {
         lightSwitch.click();
       }
-      return new MainPage();
+      return toPage(expected);
     }
     if (switchWhiteTheme.isDisplayed()) {
       lightSwitch.click();
     }
-    return new MainPage();
+    return toPage(expected);
   }
 
   @NonNull

@@ -1,9 +1,6 @@
 package guru.qa.rococo.page;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.*;
 import guru.qa.rococo.config.Config;
 import io.qameta.allure.Step;
 import lombok.Getter;
@@ -14,8 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Objects;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.*;
 import static guru.qa.rococo.condition.ScreenshotConditions.image;
 
 @Getter
@@ -23,7 +19,7 @@ import static guru.qa.rococo.condition.ScreenshotConditions.image;
 public abstract class BasePage<T extends BasePage<?>> {
   protected static final Config CFG = Config.getInstance();
 
-  protected final SelenideElement alert = $(".content");
+  protected final SelenideElement alert = $("#page");
   protected final ElementsCollection errorListElement = $$(".form__error");
 
   public abstract T checkThatPageLoaded();
@@ -85,6 +81,13 @@ public abstract class BasePage<T extends BasePage<?>> {
   @Step("Проскролить до выбранного элемента")
   public T scrollToElement(SelenideElement element) {
     element.scrollIntoView(true);
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Step("Проскролить до выбранного элемента")
+  public T scrollToFooter() {
+    executeJavaScript("window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})");
     return (T) this;
   }
 

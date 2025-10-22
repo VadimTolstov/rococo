@@ -1,9 +1,11 @@
 package guru.qa.rococo.page;
 
-import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
+import guru.qa.rococo.page.component.NotFoundComponent;
 import guru.qa.rococo.page.component.SearchField;
 import guru.qa.rococo.page.detail.ArtistDetailPage;
 import guru.qa.rococo.page.form.ArtistForm;
@@ -15,6 +17,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 import java.time.Duration;
 
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -32,6 +35,8 @@ public class ArtistPage extends BasePage<ArtistPage> {
   protected final Header header = new Header();
   @Getter
   protected final SearchField searchField = new SearchField();
+  @Getter
+  protected final NotFoundComponent notFoundComponent = new NotFoundComponent();
 
   @NonNull
   @Step("Проверяем, что загрузилась страница с художниками.")
@@ -68,14 +73,41 @@ public class ArtistPage extends BasePage<ArtistPage> {
   }
 
   @NonNull
+  @Step("Сравниваем изображение на странице 'Художники'.")
+  public ArtistPage checkImage(BufferedImage images, String artistName) {
+    compareImage(pageContainer.$(Selectors.byText(artistName)).parent(), images);
+    return this;
+  }
+
+  @NonNull
   @Step("Нажать на кнопку 'Добавить художника'.")
   public ArtistForm clickAddPaintingButton() {
     addArtistButton.shouldBe(visible).click();
     return new ArtistForm().checkThatComponentLoaded();
   }
 
-  @Step("Проверяем, что кнопки 'Добавить художника' нет.")
+  @Step("Проверяем, что кнопки 'Добавить художника' у неавторизованного пользователя нет.")
   public void checkNoAddPaintingButton() {
     addArtistButton.shouldNot(exist);
+  }
+
+  @Step("Проверяем работу пагинации")
+  public ArtistPage checkingThePagination() {
+    artist.shouldBe(CollectionCondition.sizeGreaterThan(0), Duration.ofSeconds(10));
+    final int initialSize = artist.size();
+    scrollToElement(artist.get(artist.size() - 1));
+    artist.shouldHave(sizeGreaterThan(initialSize), Duration.ofSeconds(10));
+    return this;
+  }
+
+  @Step("Проверяем отображение текста, когда художник не найден")
+  public void checkMessageArtistNotFound() {
+    notFoundComponent.shouldShown("Художники не найдены",
+        "Для указанного вами фильтра мы не смогли найти художников");
+  }
+
+  @Step("Проверяем, что при пустом списке художников отображается текст")
+  public void checkMessageArtisEmpty() {
+    checkAlert("Пока что список художников пуст. Чтобы пополнить коллекцию, добавьте нового художника");
   }
 }

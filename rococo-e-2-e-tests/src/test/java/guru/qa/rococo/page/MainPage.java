@@ -90,13 +90,13 @@ public class MainPage extends BasePage<MainPage> {
 
   @Step("Проверка темной темы")
   public void checkDarkTheme(BufferedImage expected) {
-    header.clickSwitchIsWhiteTheme(false);
+    header.clickSwitchIsWhiteTheme(false, MainPage.class);
     root.shouldHave(ScreenshotConditions.image(expected));
   }
 
   @Step("Проверка светлой темы")
   public void checkLightTheme(BufferedImage expected) {
-    header.clickSwitchIsWhiteTheme(true);
+    header.clickSwitchIsWhiteTheme(true, MainPage.class);
     root.shouldHave(ScreenshotConditions.image(expected));
   }
 }
