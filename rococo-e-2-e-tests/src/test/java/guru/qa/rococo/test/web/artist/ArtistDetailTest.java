@@ -5,7 +5,7 @@ import guru.qa.rococo.jupiter.annotation.Content;
 import guru.qa.rococo.jupiter.annotation.ScreenShotTest;
 import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.jupiter.annotation.meta.WebTest;
-import guru.qa.rococo.model.TestContent;
+import guru.qa.rococo.model.ContentJson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,21 +19,21 @@ public class ArtistDetailTest {
   @ApiLogin
   @Content(artistCount = 1)
   @DisplayName("Авторизованный пользователь может открыть форму изменения художника")
-  void authorizedUserShouldCanOpenEditArtistPage(TestContent content) {
+  void authorizedUserShouldCanOpenEditArtistPage(ContentJson content) {
   }
 
 
   @Test
   @Content(artistCount = 1)
   @DisplayName("Когда у ходжника нет картин, на детальной странице отображается информация об отсутствии картин")
-  void whenArtistHasNotPaintingsThatShownEmptyPaintingsPage(TestContent content) {
+  void whenArtistHasNotPaintingsThatShownEmptyPaintingsPage(ContentJson content) {
   }
 
 
   @Test
   @Content(artistCount = 1, paintingCount = 10)
   @DisplayName("Пагинация списка картин на детальной странице художника работает")
-  void artistDetailsPaginationShouldWork(TestContent content) {
+  void artistDetailsPaginationShouldWork(ContentJson content) {
   }
 //ArtistDetailPage.url(artist.id()
 
@@ -43,6 +43,6 @@ public class ArtistDetailTest {
   @ApiLogin
   @Content(artistCount = 1)
   @DisplayName("Если пользователь создает карточку картины в форме, открытой через детальную информацию художника, то у художника отображается данная карточка в детальной")
-  void whenUserAddPaintingFromArtistDetailThanPaintingShouldShownAtArtistDetail(TestContent content, BufferedImage expected) {
+  void whenUserAddPaintingFromArtistDetailThanPaintingShouldShownAtArtistDetail(ContentJson content, BufferedImage expected) {
   }
 }

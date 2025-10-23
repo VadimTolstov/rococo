@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
+import guru.qa.rococo.page.component.NotFoundComponent;
 import guru.qa.rococo.page.component.SearchField;
 import guru.qa.rococo.page.detail.MuseumDetailPage;
 import guru.qa.rococo.page.form.MuseumForm;
@@ -31,6 +32,8 @@ public class MuseumPage extends BasePage<MuseumPage> {
   protected final Header header = new Header();
   @Getter
   protected final SearchField searchField = new SearchField();
+  @Getter
+  protected final NotFoundComponent notFoundComponent = new NotFoundComponent();
 
   @NonNull
   @Step("Проверяем, что загрузилась страница с музеями.")
@@ -68,8 +71,19 @@ public class MuseumPage extends BasePage<MuseumPage> {
 
   @NonNull
   @Step("Нажать на кнопку 'Добавить музей'.")
-  public MuseumForm clickAddPaintingButton() {
+  public MuseumForm clickAddMuseumButton() {
     addMuseumButton.shouldBe(visible).click();
     return new MuseumForm().checkThatComponentLoaded();
+  }
+
+  @Step("Проверяем, что у неавторизованного пользователя кнопка 'Добавить музей' не отображается.")
+  public void checkNoAddMuseumButton() {
+    addMuseumButton.shouldNot(exist);
+  }
+
+  @Step("Проверяем отображение текста, когда музей не найден")
+  public void checkMessageArtistNotFound() {
+    notFoundComponent.shouldShown("Музей не найдены",
+        "Для указанного вами фильтра мы не смогли найти музеи");
   }
 }

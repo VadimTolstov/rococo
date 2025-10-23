@@ -3,15 +3,15 @@ package guru.qa.rococo.jupiter.extension;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.jupiter.annotation.Artist;
 import guru.qa.rococo.jupiter.annotation.Content;
-import guru.qa.rococo.model.TestContent;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
-import guru.qa.rococo.service.api.ArtistApiClient;
 import guru.qa.rococo.service.ArtistClient;
+import guru.qa.rococo.service.api.ArtistApiClient;
 import guru.qa.rococo.utils.PhotoConverter;
 import guru.qa.rococo.utils.RandomDataUtils;
 import io.qameta.allure.Allure;
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public class ArtistExtension implements BeforeEachCallback, ParameterResolver {
+public class ArtistExtension implements BeforeEachCallback /*ParameterResolver*/ {
   private static final Config CFG = Config.getInstance();
   private final String IMAGE_DIR = "artists";
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ArtistExtension.class);
@@ -63,23 +63,24 @@ public class ArtistExtension implements BeforeEachCallback, ParameterResolver {
                 );
 
               }
-              final TestContent created = new TestContent(createdArtist, new ArrayList<>(), new ArrayList<>());
-              context.getStore(NAMESPACE).put(
-                  context.getUniqueId(),
-                  created);
+              ContentExtension.content().artists().addAll(createdArtist);
+//              final ContentJson created = new ContentJson(createdArtist, new ArrayList<>(), new ArrayList<>());
+//              context.getStore(NAMESPACE).put(
+//                  context.getUniqueId(),
+//                  created);
             }
           });
         });
   }
 
-  @Override
-  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return extensionContext.getRequiredTestMethod().isAnnotationPresent(Content.class) &&
-        parameterContext.getParameter().getType().isAssignableFrom(TestContent.class);
-  }
-
-  @Override
-  public TestContent resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), TestContent.class);
-  }
+//  @Override
+//  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+//    return extensionContext.getRequiredTestMethod().isAnnotationPresent(Content.class) &&
+//        parameterContext.getParameter().getType().isAssignableFrom(ContentJson.class);
+//  }
+//
+//  @Override
+//  public ContentJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+//    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), ContentJson.class);
+//  }
 }

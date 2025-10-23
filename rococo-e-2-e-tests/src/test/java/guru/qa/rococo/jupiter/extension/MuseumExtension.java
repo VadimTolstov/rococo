@@ -13,7 +13,8 @@ import guru.qa.rococo.service.api.MuseumApiClient;
 import guru.qa.rococo.utils.PhotoConverter;
 import guru.qa.rococo.utils.RandomDataUtils;
 import io.qameta.allure.Allure;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
-public class MuseumExtension implements BeforeEachCallback, ParameterResolver {
+public class MuseumExtension implements BeforeEachCallback /*ParameterResolver */ {
   private static final Config CFG = Config.getInstance();
   private final String IMAGE_DIR = "museums";
 
@@ -32,9 +33,9 @@ public class MuseumExtension implements BeforeEachCallback, ParameterResolver {
   public void beforeEach(ExtensionContext context) throws Exception {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
         .ifPresent(content -> {
-          Allure.step("Создаем художников перед тестом", () -> {
+          Allure.step("Музеи перед тестом", () -> {
             if (ArrayUtils.isNotEmpty(content.museums()) || content.museumCount() > 0) {
-              final List<MuseumJson> museums = new ArrayList<>();
+              final List<MuseumJson> createMuseums = new ArrayList<>();
 
               for (final Museum museumAnno : content.museums()) {
                 final MuseumJson museum = new MuseumJson(
@@ -54,25 +55,57 @@ public class MuseumExtension implements BeforeEachCallback, ParameterResolver {
                             : museumAnno.city(),
                         new CountryJson(
                             null,
-                            museumAnno.country() == Country.RUSSIA
-                                ? Country.RUSSIA.getCountry()
-                                : museumAnno.country().getCountry()
+                            museumAnno.country().getCountry()
                         )
                     )
                 );
+                createMuseums.add(museumClient.createMuseum(museum));
               }
+              for (int i = 0; i < content.museumCount(); i++) {
+                createMuseums.add(museumClient.createMuseum(
+                    new MuseumJson(
+                        null,
+                        RandomDataUtils.museum(),
+                        RandomDataUtils.shortBio(),
+                        RandomDataUtils.randomImageString(IMAGE_DIR),
+                        new GeoJson(
+                            RandomDataUtils.city(),
+                            new CountryJson(
+                                null,
+                                Country.RUSSIA.getCountry()
+                            )
+                        )
+                    )
+                ));
+              }
+              ContentExtension.content().museums().addAll(createMuseums);
+              //   setMuseum(createMuseums);
             }
           });
         });
   }
 
-  @Override
-  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return false;
-  }
 
-  @Override
-  public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-    return null;
-  }
+//  @Override
+//  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+//    return parameterContext.getParameter().getType().isAssignableFrom(MuseumJson[].class);
+//  }
+//
+//  @Override
+//  public MuseumJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+//    return getMuseum().toArray(MuseumJson[]::new);
+//  }
+//
+//  @Nonnull
+//  @SuppressWarnings("unchecked")
+//  public static List<MuseumJson> getMuseum() {
+//    final ExtensionContext context = TestsMethodContextExtension.context();
+//    return Optional.ofNullable(context.getStore(NAMESPACE).get(context.getUniqueId(), List.class))
+//        .orElse(Collections.emptyList());
+//  }
+//
+//  public static void setMuseum(List<MuseumJson> createMuseums) {
+//    final ExtensionContext context = TestsMethodContextExtension.context();
+//    context.getStore(NAMESPACE).put(context.getUniqueId(), createMuseums);
+//  }
 }

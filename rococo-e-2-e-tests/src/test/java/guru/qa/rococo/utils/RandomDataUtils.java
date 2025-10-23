@@ -18,11 +18,11 @@ public class RandomDataUtils {
   private static final Faker faker = new Faker();
 
   public static @Nonnull String randomUsername() {
-    return faker.name().username();
+    return faker.name().username() + " " + faker.name().firstName();
   }
 
   public static @Nonnull String randomArtistName() {
-    return faker.artist().name();
+    return faker.artist().name() + " " + faker.name().firstName();
   }
 
   public static @Nonnull String randomSurname() {
@@ -38,7 +38,7 @@ public class RandomDataUtils {
   }
 
   public static @Nonnull String museum() {
-    return faker.university().name() + " Museum";
+    return faker.university().name() + " " + city() + " Museum";
   }
 
   public static @Nonnull String randomSentence(int wordsCount) {

@@ -92,12 +92,11 @@ public class ArtistPage extends BasePage<ArtistPage> {
   }
 
   @Step("Проверяем работу пагинации")
-  public ArtistPage checkingThePagination() {
+  public void checkingThePagination() {
     artist.shouldBe(CollectionCondition.sizeGreaterThan(0), Duration.ofSeconds(10));
     final int initialSize = artist.size();
     scrollToElement(artist.get(artist.size() - 1));
     artist.shouldHave(sizeGreaterThan(initialSize), Duration.ofSeconds(10));
-    return this;
   }
 
   @Step("Проверяем отображение текста, когда художник не найден")
