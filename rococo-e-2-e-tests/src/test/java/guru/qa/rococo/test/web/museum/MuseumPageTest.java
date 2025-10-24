@@ -73,7 +73,7 @@ public class MuseumPageTest {
       museums = @Museum(photo = "/museums/wien-kunsthistorisches.png")
   )
   @ScreenShotTest(expected = "museum/wien-kunsthistorisches.png")
-  @DisplayName("Карточка художника отображаются на странице 'Художники'")
+  @DisplayName("Карточка музея отображаются на странице 'Музеи'")
   void museumShouldBeShown(BufferedImage image, ContentJson content) {
     final String museumName = content.museums().getFirst().title();
     Selenide.open(MuseumPage.URL, MuseumPage.class)
