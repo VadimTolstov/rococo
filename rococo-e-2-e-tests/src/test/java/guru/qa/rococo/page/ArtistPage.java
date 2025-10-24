@@ -6,6 +6,7 @@ import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
 import guru.qa.rococo.page.component.NotFoundComponent;
+import guru.qa.rococo.page.component.PaginationComponent;
 import guru.qa.rococo.page.component.SearchField;
 import guru.qa.rococo.page.detail.ArtistDetailPage;
 import guru.qa.rococo.page.form.ArtistForm;
@@ -37,6 +38,8 @@ public class ArtistPage extends BasePage<ArtistPage> {
   protected final SearchField searchField = new SearchField();
   @Getter
   protected final NotFoundComponent notFoundComponent = new NotFoundComponent();
+  @Getter
+  protected final PaginationComponent paginationComponent = new PaginationComponent();
 
   @NonNull
   @Step("Проверяем, что загрузилась страница с художниками.")
@@ -72,11 +75,9 @@ public class ArtistPage extends BasePage<ArtistPage> {
     return this;
   }
 
-  @NonNull
   @Step("Сравниваем изображение на странице 'Художники'.")
-  public ArtistPage checkImage(BufferedImage images, String artistName) {
+  public void checkImage(BufferedImage images, String artistName) {
     compareImage(pageContainer.$(Selectors.byText(artistName)).parent(), images);
-    return this;
   }
 
   @NonNull

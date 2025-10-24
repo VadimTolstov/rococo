@@ -78,7 +78,7 @@ public class MuseumExtension implements BeforeEachCallback /*ParameterResolver *
                     )
                 ));
               }
-              ContentExtension.content().museums().addAll(createMuseums);
+              ContentExtension.getContent().museums().addAll(createMuseums);
               //   setMuseum(createMuseums);
             }
           });

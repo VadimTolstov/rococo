@@ -84,14 +84,7 @@ public abstract class BasePage<T extends BasePage<?>> {
     return (T) this;
   }
 
-  @SuppressWarnings("unchecked")
-  @Step("Проскролить до выбранного элемента")
-  public T scrollToFooter() {
-    executeJavaScript("window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})");
-    return (T) this;
-  }
-
-//  @SuppressWarnings("unchecked")
+  //  @SuppressWarnings("unchecked")
 //  @Step("Проверить, что контент отображается и проскролить до него")
 //  public T visible() {
 //    self.shouldBe(visible, Duration.ofSeconds(10));

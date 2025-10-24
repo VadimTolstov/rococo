@@ -63,7 +63,7 @@ public class ArtistExtension implements BeforeEachCallback /*ParameterResolver*/
                 );
 
               }
-              ContentExtension.content().artists().addAll(createdArtist);
+              ContentExtension.getContent().artists().addAll(createdArtist);
 //              final ContentJson created = new ContentJson(createdArtist, new ArrayList<>(), new ArrayList<>());
 //              context.getStore(NAMESPACE).put(
 //                  context.getUniqueId(),

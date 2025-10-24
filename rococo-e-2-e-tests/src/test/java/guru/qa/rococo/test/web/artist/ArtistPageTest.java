@@ -63,6 +63,7 @@ public class ArtistPageTest {
   void paginateShouldWork() {
     Selenide.open(ArtistPage.URL, ArtistPage.class)
         .checkThatPageLoaded()
+        .getPaginationComponent()
         .checkingThePagination();
   }
 
