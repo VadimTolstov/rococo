@@ -6,6 +6,8 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.page.MuseumPage;
 import guru.qa.rococo.page.component.BaseComponent;
+import guru.qa.rococo.page.component.PaginationComponent;
+import guru.qa.rococo.page.detail.MuseumDetailPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
@@ -28,8 +30,10 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   private final ElementsCollection listCountry = self.$$("select[name='countryId'] option");
   private final SelenideElement inputCity = self.$("[name='city']");
 
+  final private PaginationComponent pageContainer = new PaginationComponent();
+
   @NonNull
-  @Step("Добавляем новый Музей.")
+  @Step("Добавляем новый Музей {museum}")
   public MuseumPage addMuseum(MuseumJson museum) {
     return checkThatComponentLoaded()
         .setTitle(museum.title())
@@ -37,7 +41,14 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
         .setCity(museum.geo().city())
         .setPhoto(museum.photo())
         .setDescription(museum.description())
-        .clickButtonAddPainting(MuseumPage.class);
+        .clickButtonAddMuseum(MuseumPage.class);
+  }
+
+  @NonNull
+  @Step("Редактируем все поля музея {museum}")
+  public MuseumDetailPage fullUpdateMuseum(MuseumJson museum) {
+    addMuseum(museum);
+    return new MuseumDetailPage().checkThatPageLoaded();
   }
 
   @NonNull
@@ -78,25 +89,22 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   @NonNull
   @Step("Выбираем страну {country}.")
   public MuseumForm setCountry(String country) {
-    listCountry.findBy(Condition.exactText(country))
-        .scrollIntoView(true)
-        .click();
+    pageContainer.scrollPagination(listCountry, country).click();
     return this;
   }
 
   @NonNull
   @Step("Нажимаем кнопку 'Добавить'.")
-  public <B> B clickButtonAddPainting(Class<B> clazz) {
+  public <T> T clickButtonAddMuseum(Class<T> tClass) {
     buttonSaveMuseum.click();
-    self.should(Condition.disappear);
-    return toPage(clazz);
+    return toPage(tClass);
   }
 
   @NonNull
   @Step("Нажимаем кнопку 'Закрыть'.")
-  public <B> B clickButtonCloseForm(Class<B> clazz) {
+  public <T> T clickButtonCloseForm(Class<T> tClass) {
     buttonCloseForm.click();
     self.should(Condition.disappear);
-    return toPage(clazz);
+    return toPage(tClass);
   }
 }

@@ -19,7 +19,7 @@ import static guru.qa.rococo.condition.ScreenshotConditions.image;
 public abstract class BasePage<T extends BasePage<?>> {
   protected static final Config CFG = Config.getInstance();
 
-  protected final SelenideElement alert = $("#page");
+  protected final SelenideElement alert = $("div.toast");
   protected final ElementsCollection errorListElement = $$(".form__error");
 
   public abstract T checkThatPageLoaded();
@@ -83,15 +83,4 @@ public abstract class BasePage<T extends BasePage<?>> {
     element.scrollIntoView(true);
     return (T) this;
   }
-
-  //  @SuppressWarnings("unchecked")
-//  @Step("Проверить, что контент отображается и проскролить до него")
-//  public T visible() {
-//    self.shouldBe(visible, Duration.ofSeconds(10));
-//    Selenide.executeJavaScript(
-//        "arguments[0].scrollIntoView({ block: 'center', inline: 'nearest' });",
-//        self.toWebElement()
-//    );
-//    return (T) this;
-//  }
 }

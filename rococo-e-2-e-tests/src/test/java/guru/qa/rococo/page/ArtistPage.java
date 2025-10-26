@@ -1,9 +1,6 @@
 package guru.qa.rococo.page;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selectors;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.*;
 import guru.qa.rococo.page.component.Header;
 import guru.qa.rococo.page.component.NotFoundComponent;
 import guru.qa.rococo.page.component.PaginationComponent;
@@ -108,6 +105,7 @@ public class ArtistPage extends BasePage<ArtistPage> {
 
   @Step("Проверяем, что при пустом списке художников отображается текст")
   public void checkMessageArtisEmpty() {
-    checkAlert("Пока что список художников пуст. Чтобы пополнить коллекцию, добавьте нового художника");
+    pageContainer.shouldHave(Condition.visible)
+        .shouldHave(Condition.text("Пока что список художников пуст. Чтобы пополнить коллекцию, добавьте нового художника"));
   }
 }

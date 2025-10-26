@@ -38,8 +38,9 @@ public class MuseumDetailPage extends BasePage<MuseumDetailPage> {
   }
 
   @Step("Проверяем полностью карточку Музея.")
-  public void checkDetailMuseum(MuseumJson museum) {
+  public MuseumDetailPage checkDetailMuseum(MuseumJson museum) {
     pageContainer.shouldHave(MuseumDetailCondition.hasPainting(museum));
+    return this;
   }
 
   @NonNull

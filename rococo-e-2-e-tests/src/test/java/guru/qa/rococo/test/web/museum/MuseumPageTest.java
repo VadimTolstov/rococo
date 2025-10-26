@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test;
 import java.awt.image.BufferedImage;
 
 @WebTest
+@DisplayName("Тесты на страницу музеи")
 public class MuseumPageTest {
 
   @Test
   @DisplayName("У неавторизованного пользователя нет кнопки  'Добавить музей")
-  void unauthorizedUserDoesNotHaveButtonAddArtist() {
+  void unauthorizedUserDoesNotHaveButtonAddMuseum() {
     Selenide.open(MuseumPage.URL, MuseumPage.class)
         .checkThatPageLoaded()
         .checkNoAddMuseumButton();
@@ -43,7 +44,7 @@ public class MuseumPageTest {
         .getSearchField()
         .searchThroughButton(RandomDataUtils.randomSurname())
         .toPage(MuseumPage.class)
-        .checkMessageArtistNotFound();
+        .checkMessageMuseumNotFound();
   }
 
   @Test

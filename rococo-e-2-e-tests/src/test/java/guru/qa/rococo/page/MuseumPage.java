@@ -92,13 +92,14 @@ public class MuseumPage extends BasePage<MuseumPage> {
   }
 
   @Step("Проверяем отображение текста, когда музей не найден")
-  public void checkMessageArtistNotFound() {
+  public void checkMessageMuseumNotFound() {
     notFoundComponent.shouldShown("Музеи не найдены",
         "Для указанного вами фильтра мы не смогли не найти ни одного музея");
   }
 
   @Step("Проверяем, что при пустом списке музеев отображается текст")
   public void checkMessageMuseumEmpty() {
-    checkAlert("Пока что список музеев пуст. Чтобы пополнить коллекцию, добавьте новый музей");
+    pageContainer.shouldHave(Condition.visible)
+        .shouldHave(Condition.text("Пока что список музеев пуст. Чтобы пополнить коллекцию, добавьте новый музей"));
   }
 }
