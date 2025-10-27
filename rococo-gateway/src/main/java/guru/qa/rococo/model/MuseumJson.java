@@ -2,6 +2,7 @@ package guru.qa.rococo.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import guru.qa.rococo.config.RococoGatewayServiceConfig;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,13 +21,14 @@ public record MuseumJson(
         @JsonProperty("title")
         String title,
 
-        @Size(min = 10, max = 2000, message = "Описание музея должно должно содержать от 3 до 2000 символов")
+        @Size(min = 10, max = 2000, message = "Описание музея должно должно содержать от 10 до 2000 символов")
         @NotBlank(message = "Описание музея обязательно для заполнения, не может быть пустым или состоять только из пробелов")
         @JsonProperty("description")
         String description,
 
-        @Pattern(regexp = "^data:image/.*", message = "photo: Фото должно начинаться с 'data:image/'")
-        @NotNull(message = "photo: Изображение музея обязательно для заполнения")
+        @Pattern(regexp = "^data:image/.*", message = "Изображение музея: Фото должно начинаться с 'data:image/'")
+        @NotNull(message = "Изображение музея: Изображение музея обязательно для заполнения")
+        @Size(max = RococoGatewayServiceConfig.ONE_MB, message = "Изображение музея: Размер фото не должен превышать 1MB")
         @JsonProperty("photo")
         String photo,
 

@@ -11,7 +11,7 @@ export const Errors = {
     DESCRIPTION_LENGTH_CONSTRAINT_MAX: "Описание не может быть длиннее 2000 символов",
     CITY_LENGTH_CONSTRAINT_MIN: "Город не может быть короче 3 символов",
     CITY_LENGTH_CONSTRAINT_MAX: "Город не может быть длиннее 255 символов",
-    IMAGE_CONSTRAINT_TOO_BIG: "Максимальный размер изображения 15 Mb",
+    IMAGE_CONSTRAINT_TOO_BIG: "Максимальный размер изображения 1 Mb",
     AUTHOR_CONTRAINT_NOT_EMPTY: "Укажите автора картины",
     COUNTRY_CONTRAINT_NOT_EMPTY: "Укажите страну нахождения музея",
 

@@ -16,10 +16,8 @@ import java.awt.image.BufferedImage;
 @DisplayName("Тесты на страницу с подробной информацией о музеи")
 public class MuseumDetailTest {
 
-  @Content(
-      museums = @Museum(photo = "/museums/wien-kunsthistorisches.png")
-  )
-  @ScreenShotTest(expected = "museum/museum-detail/wien-kunsthistorisches.png")
+  @Content(museums = @Museum(photo = "/museums/scale.jpeg"))
+  @ScreenShotTest(expected = "museum/museum-detail/scale.png")
   @DisplayName("В детальной информации о музее отображается изображение музея")
   void museumShouldBeShown(BufferedImage image, ContentJson content) {
     final MuseumJson museum = content.museums().getFirst();

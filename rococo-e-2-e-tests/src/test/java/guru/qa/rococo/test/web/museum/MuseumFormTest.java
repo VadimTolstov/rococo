@@ -28,16 +28,14 @@ public class MuseumFormTest {
 
   @User
   @ApiLogin
-  @ScreenShotTest(
-      expected = "museum/museum-detail/tyla.png"
-  )
+  @ScreenShotTest(expected = "museum/museum-detail/tyla.png")
   @DisplayName("Авторизованный пользователь может добавить музей")
   void authorizedUserShouldCanAddMuseum(BufferedImage image) {
     final MuseumJson museum = new MuseumJson(
         null,
         RandomDataUtils.museum(),
         RandomDataUtils.shortBio(),
-        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/tyla.png",
+        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/tyla.jpg",
         new GeoJson(
             RandomDataUtils.city(),
             new CountryJson(
@@ -69,7 +67,7 @@ public class MuseumFormTest {
         null,
         RandomDataUtils.museum(),
         RandomDataUtils.shortBio(),
-        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/tank-museum.png",
+        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/tank-museum.jpg",
         new GeoJson(
             RandomDataUtils.city(),
             new CountryJson(
@@ -107,13 +105,302 @@ public class MuseumFormTest {
         .checkThatPageLoaded()
         .clickAddMuseumButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomString.make(1))
+        .setTitle(RandomString.make(2))
         .setCountry(Country.random().getCountry())
         .setDescription(RandomDataUtils.shortBio())
         .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
         .setCity(RandomDataUtils.city())
         .clickButtonAddMuseum(MuseumForm.class)
         .assertTitleRequired("Название не может быть короче 3 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 3 символами в поле 'Название музея'")
+  void titleShouldBeMinLength() {
+    final String museumTitle = RandomString.make(3);
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumTitle)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumTitle);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 255 символами в поле 'Название музея'")
+  void titleShouldBeMaxLength() {
+    final String museumTitle = RandomString.make(255);
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumTitle)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumTitle);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Название музея - не может быть длине 255 символов")
+  void titleShouldBeNotLong() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomString.make(256))
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Название не может быть длиннее 255 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 3 символами в поле 'Укажите город'")
+  void citiShouldBeMinLength() {
+    final String museumTitle = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumTitle)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomString.make(3))
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumTitle);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Название города - не может быть короче 3 символов")
+  void citiShouldBeRequired() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomString.make(2))
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Город не может быть короче 3 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 255 символами в поле 'Укажите город'")
+  void citiShouldBeMaxLength() {
+    final String museumTitle = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumTitle)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomString.make(255))
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumTitle);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Название города - не может быть длине 255 символов")
+  void citiShouldBeNotLong() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomString.make(256))
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Город не может быть длиннее 255 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("О музее - не может быть короче 10 символов")
+  void descriptionShouldBeRequired() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomString.make(9))
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Описание не может быть короче 10 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 10 символами в поле 'О музее'")
+  void descriptionShouldBeMinLength() {
+    final String museumName = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumName)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomString.make(10))
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumName);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("О музее - не может быть длине 2000 символов")
+  void descriptionShouldBeNotLong() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomString.make(2001))
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Описание не может быть длиннее 2000 символов");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей создается с 2000 символами в поле 'О музее'")
+  void descriptionShouldBeBigLength() {
+    final String museumName = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumName)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomString.make(2000))
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Добавлен музей: " + museumName);
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Страна - обязательна для добавления музея")
+  void countryRequiredToAddMuseum() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .checkThatComponentLoaded();
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Изображение музея - обязательна для добавления музея")
+  void photoRequiredToAddMuseum() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(RandomDataUtils.museum())
+        .setDescription(RandomDataUtils.shortBio())
+        .setCountry(Country.random().getCountry())
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .checkThatComponentLoaded();
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Пользователь может закрыть форму создания музея без добавления музея")
+  void userCanCloseTheMuseumCreationForm() {
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .clickButtonCloseForm(MuseumPage.class)
+        .checkThatPageLoaded();
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Изображение музея - загрузка файла невалидного формата")
+  void uploadingAnInvalidFileFormat() {
+    final String museumName = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumName)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(Config.getInstance().imageContentBaseDir() + "/error-file.torrent")
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumPage.class)
+        .checkAlert("Изображение музея: Фото должно начинаться с 'data:image/'");
+  }
+
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("При загрузке файла больше 1МБ отображается ошибка")
+  void oversizeImageShouldBeValidated() {
+    final String museumName = RandomDataUtils.museum();
+    Selenide.open(MuseumPage.URL, MuseumPage.class)
+        .checkThatPageLoaded()
+        .clickAddMuseumButton()
+        .checkThatComponentLoaded()
+        .setTitle(museumName)
+        .setCountry(Country.random().getCountry())
+        .setDescription(RandomDataUtils.shortBio())
+        .setPhoto(Config.getInstance().imageContentBaseDir() + "/oversize.png")
+        .setCity(RandomDataUtils.city())
+        .clickButtonAddMuseum(MuseumForm.class)
+        .assertTitleRequired("Максимальный размер изображения 1 Mb");
   }
 }
 

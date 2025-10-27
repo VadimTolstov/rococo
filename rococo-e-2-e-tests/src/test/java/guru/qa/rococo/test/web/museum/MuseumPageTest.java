@@ -70,10 +70,8 @@ public class MuseumPageTest {
         .checkingThePagination();
   }
 
-  @Content(
-      museums = @Museum(photo = "/museums/wien-kunsthistorisches.png")
-  )
-  @ScreenShotTest(expected = "museum/wien-kunsthistorisches.png")
+  @Content(museums = @Museum(photo = "/museums/scale.jpeg"))
+  @ScreenShotTest(expected = "museum/scale.png")
   @DisplayName("Карточка музея отображаются на странице 'Музеи'")
   void museumShouldBeShown(BufferedImage image, ContentJson content) {
     final String museumName = content.museums().getFirst().title();
