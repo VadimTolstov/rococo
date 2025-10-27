@@ -22,7 +22,7 @@ import java.util.List;
 public class ArtistExtension implements BeforeEachCallback /*ParameterResolver*/ {
   private static final Config CFG = Config.getInstance();
   private final String IMAGE_DIR = "artists";
-  public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ArtistExtension.class);
+
   private final ArtistClient artistClient = new ArtistApiClient();
 
   @Override
@@ -64,23 +64,8 @@ public class ArtistExtension implements BeforeEachCallback /*ParameterResolver*/
 
               }
               ContentExtension.getContent().artists().addAll(createdArtist);
-//              final ContentJson created = new ContentJson(createdArtist, new ArrayList<>(), new ArrayList<>());
-//              context.getStore(NAMESPACE).put(
-//                  context.getUniqueId(),
-//                  created);
             }
           });
         });
   }
-
-//  @Override
-//  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-//    return extensionContext.getRequiredTestMethod().isAnnotationPresent(Content.class) &&
-//        parameterContext.getParameter().getType().isAssignableFrom(ContentJson.class);
-//  }
-//
-//  @Override
-//  public ContentJson resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-//    return extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), ContentJson.class);
-//  }
 }

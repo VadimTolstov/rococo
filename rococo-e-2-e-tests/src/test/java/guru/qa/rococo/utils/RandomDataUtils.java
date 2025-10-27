@@ -41,6 +41,10 @@ public class RandomDataUtils {
     return faker.university().name() + " " + city() + " Museum";
   }
 
+  public static @Nonnull String painting() {
+    return faker.book().title() + " " + faker.weather().description();
+  }
+
   public static @Nonnull String randomSentence(int wordsCount) {
     if (wordsCount <= 0) {
       throw new IllegalArgumentException("Words count must be greater than zero");

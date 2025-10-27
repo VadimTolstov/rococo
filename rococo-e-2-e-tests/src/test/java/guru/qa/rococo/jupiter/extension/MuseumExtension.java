@@ -26,18 +26,17 @@ public class MuseumExtension implements BeforeEachCallback /*ParameterResolver *
   private static final Config CFG = Config.getInstance();
   private final String IMAGE_DIR = "museums";
 
-  public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(MuseumExtension.class);
   private final MuseumClient museumClient = new MuseumApiClient();
 
   @Override
   public void beforeEach(ExtensionContext context) throws Exception {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
         .ifPresent(content -> {
-          Allure.step("Музеи перед тестом", () -> {
+          Allure.step("Создание музеев перед тестами", () -> {
             if (ArrayUtils.isNotEmpty(content.museums()) || content.museumCount() > 0) {
               final List<MuseumJson> createMuseums = new ArrayList<>();
 
-              for (final Museum museumAnno : content.museums()) {
+              for (Museum museumAnno : content.museums()) {
                 final MuseumJson museum = new MuseumJson(
                     null,
                     "".equals(museumAnno.title())
@@ -79,33 +78,8 @@ public class MuseumExtension implements BeforeEachCallback /*ParameterResolver *
                 ));
               }
               ContentExtension.getContent().museums().addAll(createMuseums);
-              //   setMuseum(createMuseums);
             }
           });
         });
   }
-
-
-//  @Override
-//  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-//    return parameterContext.getParameter().getType().isAssignableFrom(MuseumJson[].class);
-//  }
-//
-//  @Override
-//  public MuseumJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-//    return getMuseum().toArray(MuseumJson[]::new);
-//  }
-//
-//  @Nonnull
-//  @SuppressWarnings("unchecked")
-//  public static List<MuseumJson> getMuseum() {
-//    final ExtensionContext context = TestsMethodContextExtension.context();
-//    return Optional.ofNullable(context.getStore(NAMESPACE).get(context.getUniqueId(), List.class))
-//        .orElse(Collections.emptyList());
-//  }
-//
-//  public static void setMuseum(List<MuseumJson> createMuseums) {
-//    final ExtensionContext context = TestsMethodContextExtension.context();
-//    context.getStore(NAMESPACE).put(context.getUniqueId(), createMuseums);
-//  }
 }
