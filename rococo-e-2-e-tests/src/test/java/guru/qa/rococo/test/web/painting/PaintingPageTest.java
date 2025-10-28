@@ -1,10 +1,11 @@
-package guru.qa.rococo.test.web.museum;
+package guru.qa.rococo.test.web.painting;
 
 import com.codeborne.selenide.Selenide;
 import guru.qa.rococo.jupiter.annotation.*;
 import guru.qa.rococo.jupiter.annotation.meta.WebTest;
 import guru.qa.rococo.model.ContentJson;
 import guru.qa.rococo.page.MuseumPage;
+import guru.qa.rococo.page.PaintingPage;
 import guru.qa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,59 +14,59 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 @WebTest
-@DisplayName("Тесты на страницу музеи")
-public class MuseumPageTest {
+@DisplayName("Тесты на страницу с картинами")
+public class PaintingPageTest {
 
   @Test
-  @DisplayName("У неавторизованного пользователя нет кнопки  'Добавить музей")
+  @DisplayName("У неавторизованного пользователя нет кнопки 'Добавить картину")
   void unauthorizedUserDoesNotHaveButtonAddMuseum() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .checkNoAddMuseumButton();
+        .checkNoAddPaintingButton();
   }
 
   @Content(
-      museumCount = 10
+      paintingCount = 10
   )
   @Test
-  @DisplayName("Найти музей через поиск и перейти в его описание")
+  @DisplayName("Найти картину через поиск и перейти в его описание")
   void searchShouldWorkAndOpenDetail(ContentJson content) {
-    final String museum = new ArrayList<>(content.museums()).getFirst().title();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    final String painting = new ArrayList<>(content.paintings()).getFirst().title();
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .searchAndOpenPainting(museum)
+        .searchAndOpenPainting(painting)
         .checkThatPageLoaded();
   }
 
   @Test
-  @DisplayName("Если музей не найдена, отображается соответсвующий текст")
+  @DisplayName("Если картина не найдена, отображается соответсвующий текст")
   void museumNotFoundTest() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
         .getSearchField()
         .searchThroughButton(RandomDataUtils.randomSurname())
-        .toPage(MuseumPage.class)
-        .checkMessageMuseumNotFound();
+        .toPage(PaintingPage.class)
+        .checkMessagePaintingNotFound();
   }
 
   @Test
   @User
   @ApiLogin
-  @DisplayName("Авторизованный пользователь имеет возможность открыть форму создания музея")
-  void authorizedUserShouldCanOpenAddMuseumForm() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Авторизованный пользователь имеет возможность открыть форму создания картины")
+  void authorizedUserShouldCanOpenAddPaintingForm() {
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded();
   }
 
   @Content(
-      museumCount = 20
+      paintingCount = 20
   )
   @Test
-  @DisplayName("Проверка пагинации на странице 'Музеи'")
+  @DisplayName("Проверка пагинации на странице 'Картины'")
   void paginateShouldWork() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
         .getPaginationComponent()
         .checkingThePagination();

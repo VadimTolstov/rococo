@@ -19,6 +19,7 @@ import java.lang.annotation.Target;
     ContentExtension.class,
     ArtistExtension.class,
     MuseumExtension.class,
+    PaintingExtension.class,
     ScreenShotTestExtension.class
     })
 public @interface WebTest {

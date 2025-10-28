@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ContentExtension implements BeforeEachCallback, ParameterResolver {
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ContentExtension.class);
@@ -15,9 +16,9 @@ public class ContentExtension implements BeforeEachCallback, ParameterResolver {
     AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Content.class)
         .ifPresent(content -> {
           setContent(new ContentJson(
-              new ArrayList<>(),
-              new ArrayList<>(),
-              new ArrayList<>()
+              new HashSet<>(),
+              new HashSet<>(),
+              new HashSet<>()
           ));
         });
   }

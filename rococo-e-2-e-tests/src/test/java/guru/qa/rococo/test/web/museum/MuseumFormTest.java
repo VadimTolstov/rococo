@@ -18,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 @WebTest
 @DisplayName("Тесты на форму создания/редактирования музея")
@@ -62,7 +63,7 @@ public class MuseumFormTest {
   @ScreenShotTest(expected = "museum/museum-detail/tank-museum.png")
   @DisplayName("Авторизованный пользователь может редактировать музей")
   void authorizedUserShouldCanEditMuseum(ContentJson content, BufferedImage expected) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     final MuseumJson newMuseum = new MuseumJson(
         null,
         RandomDataUtils.museum(),
@@ -90,7 +91,7 @@ public class MuseumFormTest {
   @Test
   @DisplayName("У неавторизованного пользователя нет кнопки 'Редактировать'")
   void unauthorizedUserDoesNotHaveButtonUpdateMuseum(ContentJson content) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
         .checkNoUpdateMuseumButton();

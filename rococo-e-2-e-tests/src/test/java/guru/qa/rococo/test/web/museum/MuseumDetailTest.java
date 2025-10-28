@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 @WebTest
 @DisplayName("Тесты на страницу с подробной информацией о музеи")
@@ -20,7 +21,7 @@ public class MuseumDetailTest {
   @ScreenShotTest(expected = "museum/museum-detail/scale.png")
   @DisplayName("В детальной информации о музее отображается изображение музея")
   void museumShouldBeShown(BufferedImage image, ContentJson content) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
         .checkImage(image);
@@ -32,7 +33,7 @@ public class MuseumDetailTest {
   @Step("Подробная информацию о музее отображается")
   @Test
   public void detailedInformationAboutMuseumIsDisplayed(ContentJson content) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
         .checkDetailMuseum(museum);
@@ -46,7 +47,7 @@ public class MuseumDetailTest {
   )
   @DisplayName("Авторизованный пользователь имеет возможность открыть форму редактирования")
   void authorizedUserShouldCanOpenAddArtistForm(ContentJson content) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
         .clickEdit()
@@ -59,7 +60,7 @@ public class MuseumDetailTest {
   @Test
   @DisplayName("У неавторизованного пользователя нет кнопки  'Редактировать'")
   void unauthorizedUserDoesNotHaveButtonAddArtist(ContentJson content) {
-    final MuseumJson museum = content.museums().getFirst();
+    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
         .checkNoUpdateMuseumButton();

@@ -4,6 +4,8 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
+import guru.qa.rococo.page.component.NotFoundComponent;
+import guru.qa.rococo.page.component.PaginationComponent;
 import guru.qa.rococo.page.component.SearchField;
 import guru.qa.rococo.page.detail.PaintingDetailPage;
 import guru.qa.rococo.page.form.PaintingForm;
@@ -30,6 +32,10 @@ public class PaintingPage extends BasePage<PaintingPage> {
   protected final Header header = new Header();
   @Getter
   protected final SearchField searchField = new SearchField();
+  @Getter
+  protected NotFoundComponent notFoundComponent = new NotFoundComponent();
+  @Getter
+  protected final PaginationComponent paginationComponent = new PaginationComponent();
 
   @NonNull
   @Step("Проверяем, что загрузилась страница с картинами.")
@@ -70,5 +76,16 @@ public class PaintingPage extends BasePage<PaintingPage> {
   public PaintingForm clickAddPaintingButton() {
     addPaintingButton.shouldBe(visible).click();
     return new PaintingForm().checkThatComponentLoaded();
+  }
+
+  @Step("Проверяем, что у неавторизованного пользователя кнопка 'Добавить катину' не отображается.")
+  public void checkNoAddPaintingButton() {
+    addPaintingButton.shouldNot(exist);
+  }
+
+  @Step("Проверяем отображение текста, когда картина не найден")
+  public void checkMessagePaintingNotFound() {
+    notFoundComponent.shouldShown("Картины не найдены",
+        "Для указанного вами фильтра мы не смогли не найти ни одной картины");
   }
 }

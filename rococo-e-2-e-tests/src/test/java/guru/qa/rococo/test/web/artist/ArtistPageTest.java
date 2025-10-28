@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 @WebTest
 @ParametersAreNonnullByDefault
@@ -31,7 +32,7 @@ public class ArtistPageTest {
   @ScreenShotTest(expected = "artist/vangog.png")
   @DisplayName("Карточка художника отображаются на странице 'Художники'")
   void artistShouldBeShown(BufferedImage image, ContentJson content) {
-    final String artistName = content.artists().getFirst().name();
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
     Selenide.open(ArtistPage.URL, ArtistPage.class)
         .checkThatPageLoaded()
         .getHeader()
@@ -48,7 +49,7 @@ public class ArtistPageTest {
   @Test
   @DisplayName("Найти художника через поиск и перейти в его описание")
   void searchShouldWorkAndOpenDetail(ContentJson content) {
-    final String artistName = content.artists().getFirst().name();
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
     Selenide.open(ArtistPage.URL, ArtistPage.class)
         .checkThatPageLoaded()
         .searchAndOpenPainting(artistName)

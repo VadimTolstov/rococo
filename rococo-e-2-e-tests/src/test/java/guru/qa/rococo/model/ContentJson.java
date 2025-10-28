@@ -6,11 +6,12 @@ import guru.qa.rococo.model.rest.painting.PaintingJson;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Set;
 
 public record ContentJson(
-    @Nonnull List<ArtistJson> artists,
-    @Nonnull List<MuseumJson> museums,
-    @Nonnull List<PaintingJson> paintings
+    @Nonnull Set<ArtistJson> artists,
+    @Nonnull Set<MuseumJson> museums,
+    @Nonnull Set<PaintingJson> paintings
 ) {
 
 }
