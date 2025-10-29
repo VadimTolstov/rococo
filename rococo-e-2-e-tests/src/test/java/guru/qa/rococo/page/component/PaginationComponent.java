@@ -54,7 +54,7 @@ public class PaginationComponent extends BaseComponent<PaginationComponent> {
     int collectionSize;
     int previousSize = 0;
 
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 250; i++) {
       collectionSize = elementsCollection.size();
 
 //      // Проверяем, не достигли ли мы конца списка

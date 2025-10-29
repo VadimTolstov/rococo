@@ -79,7 +79,7 @@ public class AuthApiClient implements AuthClient, RequestExecutor {
         while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
             try {
                 UserJson userJson = userdataApiClient.getUser(username);
-                if (userJson != null || userJson.id() != null) {
+                if (userJson != null && userJson.id() != null) {
                     return userJson; // Пользователь найден, возвращаем
                 } else {
                     Thread.sleep(100); // Ожидаем перед следующей проверкой

@@ -6,7 +6,6 @@ import guru.qa.rococo.jupiter.annotation.meta.WebTest;
 import guru.qa.rococo.model.ContentJson;
 import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.page.detail.MuseumDetailPage;
-import io.qameta.allure.Step;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +29,8 @@ public class MuseumDetailTest {
   @Content(
       museumCount = 1
   )
-  @Step("Подробная информацию о музее отображается")
   @Test
+  @DisplayName("Подробная информацию о музее отображается")
   public void detailedInformationAboutMuseumIsDisplayed(ContentJson content) {
     final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
@@ -46,7 +45,7 @@ public class MuseumDetailTest {
       museumCount = 1
   )
   @DisplayName("Авторизованный пользователь имеет возможность открыть форму редактирования")
-  void authorizedUserShouldCanOpenAddArtistForm(ContentJson content) {
+  void authorizedUserShouldCanOpenAddPaintingForm(ContentJson content) {
     final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()
@@ -59,7 +58,7 @@ public class MuseumDetailTest {
   )
   @Test
   @DisplayName("У неавторизованного пользователя нет кнопки  'Редактировать'")
-  void unauthorizedUserDoesNotHaveButtonAddArtist(ContentJson content) {
+  void unauthorizedUserDoesNotHaveButtonAddMuseum(ContentJson content) {
     final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
     Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
         .checkThatPageLoaded()

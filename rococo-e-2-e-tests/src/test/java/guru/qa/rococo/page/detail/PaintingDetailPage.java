@@ -11,11 +11,13 @@ import lombok.NonNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 @ParametersAreNonnullByDefault
 public class PaintingDetailPage extends BasePage<PaintingDetailPage> {
+  public static final String URL = CFG.frontUrl() + "painting/";
 
   private final SelenideElement pageContainer = $("#appShell");
   private final SelenideElement imagePainting = pageContainer.$("#page-content");
@@ -44,10 +46,16 @@ public class PaintingDetailPage extends BasePage<PaintingDetailPage> {
     return this;
   }
 
+
   @NonNull
   @Step("Нажать на кнопку 'Редактировать'")
   public PaintingForm clickEdit() {
     buttonEdit.shouldBe(visible).click();
     return new PaintingForm().checkThatComponentLoaded();
+  }
+
+  @Step("Проверяем, что у неавторизованного пользователя кнопка 'Редактировать' не отображается.")
+  public void checkNoUpdatePaintingButton() {
+    buttonEdit.shouldNot(exist);
   }
 }

@@ -6,6 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.page.PaintingPage;
 import guru.qa.rococo.page.component.BaseComponent;
+import guru.qa.rococo.page.component.PaginationComponent;
 import guru.qa.rococo.page.detail.ArtistDetailPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
@@ -28,6 +29,9 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
   private final SelenideElement buttonCloseForm = self.$("[type='button']");
   private final ElementsCollection listArtist = self.$$("select[name='authorId'] option");
   private final ElementsCollection listMuseum = self.$$("select[name='museumId'] option");
+
+
+  final private PaginationComponent pageContainer = new PaginationComponent();
 
   @NonNull
   @Step("Добавляем новую картину.")
@@ -76,9 +80,7 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
   @NonNull
   @Step("Выбираем автора {artist}.")
   public PaintingForm setArtist(String artist) {
-    listArtist.findBy(Condition.exactText(artist))
-        .scrollIntoView(true)
-        .click();
+    pageContainer.scrollPagination(listArtist, artist).click();
     return this;
   }
 
@@ -92,9 +94,7 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
   @NonNull
   @Step("Выбираем музей {museum}.")
   public PaintingForm setMuseum(String museum) {
-    listMuseum.findBy(Condition.exactText(museum))
-        .scrollIntoView(true)
-        .click();
+    pageContainer.scrollPagination(listMuseum, museum).click();
     return this;
   }
 

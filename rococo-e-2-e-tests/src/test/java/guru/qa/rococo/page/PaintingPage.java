@@ -2,6 +2,7 @@ package guru.qa.rococo.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.page.component.Header;
 import guru.qa.rococo.page.component.NotFoundComponent;
@@ -71,6 +72,11 @@ public class PaintingPage extends BasePage<PaintingPage> {
     return this;
   }
 
+  @Step("Сравниваем изображение на странице 'Картины'.")
+  public void checkImage(BufferedImage images, String paintingName) {
+    compareImage(pageContainer.$(Selectors.byText(paintingName)).parent(), images);
+  }
+
   @NonNull
   @Step("Нажать на кнопку 'Добавить картину'.")
   public PaintingForm clickAddPaintingButton() {
@@ -87,5 +93,11 @@ public class PaintingPage extends BasePage<PaintingPage> {
   public void checkMessagePaintingNotFound() {
     notFoundComponent.shouldShown("Картины не найдены",
         "Для указанного вами фильтра мы не смогли не найти ни одной картины");
+  }
+
+  @Step("Проверяем, что при пустом списке картин отображается текст")
+  public void checkMessagePaintingEmpty() {
+    pageContainer.shouldHave(Condition.visible)
+        .shouldHave(Condition.text("Пока что список картин пуст. Чтобы пополнить коллекцию, добавьте новую картину"));
   }
 }

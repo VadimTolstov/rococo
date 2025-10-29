@@ -4,7 +4,6 @@ import com.codeborne.selenide.Selenide;
 import guru.qa.rococo.jupiter.annotation.*;
 import guru.qa.rococo.jupiter.annotation.meta.WebTest;
 import guru.qa.rococo.model.ContentJson;
-import guru.qa.rococo.page.MuseumPage;
 import guru.qa.rococo.page.PaintingPage;
 import guru.qa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -72,26 +71,26 @@ public class PaintingPageTest {
         .checkingThePagination();
   }
 
-  @Content(museums = @Museum(photo = "/museums/scale.jpeg"))
-  @ScreenShotTest(expected = "museum/scale.png")
-  @DisplayName("Карточка музея отображаются на странице 'Музеи'")
-  void museumShouldBeShown(BufferedImage image, ContentJson content) {
-    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @Content(paintings = @Painting(content = "/paintings/cossacs.png"))
+  @ScreenShotTest(expected = "painting/cossacs.png")
+  @DisplayName("Карточка картины отображаются на странице 'Картины'")
+  void paintingShouldBeShown(BufferedImage image, ContentJson content) {
+    final String paintingName = new ArrayList<>(content.paintings()).getFirst().title();
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
         .getHeader()
-        .clickSwitchIsWhiteTheme(false, MuseumPage.class)
+        .clickSwitchIsWhiteTheme(false, PaintingPage.class)
         .getSearchField()
-        .searchThroughEnter(museumName)
-        .toPage(MuseumPage.class)
-        .checkImage(image, museumName);
+        .searchThroughEnter(paintingName)
+        .toPage(PaintingPage.class)
+        .checkImage(image, paintingName);
   }
 
   @Test
-  @DisplayName("Проверяем отображения текста, когда список музеев пуст")
+  @DisplayName("Проверяем отображения текста, когда список картин пуст")
   void checkMessageArtisEmpty() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .checkMessageMuseumEmpty();
+        .checkMessagePaintingEmpty();
   }
 }

@@ -14,7 +14,7 @@ public interface ArtistApi {
     @GET("/internal/artist/{id}")
     Call<ArtistJson> getArtist(@NonNull @Path("id") UUID id);
 
-    @GET
+    @GET("/internal/artist")
     Call<RestResponsePage<ArtistJson>> getArtists(
             @Query("name") @Nullable String name,
             @Query("page") @Nullable Integer page,
