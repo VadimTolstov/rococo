@@ -56,10 +56,14 @@ public class HeaderTest {
     ;
   }
 
-  //todo добавить тест когда будет реализован полноценный @User с аватаром
-  @ScreenShotTest(expected = "profile/avatar-template-small.png1", rewriteExpected = true)
+  @User(avatar = "avatar.jpg")
+  @ApiLogin
+  @ScreenShotTest(expected = "profile/avatar-template.png")
   @DisplayName("У пользователя с аватаром аватар должен отображаться в шапке")
   void avatarShouldBeShown(BufferedImage expected) {
+    Selenide.open(MainPage.URL, MainPage.class)
+        .getHeader()
+        .checkImgAvatar(expected);
   }
 
   @Test

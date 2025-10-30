@@ -12,7 +12,6 @@ import guru.qa.rococo.model.rest.museum.GeoJson;
 import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.page.MainPage;
-import guru.qa.rococo.page.PaintingPage;
 import guru.qa.rococo.service.api.PaintingApiClient;
 import org.junit.jupiter.api.Test;
 
@@ -68,10 +67,10 @@ public class MainTest {
     Selenide.open(MainPage.URL, MainPage.class)
         .clickArtistsLink()
         .openDetailPage(artist.name())
-        .checkDetailPainting(artist);
+        .checkDetailsArtist(artist);
   }
-
-  @ApiLogin(password = "12345", username = "test")
+@User
+  @ApiLogin()
   @Test
   public void museumTest() {
     MuseumJson museumJson = new MuseumJson(

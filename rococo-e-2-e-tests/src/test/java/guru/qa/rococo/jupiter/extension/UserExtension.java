@@ -1,11 +1,13 @@
 package guru.qa.rococo.jupiter.extension;
 
+import guru.qa.rococo.config.Config;
 import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.service.AuthClient;
 import guru.qa.rococo.service.UserdataClient;
 import guru.qa.rococo.service.api.AuthApiClient;
 import guru.qa.rococo.service.api.UserdataApiClient;
+import guru.qa.rococo.utils.PhotoConverter;
 import guru.qa.rococo.utils.RandomDataUtils;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
@@ -18,6 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 public class UserExtension implements BeforeEachCallback, ParameterResolver {
+  private static final Config CFG = Config.getInstance();
 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(UserExtension.class);
 
@@ -51,12 +54,12 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                 needToUpdate = true;
               }
               if (!StringUtils.isBlank(userAnno.avatar())) {
-                userBuilder.avatar(userAnno.avatar());
+                userBuilder.avatar(PhotoConverter.loadImageAsString(CFG.imageContentBaseDir() + userAnno.avatar()));
                 needToUpdate = true;
               }
 
               if (needToUpdate) {
-                user = userdataClient.updateUser(userBuilder.build());
+                user = userdataClient.updateUser(userBuilder.build()).withPassword(password);
               }
 
               setUser(user);
