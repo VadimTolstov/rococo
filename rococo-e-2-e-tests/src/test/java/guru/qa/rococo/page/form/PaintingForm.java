@@ -8,6 +8,7 @@ import guru.qa.rococo.page.PaintingPage;
 import guru.qa.rococo.page.component.BaseComponent;
 import guru.qa.rococo.page.component.PaginationComponent;
 import guru.qa.rococo.page.detail.ArtistDetailPage;
+import guru.qa.rococo.page.detail.PaintingDetailPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
@@ -43,6 +44,13 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
         .setDescription(painting.description())
         .setMuseum(painting.museum().title())
         .clickButtonAddPainting(PaintingPage.class);
+  }
+
+  @NonNull
+  @Step("Редактируем все поля музея {museum}")
+  public PaintingDetailPage fullUpdatePainting(PaintingJson painting) {
+    addPainting(painting);
+    return new PaintingDetailPage().checkThatPageLoaded();
   }
 
   @NonNull
@@ -102,7 +110,6 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
   @Step("Нажимаем кнопку 'Добавить'.")
   public <B> B clickButtonAddPainting(Class<B> clazz) {
     buttonSavePainting.click();
-    self.should(Condition.disappear);
     return toPage(clazz);
   }
 

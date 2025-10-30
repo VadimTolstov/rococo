@@ -24,12 +24,12 @@ public record PaintingJson(
         @JsonProperty("title")
         String title,
 
-        @Size(min = 11, max = 2000, message = "description: Описание должно содержать от 11 до 2000 символов")
+        @Size(min = 10, max = 2000, message = "description: Описание должно содержать от 10 до 2000 символов")
         @NotBlank(message = "description: Описание обязательно для заполнения, не может быть пустой или состоять только из пробелов")
         @JsonProperty("description")
         String description,
 
-        @Pattern(regexp = "^data:image/.*", message = "photo: Фото должно начинаться с 'data:image/'")
+        @Pattern(regexp = "^data:image/.*", message = "content: Изображение картины должно начинаться с 'data:image/'")
         @NotNull(message = "content: Фото обязательно для заполнения")
         @Size(max = RococoGatewayServiceConfig.ONE_MB, message = "content: Размер фото не должен превышать 1MB")
         @JsonProperty("content")

@@ -27,40 +27,16 @@ public class PaginationComponent extends BaseComponent<PaginationComponent> {
     gridList.shouldHave(sizeGreaterThan(initialSize), Duration.ofSeconds(10));
   }
 
-//  @Step("Ищем элемент в пагинации по названию {optionText}")
-//  public SelenideElement scrollPagination(ElementsCollection elementsCollection, String optionText) {
-//    elementsCollection.shouldBe(CollectionCondition.sizeGreaterThan(0), Duration.ofSeconds(10));
-//    int collectionSize;
-//    for (int i = 0; i < 10; i++) {
-//      collectionSize = elementsCollection.size();
-//      var targetOption = elementsCollection
-//          .stream()
-//          .filter(element ->
-//              StringUtils.equalsAnyIgnoreCase(optionText, element.getText()))
-//          .findFirst();
-//      if (targetOption.isPresent()) {
-//        return targetOption.get();
-//
-//      }
-//      elementsCollection.last().scrollIntoView(true);
-//      elementsCollection.shouldBe(CollectionCondition.sizeGreaterThan(collectionSize), Duration.ofSeconds(10));
-//    }
-//    throw new AssertionError("Элемент не найдена: " + optionText);
-//  }
 
   @Step("Ищем элемент в пагинации по названию {optionText}")
   public SelenideElement scrollPagination(ElementsCollection elementsCollection, String optionText) {
     elementsCollection.shouldBe(CollectionCondition.sizeGreaterThan(0), Duration.ofSeconds(10));
     int collectionSize;
-    int previousSize = 0;
 
-    for (int i = 0; i < 250; i++) {
+    for (int i = 0; i < 15; i++) {
       collectionSize = elementsCollection.size();
 
-//      // Проверяем, не достигли ли мы конца списка
-//      if (collectionSize == previousSize) {
-//        break;
-//      }
+
       var targetOption = elementsCollection
           .stream()
           .filter(element ->
@@ -70,29 +46,14 @@ public class PaginationComponent extends BaseComponent<PaginationComponent> {
       if (targetOption.isPresent()) {
         return targetOption.get();
       }
-      // Сохраняем текущий размер для следующей итерации
-      previousSize = collectionSize;
 
       elementsCollection.last().scrollIntoView(true);
 
-      // Ждем либо увеличения списка, либо стабилизации (если достигнут конец)
       try {
         elementsCollection.shouldBe(CollectionCondition.sizeGreaterThan(collectionSize), Duration.ofSeconds(5));
-      } catch (AssertionError e) {
-        // Если размер не увеличился, возможно достигнут конец списка
-        // Продолжаем выполнение для проверки элемента
+      } catch (AssertionError ignored) {
       }
     }
-//    // После завершения цикла проверяем элемент еще раз (на случай если он загрузился)
-//    var finalCheck = elementsCollection
-//        .stream()
-//        .filter(element ->
-//            StringUtils.equalsAnyIgnoreCase(optionText, element.getText()))
-//        .findFirst();
-//
-//    if (finalCheck.isPresent()) {
-//      return finalCheck.get();
-//    }
 
     throw new AssertionError("Элемент не найден: " + optionText);
   }

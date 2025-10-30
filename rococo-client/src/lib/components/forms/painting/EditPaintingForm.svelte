@@ -46,7 +46,7 @@
             });
             content = await blobToBase64(file) as string;
         }
-        validateForm(title, description, authorId);
+        validateForm(title, description, authorId, museumId);
                 if(!Object.values($paintingFormErrorStore).some(v => v.length > 0)) {
                     const res = await apiClient.updatePainting({
                         id,

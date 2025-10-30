@@ -13,5 +13,6 @@ export const Errors = {
     CITY_LENGTH_CONSTRAINT_MAX: "Город не может быть длиннее 255 символов",
     IMAGE_CONSTRAINT_TOO_BIG: "Максимальный размер изображения 1 Mb",
     AUTHOR_CONTRAINT_NOT_EMPTY: "Укажите автора картины",
+    PAINTING_CONTRAINT_NOT_EMPTY: "Укажите, где хранится оригинал картины",
     COUNTRY_CONTRAINT_NOT_EMPTY: "Укажите страну нахождения музея"
 }

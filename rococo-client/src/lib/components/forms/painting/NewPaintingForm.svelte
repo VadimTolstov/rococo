@@ -23,7 +23,7 @@
 	let description = "";
 	let content = "";
 	let authorId = "";
-	let museumId: string | undefined = undefined;
+	let museumId: string;
 
 	paintingFormErrorStore.set({
 		title: "",
@@ -39,10 +39,10 @@
 		paintingFormErrorStore.update((prevState) => {
 			return {
 				...prevState,
-				photo: validateImage(file),
+				content: validateImage(file),
 			}
 		});
-		validateForm(title, description, data?.id ?? authorId);
+		validateForm(title, description, data?.id ?? authorId, museumId);
 		if(!Object.values($paintingFormErrorStore).some(v => v.length > 0)) {
 			content = await blobToBase64(file) as string;
 			const res = await apiClient.addPainting({

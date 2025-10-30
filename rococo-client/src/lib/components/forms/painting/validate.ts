@@ -24,7 +24,9 @@ export const validateForm = (
 					? Errors.DESCRIPTION_LENGTH_CONSTRAINT_MAX
 					: '',
 
-			authorId: !authorId ? Errors.AUTHOR_CONTRAINT_NOT_EMPTY : ''
+			authorId: !authorId ? Errors.AUTHOR_CONTRAINT_NOT_EMPTY : '',
+
+			museumId: !museumId ? Errors.PAINTING_CONTRAINT_NOT_EMPTY : ''
 
 		};
 	});

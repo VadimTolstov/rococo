@@ -6,15 +6,11 @@ import guru.qa.rococo.jupiter.annotation.*;
 import guru.qa.rococo.jupiter.annotation.meta.WebTest;
 import guru.qa.rococo.model.ContentJson;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
-import guru.qa.rococo.model.rest.museum.Country;
-import guru.qa.rococo.model.rest.museum.CountryJson;
-import guru.qa.rococo.model.rest.museum.GeoJson;
 import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
-import guru.qa.rococo.page.MuseumPage;
 import guru.qa.rococo.page.PaintingPage;
-import guru.qa.rococo.page.detail.MuseumDetailPage;
-import guru.qa.rococo.page.form.MuseumForm;
+import guru.qa.rococo.page.detail.PaintingDetailPage;
+import guru.qa.rococo.page.form.PaintingForm;
 import guru.qa.rococo.utils.RandomDataUtils;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.DisplayName;
@@ -55,357 +51,409 @@ public class PaintingFormTest {
         .clickAddPaintingButton()
         .checkThatComponentLoaded()
         .addPainting(painting)
-        .checkAlert("Добавлена картина: " + painting.title())
+        .checkAlert("Добавлена картины: " + painting.title())
         .openDetailPage(painting.title())
         .checkThatPageLoaded()
         .checkDetailPainting(painting)
         .checkImage(image);
   }
 
-  @Content(museums = {@Museum(photo = "museums/british-museum.png")})
+  @Content(
+      museums = @Museum,
+      artists = @Artist,
+      paintings = @Painting(content = "/paintings/mona-liza.png"),
+      museumCount = 1,
+      artistCount = 1
+  )
   @User
   @ApiLogin
-  @ScreenShotTest(expected = "museum/museum-detail/tank-museum.png")
-  @DisplayName("Авторизованный пользователь может редактировать музей")
-  void authorizedUserShouldCanEditMuseum(ContentJson content, BufferedImage expected) {
-    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
-    final MuseumJson newMuseum = new MuseumJson(
+  @ScreenShotTest(expected = "painting/painting-detail/starry-night.png")
+  @DisplayName("Авторизованный пользователь может редактировать картину")
+  void authorizedUserShouldCanEditPainting(ContentJson content, BufferedImage expected) {
+    final PaintingJson painting = new ArrayList<>(content.paintings()).getFirst();
+    final String oldMuseum = painting.museum().title();
+    final String oldArtist = painting.artist().name();
+
+    final ArtistJson newArtist = new ArrayList<>(content.artists())
+        .stream()
+        .filter(artist -> !oldArtist.equals(artist.name()))
+        .toList()
+        .getFirst();
+    final MuseumJson newMuseum = new ArrayList<>(content.museums())
+        .stream()
+        .filter(museum -> !oldMuseum.equals(museum.title()))
+        .toList()
+        .getFirst();
+
+    final PaintingJson newPainting = new PaintingJson(
         null,
-        RandomDataUtils.museum(),
+        RandomDataUtils.painting(),
         RandomDataUtils.shortBio(),
-        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/tank-museum.jpg",
-        new GeoJson(
-            RandomDataUtils.city(),
-            new CountryJson(
-                null,
-                Country.random().getCountry()
-            )
-        )
+        Config.getInstance().imageContentBaseDir() + FOLDER_NAME + "/starry-night.jpg",
+        newArtist,
+        newMuseum
     );
-    Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
+
+    Selenide.open(PaintingDetailPage.URL + painting.id(), PaintingDetailPage.class)
         .checkThatPageLoaded()
-        .checkDetailMuseum(museum)
+        .checkDetailPainting(painting)
         .clickEdit()
-        .fullUpdateMuseum(newMuseum)
-        .checkAlert("Обновлен музей: " + newMuseum.title())
-        .checkDetailMuseum(newMuseum)
+        .fullUpdatePainting(newPainting)
+        .checkAlert("Обновлена картина: " + newPainting.title())
+        .checkDetailPainting(newPainting)
         .checkImage(expected);
   }
 
-  @Content(museumCount = 1)
+  @Content(paintingCount = 1)
   @Test
   @DisplayName("У неавторизованного пользователя нет кнопки 'Редактировать'")
-  void unauthorizedUserDoesNotHaveButtonUpdateMuseum(ContentJson content) {
-    final MuseumJson museum = new ArrayList<>(content.museums()).getFirst();
-    Selenide.open(MuseumDetailPage.URL + museum.id(), MuseumDetailPage.class)
+  void unauthorizedUserDoesNotHaveButtonUpdatePainting(ContentJson content) {
+    final PaintingJson painting = new ArrayList<>(content.paintings()).getFirst();
+    Selenide.open(PaintingDetailPage.URL + painting.id(), PaintingDetailPage.class)
         .checkThatPageLoaded()
-        .checkNoUpdateMuseumButton();
+        .checkNoUpdatePaintingButton();
   }
 
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Название музея - не может быть короче 3 символов")
-  void titleShouldBeRequired() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Название картины - не может быть короче 3 символов")
+  void titleShouldBeRequired(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomString.make(2))
-        .setCountry(Country.random().getCountry())
+        .setName(RandomString.make(2))
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingForm.class)
         .assertTitleRequired("Название не может быть короче 3 символов");
   }
 
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Музей создается с 3 символами в поле 'Название музея'")
-  void titleShouldBeMinLength() {
-    final String museumTitle = RandomString.make(3);
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Картина создается с 3 символами в поле 'Название картины'")
+  void titleShouldBeMinLength(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String paintingName = RandomString.make(3);
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumTitle)
-        .setCountry(Country.random().getCountry())
+        .setName(paintingName)
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumTitle);
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingDetailPage.class)
+        .checkAlert("Добавлена картины: " + paintingName);
   }
 
+
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Музей создается с 255 символами в поле 'Название музея'")
-  void titleShouldBeMaxLength() {
-    final String museumTitle = RandomString.make(255);
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Картина создается с 255 символами в поле 'Название картины'")
+  void titleShouldBeMaxLength(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String paintingName = RandomString.make(255);
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumTitle)
-        .setCountry(Country.random().getCountry())
+        .setName(paintingName)
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumTitle);
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingPage.class)
+        .checkAlert("Добавлена картины: " + paintingName);
   }
 
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Название музея - не может быть длине 255 символов")
-  void titleShouldBeNotLong() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Название картины - не может быть длине 255 символов")
+  void titleShouldBeNotLong(ContentJson content) {
+
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String paintingName = RandomString.make(256);
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomString.make(256))
-        .setCountry(Country.random().getCountry())
+        .setName(paintingName)
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingForm.class)
         .assertTitleRequired("Название не может быть длиннее 255 символов");
   }
 
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Музей создается с 3 символами в поле 'Укажите город'")
-  void citiShouldBeMinLength() {
-    final String museumTitle = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
-        .checkThatPageLoaded()
-        .clickAddMuseumButton()
-        .checkThatComponentLoaded()
-        .setTitle(museumTitle)
-        .setCountry(Country.random().getCountry())
-        .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomString.make(3))
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumTitle);
-  }
+  @DisplayName("Описание картины - не может быть короче 10 символов")
+  void descriptionShouldBeRequired(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
 
-  @Test
-  @User
-  @ApiLogin
-  @DisplayName("Название города - не может быть короче 3 символов")
-  void citiShouldBeRequired() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
-        .setCountry(Country.random().getCountry())
-        .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomString.make(2))
-        .clickButtonAddMuseum(MuseumForm.class)
-        .assertTitleRequired("Город не может быть короче 3 символов");
-  }
-
-  @Test
-  @User
-  @ApiLogin
-  @DisplayName("Музей создается с 255 символами в поле 'Укажите город'")
-  void citiShouldBeMaxLength() {
-    final String museumTitle = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
-        .checkThatPageLoaded()
-        .clickAddMuseumButton()
-        .checkThatComponentLoaded()
-        .setTitle(museumTitle)
-        .setCountry(Country.random().getCountry())
-        .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomString.make(255))
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumTitle);
-  }
-
-  @Test
-  @User
-  @ApiLogin
-  @DisplayName("Название города - не может быть длине 255 символов")
-  void citiShouldBeNotLong() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
-        .checkThatPageLoaded()
-        .clickAddMuseumButton()
-        .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
-        .setCountry(Country.random().getCountry())
-        .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomString.make(256))
-        .clickButtonAddMuseum(MuseumForm.class)
-        .assertTitleRequired("Город не может быть длиннее 255 символов");
-  }
-
-  @Test
-  @User
-  @ApiLogin
-  @DisplayName("О музее - не может быть короче 10 символов")
-  void descriptionShouldBeRequired() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
-        .checkThatPageLoaded()
-        .clickAddMuseumButton()
-        .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
-        .setCountry(Country.random().getCountry())
+        .setName(RandomDataUtils.painting())
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomString.make(9))
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingForm.class)
         .assertTitleRequired("Описание не может быть короче 10 символов");
   }
 
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Музей создается с 10 символами в поле 'О музее'")
-  void descriptionShouldBeMinLength() {
-    final String museumName = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Картина создается с 10 символами в поле 'Описание картины'")
+  void descriptionShouldBeMinLength(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String paintingName = RandomDataUtils.painting();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumName)
-        .setCountry(Country.random().getCountry())
+        .setName(paintingName)
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomString.make(10))
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumName);
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingPage.class)
+        .checkAlert("Добавлена картины: " + paintingName);
   }
 
+
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("О музее - не может быть длине 2000 символов")
-  void descriptionShouldBeNotLong() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Описание картины - не может быть длине 2000 символов")
+  void descriptionShouldBeNotLong(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
-        .setCountry(Country.random().getCountry())
+        .setName(RandomDataUtils.painting())
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomString.make(2001))
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingForm.class)
         .assertTitleRequired("Описание не может быть длиннее 2000 символов");
   }
 
+
+  @Content(
+      artistCount = 1,
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Музей создается с 2000 символами в поле 'О музее'")
-  void descriptionShouldBeBigLength() {
-    final String museumName = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Картина создается с 2000 символами в поле  'Описание картины'")
+  void descriptionShouldBeBigLength(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String paintingName = RandomDataUtils.painting();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumName)
-        .setCountry(Country.random().getCountry())
+        .setName(paintingName)
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
         .setDescription(RandomString.make(2000))
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Добавлен музей: " + museumName);
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingPage.class)
+        .checkAlert("Добавлена картины: " + paintingName);
   }
 
+  @Content(
+      museumCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Страна - обязательна для добавления музея")
-  void countryRequiredToAddMuseum() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Художник - обязателен для добавления картины")
+  void artistRequiredToAddPainting(ContentJson content) {
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
+        .setName(RandomDataUtils.painting())
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(RandomDataUtils.randomFilePath(FOLDER_NAME))
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .setMuseum(museumName)
+        .clickButtonAddPainting(PaintingForm.class)
         .checkThatComponentLoaded();
   }
 
+  @Content(
+      museumCount = 1,
+      artistCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Изображение музея - обязательна для добавления музея")
-  void photoRequiredToAddMuseum() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Изображение картины - обязателен для добавления картины")
+  void contentRequiredToAddPainting(ContentJson content) {
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(RandomDataUtils.museum())
+        .setName(RandomDataUtils.painting())
+        .setArtist(artistName)
+        .setMuseum(museumName)
         .setDescription(RandomDataUtils.shortBio())
-        .setCountry(Country.random().getCountry())
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .clickButtonAddPainting(PaintingForm.class)
         .checkThatComponentLoaded();
   }
+
+  @Content(
+      artistCount = 1
+  )
+  @Test
+  @User
+  @ApiLogin
+  @DisplayName("Музей - обязателен для добавления картины")
+  void museumRequiredToAddPainting(ContentJson content) {
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
+        .checkThatPageLoaded()
+        .clickAddPaintingButton()
+        .checkThatComponentLoaded()
+        .setName(RandomDataUtils.painting())
+        .setContent(RandomDataUtils.randomFilePath(FOLDER_NAME))
+        .setArtist(artistName)
+        .setDescription(RandomDataUtils.shortBio())
+        .clickButtonAddPainting(PaintingForm.class)
+        .assertTitleRequired("Укажите, где хранится оригинал картины");
+  }
+
 
   @Test
   @User
   @ApiLogin
-  @DisplayName("Пользователь может закрыть форму создания музея без добавления музея")
-  void userCanCloseTheMuseumCreationForm() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Пользователь может закрыть форму создания картины без добавления картины")
+  void userCanCloseThePaintingCreationForm() {
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .clickButtonCloseForm(MuseumPage.class)
+        .clickButtonCloseForm(PaintingPage.class)
         .checkThatPageLoaded();
   }
 
+  @Content(
+      museumCount = 1,
+      artistCount = 1
+  )
   @Test
   @User
   @ApiLogin
-  @DisplayName("Изображение музея - загрузка файла невалидного формата")
-  void uploadingAnInvalidFileFormat() {
-    final String museumName = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  @DisplayName("Изображение картины - загрузка файла невалидного формата")
+  void uploadingAnInvalidFileFormat(ContentJson content) {
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumName)
-        .setCountry(Country.random().getCountry())
+        .setName(RandomDataUtils.painting())
+        .setContent(Config.getInstance().imageContentBaseDir() + "/error-file.torrent")
+        .setArtist(artistName)
+        .setMuseum(museumName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(Config.getInstance().imageContentBaseDir() + "/error-file.torrent")
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumPage.class)
-        .checkAlert("Изображение музея: Фото должно начинаться с 'data:image/'");
+        .clickButtonAddPainting(PaintingPage.class)
+        .checkAlert("content: Изображение картины должно начинаться с 'data:image/'");
+
   }
 
+  @Content(
+      museumCount = 1,
+      artistCount = 1
+  )
   @Test
   @User
   @ApiLogin
   @DisplayName("При загрузке файла больше 1МБ отображается ошибка")
-  void oversizeImageShouldBeValidated() {
-    final String museumName = RandomDataUtils.museum();
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
+  void oversizeImageShouldBeValidated(ContentJson content) {
+    final String museumName = new ArrayList<>(content.museums()).getFirst().title();
+    final String artistName = new ArrayList<>(content.artists()).getFirst().name();
+
+    Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
-        .clickAddMuseumButton()
+        .clickAddPaintingButton()
         .checkThatComponentLoaded()
-        .setTitle(museumName)
-        .setCountry(Country.random().getCountry())
+        .setName(RandomDataUtils.painting())
+        .setContent(Config.getInstance().imageContentBaseDir() + "/oversize.png")
+        .setArtist(artistName)
+        .setMuseum(museumName)
         .setDescription(RandomDataUtils.shortBio())
-        .setPhoto(Config.getInstance().imageContentBaseDir() + "/oversize.png")
-        .setCity(RandomDataUtils.city())
-        .clickButtonAddMuseum(MuseumForm.class)
+        .clickButtonAddPainting(PaintingForm.class)
         .assertTitleRequired("Максимальный размер изображения 1 Mb");
+
   }
 }
