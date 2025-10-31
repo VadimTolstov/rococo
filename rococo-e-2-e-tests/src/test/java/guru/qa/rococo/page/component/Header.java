@@ -1,7 +1,6 @@
 package guru.qa.rococo.page.component;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.condition.ScreenshotConditions;
 import guru.qa.rococo.page.*;
@@ -84,10 +83,10 @@ public class Header extends BaseComponent<Header> {
 
   @NonNull
   @Step("Открыть профиль пользователя")
-  public ProfileModal openProfile() {
+  public Profile openProfile() {
     profileButton.shouldBe(Condition.visible)
         .click();
-    return new ProfileModal();
+    return new Profile();
   }
 
   @NonNull
@@ -105,10 +104,8 @@ public class Header extends BaseComponent<Header> {
     return this;
   }
 
-  @NonNull
   @Step("Проверяем изображение аватара")
-  public Header checkImgAvatar(BufferedImage expected) {
+  public void checkImgAvatar(BufferedImage expected) {
     avatarImage.shouldBe(ScreenshotConditions.image(expected));
-    return this;
   }
 }

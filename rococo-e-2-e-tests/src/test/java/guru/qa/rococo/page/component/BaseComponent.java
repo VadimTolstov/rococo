@@ -22,11 +22,11 @@ public abstract class BaseComponent<T extends BaseComponent<?>> {
   }
 
   @NonNull
-  public <B> B toPage(Class<B> expected) {
+  public <B> B toPage(Class<B> tClass) {
     try {
-      return expected.getDeclaredConstructor().newInstance();
+      return tClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
-      throw new RuntimeException("Cannot create instance of " + expected, e);
+      throw new RuntimeException("Cannot create instance of " + tClass, e);
     }
   }
 

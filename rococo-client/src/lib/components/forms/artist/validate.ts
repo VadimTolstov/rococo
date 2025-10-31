@@ -13,7 +13,7 @@ export const validateForm = (
                 : name?.length > 255
                     ? Errors.NAME_LENGTH_CONSTRAINT_MAX
                     : "",
-            biography: biography?.length < 11
+            biography: biography?.length < 10
                 ? Errors.BIOGRAPHY_LENGTH_CONSTRAINT_MIN
                 : biography?.length > 2000
                     ? Errors.BIOGRAPHY_LENGTH_CONSTRAINT_MAX

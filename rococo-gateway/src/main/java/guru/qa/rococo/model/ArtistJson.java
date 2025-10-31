@@ -40,7 +40,7 @@ public record ArtistJson(
          * Должна содержать от 11 до 2000 символов.
          * Удаляются начальные и конечные пробелы.
          */
-        @Size(min = 11, max = 2000, message = "biography: Биография должна содержать от 11 до 2000 символов")
+        @Size(min = 10, max = 2000, message = "biography: Биография должна содержать от 11 до 2000 символов")
         @NotBlank(message = "biography: Биография обязательна для заполнения, не может быть пустой или состоять только из пробелов")
         @JsonProperty("biography")
         String biography,

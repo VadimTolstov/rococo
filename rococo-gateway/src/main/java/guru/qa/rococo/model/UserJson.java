@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.rococo.config.RococoGatewayServiceConfig;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public record UserJson(
         @JsonProperty("lastname")
         String lastname,
 
+        @Pattern(regexp = "^data:image/.*", message = "photo: Фото должно начинаться с 'data:image/'")
         @Size(max = RococoGatewayServiceConfig.ONE_MB, message = "avatar: Размер аватара не должен превышать 1MB")
         @JsonProperty("avatar")
         String avatar

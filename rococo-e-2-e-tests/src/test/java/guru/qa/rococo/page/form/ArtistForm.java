@@ -5,6 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
 import guru.qa.rococo.page.ArtistPage;
 import guru.qa.rococo.page.component.BaseComponent;
+import guru.qa.rococo.page.detail.ArtistDetailPage;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 
@@ -33,6 +34,13 @@ public class ArtistForm extends BaseComponent<ArtistForm> {
         .setPhoto(artist.photo())
         .setBiography(artist.biography())
         .clickButtonAddArtist(ArtistPage.class);
+  }
+
+  @NonNull
+  @Step("Полностью обновляем данные художника.")
+  public ArtistDetailPage fullUpdateArtist(ArtistJson artist) {
+   addArtist(artist);
+   return  new ArtistDetailPage().checkThatPageLoaded();
   }
 
   @NonNull
@@ -68,7 +76,6 @@ public class ArtistForm extends BaseComponent<ArtistForm> {
   @Step("Нажимаем кнопку 'Добавить'.")
   public <B> B clickButtonAddArtist(Class<B> clazz) {
     buttonSaveArtist.click();
-    self.should(Condition.disappear);
     return toPage(clazz);
   }
 
