@@ -8,9 +8,7 @@ import guru.qa.rococo.jupiter.annotation.ApiLogin;
 import guru.qa.rococo.jupiter.annotation.Token;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.page.MainPage;
-import guru.qa.rococo.service.UserdataClient;
 import guru.qa.rococo.service.api.AuthApiClient;
-import guru.qa.rococo.service.api.UserdataApiClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
@@ -26,7 +24,6 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
   public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
 
   private final AuthApiClient authApiClient = new AuthApiClient();
-  private final UserdataClient userdataApiClient = new UserdataApiClient();
   private final boolean setupBrowser;
 
   private ApiLoginExtension(boolean setupBrowser) {
@@ -54,18 +51,6 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
             }
             userToLogin = userFromUserExtension;
           } else {
-            //todo если мы хотим залогиниться уже существующем пользователем? или всегда делаем нового
-            //todo передали пользователя мы его создаем ? или он должен быть в системе уже?
-//            UserJson userJson = userdataApiClient.getUser(apiLogin.username());
-//            if (userJson == null) {
-//
-//            }
-
-//            final UserJson fakeUser = authApiClient.createUser(
-//                apiLogin.username(),
-//                apiLogin.password()
-//            ).withPassword(apiLogin.password());
-
             final UserJson fakeUser = UserJson.builder()
                 .username(apiLogin.username())
                 .password(apiLogin.password())

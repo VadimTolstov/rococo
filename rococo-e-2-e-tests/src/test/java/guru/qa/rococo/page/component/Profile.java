@@ -24,7 +24,6 @@ public class Profile extends BaseComponent<Profile> {
   private final SelenideElement inputFile = self.$("input[type='file']");
   private final SelenideElement inputName = self.$("input[name='firstname']");
   private final SelenideElement inputSurname = self.$("input[name='surname']");
-  private final SelenideElement labelProfile = $$("header").findBy(Condition.text("Профиль"));
   private final SelenideElement imgAvatar = self.$("img");
 
   @NonNull
@@ -99,11 +98,9 @@ public class Profile extends BaseComponent<Profile> {
     return this;
   }
 
-  @NonNull
   @Step("Проверяем изображение аватара")
-  public Profile checkImgAvatar(BufferedImage expected) {
+  public void checkImgAvatar(BufferedImage expected) {
     imgAvatar.shouldBe(ScreenshotConditions.image(expected));
-    return this;
   }
 
 }
