@@ -23,7 +23,7 @@ public interface PaintingApi {
     );
 
     @GET("/internal/painting/author/{authorId}")
-    Call<RestResponsePage<PaintingJson>> getPaintingByAuthorId(
+    Call<RestResponsePage<PaintingJson>> getPaintingsByAuthorId(
             @Query("page") @Nullable Integer page,
             @Query("size") @Nullable Integer size,
             @Query("sort") @Nullable String sort,

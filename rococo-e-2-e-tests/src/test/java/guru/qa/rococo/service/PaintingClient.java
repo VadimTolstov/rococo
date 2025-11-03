@@ -16,7 +16,7 @@ public interface PaintingClient {
       @Nullable String title
   );
 
-  RestResponsePage<PaintingJson> getPaintingByAuthorId(
+  RestResponsePage<PaintingJson> getPaintingsByAuthorId(
       @Nullable Integer page,
       @Nullable Integer size,
       @Nullable String sort,

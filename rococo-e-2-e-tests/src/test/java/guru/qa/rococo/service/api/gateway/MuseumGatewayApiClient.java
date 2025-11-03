@@ -1,31 +1,29 @@
-package guru.qa.rococo.service.api;
+package guru.qa.rococo.service.api.gateway;
 
-import guru.qa.rococo.api.MuseumApi;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
+import guru.qa.rococo.api.gateway.MuseumGatewayApi;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.museum.CountryJson;
 import guru.qa.rococo.model.rest.museum.MuseumJson;
-import guru.qa.rococo.service.MuseumClient;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.apache.hc.core5.http.HttpStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class MuseumApiClient implements MuseumClient, RequestExecutor {
+public class MuseumGatewayApiClient implements RequestExecutor {
   private static final Config CFG = Config.getInstance();
 
-  private final MuseumApi museumApi;
+  private final MuseumGatewayApi museumApi;
 
-  public MuseumApiClient() {
+  public MuseumGatewayApiClient() {
     museumApi = new RestClient.EmtyRestClient(
-        CFG.museumUrl(),
+        CFG.gatewayUrl(),
         HttpLoggingInterceptor.Level.BODY
-    ).create(MuseumApi.class);
+    ).create(MuseumGatewayApi.class);
   }
 
   /**
@@ -43,11 +41,11 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
    * @see CountryJson
    */
   @Step("Получаем список стран с пагинацией page = {page}, size = {size}, sort = {sort}")
-  @Override
   public RestResponsePage<CountryJson> getCountries(@Nullable Integer page,
                                                     @Nullable Integer size,
-                                                    @Nullable String sort) {
-    return executePage(museumApi.getCountries(page, size, sort), HttpStatus.SC_OK);
+                                                    @Nullable String sort,
+                                                    int statusCode) {
+    return executePage(museumApi.getAllCountries(page, size, sort), statusCode);
   }
 
   /**
@@ -60,9 +58,8 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
    * @throws NullPointerException           если переданный id равен null
    */
   @Step("Получения музея по id = {id}")
-  @Override
-  public @NonNull MuseumJson getMuseumById(@NonNull UUID id) {
-    return execute(museumApi.getMuseumById(id), HttpStatus.SC_OK);
+  public @NonNull MuseumJson getMuseumById(@NonNull UUID id, int statusCode) {
+    return execute(museumApi.getMuseumById(id), statusCode);
   }
 
   /**
@@ -81,12 +78,12 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
    * @see MuseumJson
    */
   @Step("Получаем список музеев с пагинацией page = {page}, size = {size}, sort = {sort}, title = {title}")
-  @Override
   public @NonNull RestResponsePage<MuseumJson> getMuseums(@Nullable Integer page,
                                                           @Nullable Integer size,
                                                           @Nullable String sort,
-                                                          @Nullable String title) {
-    return executePage(museumApi.getMuseums(page, size, sort, title), HttpStatus.SC_OK);
+                                                          @Nullable String title,
+                                                          int statusCode) {
+    return executePage(museumApi.getAllMuseums(page, size, sort, title), statusCode);
   }
 
   /**
@@ -94,16 +91,16 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
    * Отправляет POST-запрос к API с данными нового музея для сохранения.
    * Музей должен содержать обязательные поля: название, описание, город, страну и фото.
    *
-   * @param museumJson объект {@link MuseumJson} с данными создаваемого музея.
-   *                   Должен содержать обязательные поля (title, description, city, country, photo)
+   * @param museumJson  объект {@link MuseumJson} с данными создаваемого музея.
+   *                    Должен содержать обязательные поля (title, description, city, country, photo)
+   * @param bearerToken объект {@link String} с токином авторизации.
    * @return созданный объект {@link MuseumJson} с присвоенным идентификатором и данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой, данные невалидны или музей с таким названием уже существует
    * @throws NullPointerException           если переданный museumJson равен null
    */
   @Step("Создаем музей = {museumJson}")
-  @Override
-  public @NonNull MuseumJson createMuseum(@NonNull MuseumJson museumJson) {
-    return execute(museumApi.createMuseum(museumJson), HttpStatus.SC_OK);
+  public @NonNull MuseumJson createMuseum(@NonNull MuseumJson museumJson, @Nullable String bearerToken, int statusCode) {
+    return execute(museumApi.addMuseum(museumJson, bearerToken), statusCode);
   }
 
   /**
@@ -112,16 +109,16 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
    * Обновляет только переданные поля, сохраняя остальные данные неизменными.
    * Для идентификации музея используется его идентификатор, который должен быть установлен в переданном объекте.
    *
-   * @param museumJson объект {@link MuseumJson} с обновляемыми данными музея.
-   *                   Должен содержать идентификатор существующего музея и поля для обновления
+   * @param museumJson  объект {@link MuseumJson} с обновляемыми данными музея.
+   *                    Должен содержать идентификатор существующего музея и поля для обновления
+   * @param bearerToken объект {@link String} с токином авторизации.
    * @return обновленный объект {@link MuseumJson} с актуальными данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой, музей не найден или данные невалидны
    * @throws NullPointerException           если переданный museumJson равен null
    * @throws IllegalArgumentException       если идентификатор музея отсутствует или имеет неверный формат
    */
   @Step("Обновляем данные музея = {museumJson}")
-  @Override
-  public @NonNull MuseumJson updateMuseum(@NonNull MuseumJson museumJson) {
-    return execute(museumApi.updateMuseum(museumJson), HttpStatus.SC_OK);
+  public @NonNull MuseumJson updateMuseum(@NonNull MuseumJson museumJson, @Nullable String bearerToken, int statusCode) {
+    return execute(museumApi.updateMuseum(museumJson, bearerToken), statusCode);
   }
 }

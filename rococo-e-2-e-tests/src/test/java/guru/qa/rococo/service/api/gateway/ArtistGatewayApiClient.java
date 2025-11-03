@@ -1,31 +1,29 @@
-package guru.qa.rococo.service.api;
+package guru.qa.rococo.service.api.gateway;
 
-import guru.qa.rococo.api.ArtistApi;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
+import guru.qa.rococo.api.gateway.ArtistGatewayApi;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.ex.ApiException;
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
-import guru.qa.rococo.service.ArtistClient;
 import io.qameta.allure.Step;
 import lombok.NonNull;
 import okhttp3.logging.HttpLoggingInterceptor;
-import org.apache.hc.core5.http.HttpStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class ArtistApiClient implements ArtistClient, RequestExecutor {
+public class ArtistGatewayApiClient implements RequestExecutor {
   private static final Config CFG = Config.getInstance();
 
-  private final ArtistApi artistApi;
+  private final ArtistGatewayApi artistApi;
 
-  public ArtistApiClient() {
+  public ArtistGatewayApiClient() {
     artistApi = new RestClient.EmtyRestClient(
-        CFG.artistUrl(),
+        CFG.gatewayUrl(),
         HttpLoggingInterceptor.Level.BODY
-    ).create(ArtistApi.class);
+    ).create(ArtistGatewayApi.class);
   }
 
   /**
@@ -34,29 +32,27 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
    *
    * @param id уникальный идентификатор художника в формате строки (будет преобразован в UUID)
    * @return объект {@link ArtistJson} с данными художника
-   * @throws ApiException если запрос завершился ошибкой или художник не найден
+   * @throws ApiException             если запрос завершился ошибкой или художник не найден
    * @throws IllegalArgumentException если переданный id имеет неверный формат
    */
   @Step("Получения художника по id = {id}")
-  @Override
-  public @NonNull ArtistJson getArtist(@NonNull String id) {
-    return execute(artistApi.getArtist(UUID.fromString(id)), HttpStatus.SC_OK);
+  public @NonNull ArtistJson getArtist(@NonNull String id, int statusCode) {
+    return execute(artistApi.getArtistById(UUID.fromString(id)), statusCode);
   }
 
   /**
    * Создает нового художника в системе.
    * Отправляет POST-запрос к API с данными нового художника для сохранения.
    *
-   * @param artist объект {@link ArtistJson} с данными создаваемого художника.
-   *               Должен содержать обязательные поля (name, biography, photo)
+   * @param artist      объект {@link ArtistJson} с данными создаваемого художника.
+   *                    Должен содержать обязательные поля (name, biography, photo)
+   * @param bearerToken объект {@link String} с токином авторизации.
    * @return созданный объект {@link ArtistJson} с присвоенным идентификатором и данными из системы
    * @throws ApiException если запрос завершился ошибкой, данные невалидны или художник с таким именем уже существует
-   * @throws NullPointerException если переданный artist равен null
    */
   @Step("Создаем художника = {artist}")
-  @Override
-  public @NonNull ArtistJson createArtist(@NonNull ArtistJson artist) {
-    return execute(artistApi.createArtist(artist), HttpStatus.SC_OK);
+  public @NonNull ArtistJson createArtist(@NonNull ArtistJson artist, @NonNull String bearerToken, int statusCode) {
+    return execute(artistApi.addArtist(artist, bearerToken), statusCode);
   }
 
   /**
@@ -64,17 +60,15 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
    * Отправляет PATCH-запрос к API с обновленными данными художника.
    * Обновляет только переданные поля, сохраняя остальные данные неизменными.
    *
-   * @param artist объект {@link ArtistJson} с обновляемыми данными художника.
-   *               Должен содержать идентификатор существующего художника и поля для обновления
+   * @param artist      объект {@link ArtistJson} с обновляемыми данными художника.
+   *                    Должен содержать идентификатор существующего художника и поля для обновления
+   * @param bearerToken объект {@link String} с токином авторизации.
    * @return обновленный объект {@link ArtistJson} с актуальными данными из системы
    * @throws ApiException если запрос завершился ошибкой или данные невалидны
-   * @throws NullPointerException если переданный artist равен null
-   * @throws IllegalArgumentException если идентификатор художника отсутствует или имеет неверный формат
    */
   @Step("Обновляем данные художника = {artist}")
-  @Override
-  public @NonNull ArtistJson updateArtist(@NonNull ArtistJson artist) {
-    return execute(artistApi.updateArtist(artist), HttpStatus.SC_OK);
+  public @NonNull ArtistJson updateArtist(@NonNull ArtistJson artist, @NonNull String bearerToken, int statusCode) {
+    return execute(artistApi.updateArtist(artist, bearerToken), statusCode);
   }
 
   /**
@@ -93,12 +87,11 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
    * @see ArtistJson
    */
   @Step("Получаем художников по name = {name}, page = {page}, size = {size}, sort = {sort}")
-  @Override
   public @NonNull RestResponsePage<ArtistJson> getListArtists(@Nullable String name,
                                                               @Nullable Integer page,
                                                               @Nullable Integer size,
-                                                              @Nullable String sort) {
-
-    return executePage(artistApi.getArtists(name, page, size, sort), HttpStatus.SC_OK);
+                                                              @Nullable String sort,
+                                                              int statusCode) {
+    return executePage(artistApi.getAllArtists(page, size, sort, name), statusCode);
   }
 }

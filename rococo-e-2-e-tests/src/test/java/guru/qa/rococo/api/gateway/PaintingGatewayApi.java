@@ -1,4 +1,4 @@
-package guru.qa.rococo.api.geteway;
+package guru.qa.rococo.api.gateway;
 
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
@@ -22,11 +22,11 @@ public interface PaintingGatewayApi {
 
   @GET("/api/painting/author/{id}")
   Call<RestResponsePage<PaintingJson>> getPaintingsByAuthorId(
-      @Path("id") UUID id,
       @Query("page") Integer page,
       @Query("size") Integer size,
-      @Query("sort") String sort
-  );
+      @Query("sort") String sort,
+      @Path("id") UUID id
+      );
 
   @POST("/api/painting")
   Call<PaintingJson> addPainting(@Body PaintingJson painting, @Header("Authorization") String bearerToken);

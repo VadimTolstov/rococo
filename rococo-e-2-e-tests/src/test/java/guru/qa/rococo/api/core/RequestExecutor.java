@@ -77,11 +77,11 @@ public interface RequestExecutor {
    * @param call Call<{@link RestResponsePage}>
    * @return {@link RestResponsePage}
    */
-  default @NonNull <T> RestResponsePage<T> executePage(@NonNull Call<RestResponsePage<T>> call) {
+  default @NonNull <T> RestResponsePage<T> executePage(@NonNull Call<RestResponsePage<T>> call,  int expectedStatusCode) {
     final Response<RestResponsePage<T>> response;
     try {
       response = call.execute();
-      Assertions.assertEquals(HttpStatus.SC_OK, response.code());
+      Assertions.assertEquals(expectedStatusCode, response.code());
       return requireNonNull(response.body());
     } catch (IOException e) {
       throw new ApiException("Ошибка выполнения запроса", e);

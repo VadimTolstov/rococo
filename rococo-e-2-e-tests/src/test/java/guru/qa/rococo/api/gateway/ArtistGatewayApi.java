@@ -1,4 +1,4 @@
-package guru.qa.rococo.api.geteway;
+package guru.qa.rococo.api.gateway;
 
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.artist.ArtistJson;

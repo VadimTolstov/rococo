@@ -1,4 +1,4 @@
-package guru.qa.rococo.api.geteway;
+package guru.qa.rococo.api.gateway;
 
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import retrofit2.Call;

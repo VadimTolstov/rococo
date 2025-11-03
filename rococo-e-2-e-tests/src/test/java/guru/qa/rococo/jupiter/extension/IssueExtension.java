@@ -1,6 +1,6 @@
 package guru.qa.rococo.jupiter.extension;
 
-import guru.qa.rococo.api.impl.GhApiClient;
+import guru.qa.rococo.service.api.GhApiClient;
 import guru.qa.rococo.jupiter.annotation.DisabledByIssue;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;

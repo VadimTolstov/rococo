@@ -1,4 +1,4 @@
-package guru.qa.rococo.api.impl;
+package guru.qa.rococo.service.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.rococo.api.GhApi;
