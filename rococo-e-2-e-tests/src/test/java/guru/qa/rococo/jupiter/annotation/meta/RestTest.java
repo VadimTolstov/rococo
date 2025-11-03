@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 @ExtendWith({
     AllureJunit5.class,
     UserExtension.class,
-    ApiLoginExtension.class,
     ContentExtension.class,
     ArtistExtension.class,
     MuseumExtension.class,
