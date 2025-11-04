@@ -62,7 +62,7 @@ public class ArtistGatewayTest {
   void addArtistNotToken() {
     final ArtistJson request = new ArtistJson(
         null,
-        "",
+        RandomDataUtils.randomArtistName(),
         RandomDataUtils.shortBio(),
         RandomDataUtils.randomImageString(IMAGE_DIR)
     );
@@ -79,7 +79,7 @@ public class ArtistGatewayTest {
   void addArtistIncorrectToken() {
     final ArtistJson request = new ArtistJson(
         null,
-        "",
+        RandomDataUtils.randomArtistName(),
         RandomDataUtils.shortBio(),
         RandomDataUtils.randomImageString(IMAGE_DIR)
     );

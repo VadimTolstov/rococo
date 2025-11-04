@@ -1,5 +1,6 @@
 package guru.qa.rococo.service.api.gateway;
 
+import guru.qa.rococo.api.core.ErrorAsserter;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.api.gateway.MuseumGatewayApi;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class MuseumGatewayApiClient implements RequestExecutor {
+public class MuseumGatewayApiClient implements RequestExecutor, ErrorAsserter {
   private static final Config CFG = Config.getInstance();
 
   private final MuseumGatewayApi museumApi;
