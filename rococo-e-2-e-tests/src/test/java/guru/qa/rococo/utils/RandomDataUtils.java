@@ -9,6 +9,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Base64;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static guru.qa.rococo.utils.PhotoConverter.loadImageAsBytes;
@@ -89,5 +91,21 @@ public class RandomDataUtils {
 
     File randomFile = files[ThreadLocalRandom.current().nextInt(files.length)];
     return folderName + "/" + randomFile.getName();
+  }
+
+  public static String fakeJwt() {
+    String headerJson = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+    String payloadJson = String.format("{\"sub\":\"%s\",\"iat\":%d}",
+        UUID.randomUUID(), System.currentTimeMillis() / 1000);
+
+    String header = Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(headerJson.getBytes());
+    String payload = Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(payloadJson.getBytes());
+
+    String signature = Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(UUID.randomUUID().toString().getBytes());
+
+    return header + "." + payload + "." + signature;
   }
 }

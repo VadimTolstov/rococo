@@ -6,6 +6,7 @@ import lombok.NonNull;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import retrofit2.Call;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public interface RequestExecutor {
     try {
       final Response<T> response = call.execute();
       assertEquals(expectedStatusCode, response.code());
+      isBadRequest(response);
       return Objects.requireNonNull(
           response.body(),
           "Ответ API вернул null для " + call.request().method() + " " + call.request().url());
@@ -37,8 +39,9 @@ public interface RequestExecutor {
     }
   }
 
+
   /**
-   * Выполняет запрос для получения списка (ожидает 200 OK)
+   * Выполняет запрос для получения списка
    */
   default @NonNull <T> Response<T> executeForResponse(@NonNull Call<T> call) {
     try {
@@ -57,6 +60,7 @@ public interface RequestExecutor {
     try {
       final Response<Void> response = call.execute();
       assertEquals(expectedStatusCode, response.code());
+      isBadRequest(response);
     } catch (IOException e) {
       throw new ApiException("Ошибка выполнения запроса", e);
     }
@@ -77,14 +81,21 @@ public interface RequestExecutor {
    * @param call Call<{@link RestResponsePage}>
    * @return {@link RestResponsePage}
    */
-  default @NonNull <T> RestResponsePage<T> executePage(@NonNull Call<RestResponsePage<T>> call,  int expectedStatusCode) {
+  default @NonNull <T> RestResponsePage<T> executePage(@NonNull Call<RestResponsePage<T>> call, int expectedStatusCode) {
     final Response<RestResponsePage<T>> response;
     try {
       response = call.execute();
       Assertions.assertEquals(expectedStatusCode, response.code());
+      isBadRequest(response);
       return requireNonNull(response.body());
     } catch (IOException e) {
       throw new ApiException("Ошибка выполнения запроса", e);
+    }
+  }
+
+  private <T> void isBadRequest(Response<T> response) {
+    if (!requireNonNull(response).isSuccessful()) {
+      throw new HttpException(response);
     }
   }
 }

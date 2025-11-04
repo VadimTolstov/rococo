@@ -1,5 +1,6 @@
 package guru.qa.rococo.service.api.gateway;
 
+import guru.qa.rococo.api.core.ErrorAsserter;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.api.gateway.ArtistGatewayApi;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class ArtistGatewayApiClient implements RequestExecutor {
+public class ArtistGatewayApiClient implements RequestExecutor, ErrorAsserter {
   private static final Config CFG = Config.getInstance();
 
   private final ArtistGatewayApi artistApi;
@@ -22,7 +23,7 @@ public class ArtistGatewayApiClient implements RequestExecutor {
   public ArtistGatewayApiClient() {
     artistApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.HEADERS
     ).create(ArtistGatewayApi.class);
   }
 
@@ -36,8 +37,8 @@ public class ArtistGatewayApiClient implements RequestExecutor {
    * @throws IllegalArgumentException если переданный id имеет неверный формат
    */
   @Step("Получения художника по id = {id}")
-  public @NonNull ArtistJson getArtist(@NonNull String id, int statusCode) {
-    return execute(artistApi.getArtistById(UUID.fromString(id)), statusCode);
+  public @NonNull ArtistJson getArtist(@NonNull UUID id, int statusCode) {
+    return execute(artistApi.getArtistById(id), statusCode);
   }
 
   /**
