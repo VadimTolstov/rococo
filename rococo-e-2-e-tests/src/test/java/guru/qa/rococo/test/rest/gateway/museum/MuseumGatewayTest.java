@@ -632,7 +632,6 @@ public class MuseumGatewayTest {
     @Test
     @DisplayName("GET(/api/country) проверка сортировки по названию")
     void pageCountrySortingTest() {
-        // Сортировка по названию по возрастанию
         RestResponsePage<CountryJson> ascSorted = museumGatewayApiClient.getCountries(0, 20, "name,asc", 200);
         List<CountryJson> ascCountries = ascSorted.getContent();
 
@@ -657,11 +656,9 @@ public class MuseumGatewayTest {
     @Test
     @DisplayName("GET(/api/country) проверка различных параметров сортировки")
     void pageCountryDifferentSortingTest() {
-        // Разные форматы сортировки
         RestResponsePage<CountryJson> sort1 = museumGatewayApiClient.getCountries(0, 10, "name,asc", 200);
         RestResponsePage<CountryJson> sort2 = museumGatewayApiClient.getCountries(0, 10, "name,desc", 200);
 
-        // Проверяем, что разная сортировка дает разные результаты на первой странице
         List<String> ascNames = sort1.getContent().stream()
                 .map(CountryJson::name)
                 .collect(Collectors.toList());
