@@ -25,6 +25,7 @@ import retrofit2.HttpException;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -560,4 +561,114 @@ public class MuseumGatewayTest {
         "Изображение музея: Размер фото не должен превышать 1MB"
     );
   }
+
+    @Test
+    @DisplayName("GET(/api/country) получение страницы со странами")
+    void pageCountryTest() {
+        RestResponsePage<CountryJson> response = museumGatewayApiClient.getCountries(0, 10, null,  200);
+
+        assertNotNull(response);
+        assertEquals(10, response.getSize());
+
+        List<CountryJson> responseContent = response.getContent();
+        assertEquals(10, responseContent.size());
+    }
+
+    @Test
+    @DisplayName("GET(/api/country) получение страницы со странами")
+    void pageCountryTest2() {
+        RestResponsePage<CountryJson> response = museumGatewayApiClient.getCountries(0, 20, null,  200);
+
+        assertNotNull(response);
+        assertEquals(20, response.getSize());
+
+        List<CountryJson> responseContent = response.getContent();
+        assertEquals(20, responseContent.size());
+    }
+
+    @Test
+    @DisplayName("GET(/api/country) проверка граничных значений пагинации")
+    void pageCountryBoundaryTest() {
+        // Тест с минимальным размером страницы
+        RestResponsePage<CountryJson> minSizePage = museumGatewayApiClient.getCountries(0, 1, null, 200);
+        assertEquals(1, minSizePage.getSize());
+        assertEquals(1, minSizePage.getNumberOfElements());
+        assertTrue(minSizePage.getTotalPages() >= 193); // как минимум 193 страницы при size=1
+
+        // Тест с большим размером страницы
+        RestResponsePage<CountryJson> largeSizePage = museumGatewayApiClient.getCountries(0, 50, null, 200);
+        assertEquals(50, largeSizePage.getSize());
+        assertEquals(50, largeSizePage.getNumberOfElements());
+
+        // Тест последней страницы
+        int totalPages = largeSizePage.getTotalPages();
+        RestResponsePage<CountryJson> lastPage = museumGatewayApiClient.getCountries(totalPages - 1, 20, null, 200);
+        assertTrue(lastPage.isLast());
+        assertFalse(lastPage.isFirst());
+    }
+
+    @Test
+    @DisplayName("GET(/api/country) проверка обработки некорректной пагинации")
+    void pageCountryInvalidPaginationTest() {
+        RestResponsePage<CountryJson> negativePage = museumGatewayApiClient.getCountries(-1, 10, null, 200);
+        assertEquals(0, negativePage.getNumber(), "Negative page should be treated as page 0");
+        assertEquals(10, negativePage.getNumberOfElements());
+        assertTrue(negativePage.isFirst());
+
+        RestResponsePage<CountryJson> zeroSize = museumGatewayApiClient.getCountries(0, 0, null, 200);
+        assertTrue(zeroSize.getSize() > 0, "Zero size should be replaced with default page size");
+        assertTrue(zeroSize.getNumberOfElements() > 0);
+
+        RestResponsePage<CountryJson> negativeSize = museumGatewayApiClient.getCountries(0, -1, null, 200);
+        assertTrue(negativeSize.getSize() > 0, "Negative size should be replaced with default page size");
+        assertTrue(negativeSize.getNumberOfElements() > 0);
+
+        RestResponsePage<CountryJson> beyondLastPage = museumGatewayApiClient.getCountries(1000, 10, null, 200);
+        assertTrue(beyondLastPage.getContent().isEmpty());
+        assertEquals(0, beyondLastPage.getNumberOfElements());
+        assertTrue(beyondLastPage.isLast());
+    }
+
+    @Test
+    @DisplayName("GET(/api/country) проверка сортировки по названию")
+    void pageCountrySortingTest() {
+        // Сортировка по названию по возрастанию
+        RestResponsePage<CountryJson> ascSorted = museumGatewayApiClient.getCountries(0, 20, "name,asc", 200);
+        List<CountryJson> ascCountries = ascSorted.getContent();
+
+        for (int i = 0; i < ascCountries.size() - 1; i++) {
+            String current = ascCountries.get(i).name();
+            String next = ascCountries.get(i + 1).name();
+            assertTrue(current.compareToIgnoreCase(next) <= 0,
+                    "Countries should be sorted in ascending order: " + current + " should come before " + next);
+        }
+
+        RestResponsePage<CountryJson> descSorted = museumGatewayApiClient.getCountries(0, 20, "name,desc", 200);
+        List<CountryJson> descCountries = descSorted.getContent();
+
+        for (int i = 0; i < descCountries.size() - 1; i++) {
+            String current = descCountries.get(i).name();
+            String next = descCountries.get(i + 1).name();
+            assertTrue(current.compareToIgnoreCase(next) >= 0,
+                    "Countries should be sorted in descending order: " + current + " should come after " + next);
+        }
+    }
+
+    @Test
+    @DisplayName("GET(/api/country) проверка различных параметров сортировки")
+    void pageCountryDifferentSortingTest() {
+        // Разные форматы сортировки
+        RestResponsePage<CountryJson> sort1 = museumGatewayApiClient.getCountries(0, 10, "name,asc", 200);
+        RestResponsePage<CountryJson> sort2 = museumGatewayApiClient.getCountries(0, 10, "name,desc", 200);
+
+        // Проверяем, что разная сортировка дает разные результаты на первой странице
+        List<String> ascNames = sort1.getContent().stream()
+                .map(CountryJson::name)
+                .collect(Collectors.toList());
+        List<String> descNames = sort2.getContent().stream()
+                .map(CountryJson::name)
+                .collect(Collectors.toList());
+
+        assertNotEquals(ascNames, descNames, "Ascending and descending sort should produce different results");
+    }
 }
