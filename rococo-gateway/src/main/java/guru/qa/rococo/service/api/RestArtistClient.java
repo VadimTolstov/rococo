@@ -128,7 +128,7 @@ public class RestArtistClient {
 
         ResponseEntity<ArtistJson> response = restTemplate.exchange(
                 uri,
-                HttpMethod.PATCH,  // Явное указание метода PATCH
+                HttpMethod.PATCH,
                 request,
                 ArtistJson.class
         );
