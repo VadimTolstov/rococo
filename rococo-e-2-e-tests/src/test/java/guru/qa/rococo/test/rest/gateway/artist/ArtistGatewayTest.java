@@ -73,10 +73,10 @@ public class ArtistGatewayTest {
 
 
   @Test
-  @DisplayName("POST(/api/artist)  ошибка при создании художника c невалидным токином")
+  @DisplayName("POST(/api/artist)  ошибка при создании художника с поддельным токином")
   @User
   @ApiLogin
-  void addArtistIncorrectToken() {
+  void addArtistFakeToken() {
     final ArtistJson request = new ArtistJson(
         null,
         RandomDataUtils.randomArtistName(),
@@ -85,6 +85,66 @@ public class ArtistGatewayTest {
     );
     final HttpException ex = assertThrows(HttpException.class,
         () -> artistGatewayApiClient.createArtist(request, RandomDataUtils.fakeJwt(), 401));
+    assertEquals(401, ex.code());
+  }
+
+  @Test
+  @DisplayName("PATCH(/api/artist)  обновление данных художника")
+  @User
+  @ApiLogin
+  @Content(artistCount = 1)
+  void authorizedUserShouldCanEditArtist(@Token String token, ContentJson content) {
+    final ArtistJson contentArtist = content.artists().iterator().next();
+    final ArtistJson request = new ArtistJson(
+        contentArtist.id(),
+        RandomDataUtils.randomArtistName(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR)
+    );
+    final ArtistJson response = artistGatewayApiClient.updateArtist(request, token, 200);
+    assertNotNull(response);
+    assertAll(
+        () -> assertNotNull(response),
+        () -> assertEquals(request.id(), response.id()),
+        () -> assertEquals(request.name(), response.name()),
+        () -> assertEquals(request.biography(), response.biography()),
+        () -> assertEquals(request.photo(), response.photo()));
+  }
+
+
+  @Test
+  @DisplayName("PATCH(/api/artist) данные художника не обновляются без токена")
+  @User
+  @ApiLogin
+  @Content(artistCount = 1)
+  void artistsAreNotUpdatedWithoutToken(ContentJson content) {
+    final ArtistJson contentArtist = content.artists().iterator().next();
+    final ArtistJson request = new ArtistJson(
+        contentArtist.id(),
+        RandomDataUtils.randomArtistName(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR)
+    );
+    final HttpException ex = assertThrows(HttpException.class,
+        () -> artistGatewayApiClient.updateArtist(request, "", 401));
+    assertEquals(401, ex.code());
+  }
+
+  @Test
+  @DisplayName("PATCH(/api/artist) данные художника не обновляются с поддельным токином")
+  @User
+  @ApiLogin
+  @Content(artistCount = 1)
+  void artistsAreNotUpdatedWithoutFakeToken(ContentJson content) {
+    final ArtistJson contentArtist = content.artists().iterator().next();
+    final ArtistJson request = new ArtistJson(
+        contentArtist.id(),
+        RandomDataUtils.randomArtistName(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR)
+    );
+    final HttpException ex = assertThrows(HttpException.class,
+        () -> artistGatewayApiClient.updateArtist(request, RandomDataUtils.fakeJwt(), 401));
     assertEquals(401, ex.code());
   }
 
@@ -401,4 +461,6 @@ public class ArtistGatewayTest {
         "photo: Размер фото не должен превышать 1MB"
     );
   }
+
+
 }

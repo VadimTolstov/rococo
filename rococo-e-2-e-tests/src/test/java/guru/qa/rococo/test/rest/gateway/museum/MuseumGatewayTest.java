@@ -109,6 +109,82 @@ public class MuseumGatewayTest {
   }
 
   @Test
+  @DisplayName("PATCH(/api/artist)  обновление данных музея")
+  @User
+  @ApiLogin
+  @Content(museumCount = 1)
+  void authorizedUserShouldCanEditMuseum(@Token String token, ContentJson content) {
+    final MuseumJson contentMuseum = content.museums().iterator().next();
+    final CountryJson country = museumGatewayApiClient
+        .getCountries(0, 1, null, 200)
+        .iterator()
+        .next();
+    final MuseumJson request = new MuseumJson(
+        contentMuseum.id(),
+        RandomDataUtils.museum(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR),
+        new GeoJson(RandomDataUtils.city(), country)
+    );
+    final MuseumJson response = museumGatewayApiClient.updateMuseum(request, token, 200);
+    assertNotNull(response);
+    assertAll(
+        () -> assertNotNull(response),
+        () -> assertEquals(request.title(), response.title()),
+        () -> assertEquals(request.description(), response.description()),
+        () -> assertEquals(request.photo(), response.photo()),
+        () -> assertEquals(request.geo(), response.geo()));
+  }
+
+
+  @Test
+  @DisplayName("PATCH(/api/artist) данные музея не обновляются без токена")
+  @User
+  @ApiLogin
+  @Content(museumCount = 1)
+  void museumAreNotUpdatedWithoutToken(ContentJson content) {
+    final MuseumJson contentMuseum = content.museums().iterator().next();
+    final CountryJson country = museumGatewayApiClient
+        .getCountries(0, 1, null, 200)
+        .iterator()
+        .next();
+    final MuseumJson request = new MuseumJson(
+        contentMuseum.id(),
+        RandomDataUtils.museum(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR),
+        new GeoJson(RandomDataUtils.city(), country)
+    );
+    final HttpException ex = assertThrows(HttpException.class,
+        () -> museumGatewayApiClient.updateMuseum(request, "", 401));
+    assertEquals(401, ex.code());
+  }
+
+  @Test
+  @DisplayName("PATCH(/api/artist) данные музея не обновляются с поддельным токином")
+  @User
+  @ApiLogin
+  @Content(museumCount = 1)
+  void museumAreNotUpdatedWithoutFakeToken(ContentJson content) {
+    final MuseumJson contentMuseum = content.museums().iterator().next();
+    final CountryJson country = museumGatewayApiClient
+        .getCountries(0, 1, null, 200)
+        .iterator()
+        .next();
+    final MuseumJson request = new MuseumJson(
+        contentMuseum.id(),
+        RandomDataUtils.museum(),
+        RandomDataUtils.shortBio(),
+        RandomDataUtils.randomImageString(IMAGE_DIR),
+        new GeoJson(RandomDataUtils.city(), country)
+    );
+    final HttpException ex = assertThrows(HttpException.class,
+        () -> museumGatewayApiClient.updateMuseum(request, RandomDataUtils.fakeJwt(), 401));
+    assertEquals(401, ex.code());
+  }
+
+
+  @Test
   @DisplayName("POST(/api/museum)  ошибка при создании музея без названия")
   @User
   @ApiLogin

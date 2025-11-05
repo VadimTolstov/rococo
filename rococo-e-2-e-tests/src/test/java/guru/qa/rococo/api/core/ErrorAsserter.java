@@ -45,11 +45,11 @@ public interface ErrorAsserter {
 
     assertEquals(statusCode, ex.code(), "HTTP status code not as expected");
     assertAll(
-        // Проверяем код ошибки через геттер
+        // Проверяем код ошибки
         () -> assertEquals(code, actual.status(), "Error code mismatch"),
-        // Проверяем сообщение через геттер
+        // Проверяем сообщение
         () -> assertEquals(message, actual.detail(), "Error message mismatch"),
-        // Проверяем домен через геттер
+        // Проверяем домен
         () -> assertEquals(domain, actual.path(), "Error domain mismatch"),
         // Проверяем детальные ошибки
         () -> {
