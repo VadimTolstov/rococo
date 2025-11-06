@@ -44,20 +44,4 @@ public record PaintingResponseJson(
                 museum
         );
     }
-
-//    /** todo стереть если не нужно
-//     * Преобразует PaintingJson в PaintingEntity.
-//     *
-//     * @return Объект PaintingEntity.
-//     */
-//    public @Nonnull PaintingEntity toEntity() {
-//        PaintingEntity entity = new PaintingEntity();
-//        entity.setId(this.id);
-//        entity.setTitle(this.title);
-//        entity.setDescription(this.description);
-//        entity.setArtist(this.artist != null ? this.artist.toEntity() : null);
-//        entity.setMuseum(this.museum != null ? this.museum.toEntity() : null);
-//        entity.setContent(this.content != null ? this.content.getBytes(StandardCharsets.UTF_8) : null);
-//        return entity;
-//    }
 }

@@ -1,5 +1,6 @@
 package guru.qa.rococo.service.api.gateway;
 
+import guru.qa.rococo.api.core.ErrorAsserter;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.api.gateway.PaintingGatewayApi;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class PaintingGatewayApiClient implements RequestExecutor {
+public class PaintingGatewayApiClient implements RequestExecutor, ErrorAsserter {
   private static final Config CFG = Config.getInstance();
 
   private final PaintingGatewayApi paintingApi;
@@ -64,12 +65,12 @@ public class PaintingGatewayApiClient implements RequestExecutor {
    * @see PaintingJson
    */
   @Step("Получаем список картин по authorId = {authorId}, page = {page}, page = {page}, size = {size}, sort = {sort}, title = {title}")
-  public @NonNull RestResponsePage<PaintingJson> getPaintingsByAuthorId(@Nullable Integer page,
+  public @NonNull RestResponsePage<PaintingJson> getPaintingsByAuthorId(@NonNull UUID authorId,
+                                                                        @Nullable Integer page,
                                                                         @Nullable Integer size,
                                                                         @Nullable String sort,
-                                                                        @NonNull UUID authorId,
                                                                         int statusCode) {
-    return executePage(paintingApi.getPaintingsByAuthorId(page, size, sort, authorId), statusCode);
+    return executePage(paintingApi.getPaintingsByAuthorId(authorId, page, size, sort), statusCode);
   }
 
   /**

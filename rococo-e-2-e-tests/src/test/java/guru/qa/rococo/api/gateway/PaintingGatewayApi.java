@@ -22,10 +22,10 @@ public interface PaintingGatewayApi {
 
   @GET("/api/painting/author/{id}")
   Call<RestResponsePage<PaintingJson>> getPaintingsByAuthorId(
+      @Path("id") UUID id,
       @Query("page") Integer page,
       @Query("size") Integer size,
-      @Query("sort") String sort,
-      @Path("id") UUID id
+      @Query("sort") String sort
       );
 
   @POST("/api/painting")
