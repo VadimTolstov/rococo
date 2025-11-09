@@ -28,11 +28,10 @@ public class SessionGatewayTest {
   @DisplayName("GET(/api/session)  получения сесии пользователя без токена")
   void getSessionNotToken() {
     final SessionJson emptySession = sessionGatewayApiClient.getSession("", 200);
-    assertAll(() -> {
-          assertNull(emptySession.username());
-          assertNull(emptySession.issuedAt());
-          assertNull(emptySession.expiresAt());
-        }
+    assertAll(
+        () -> assertNull(emptySession.username()),
+        () -> assertNull(emptySession.issuedAt()),
+        () -> assertNull(emptySession.expiresAt())
     );
   }
 
@@ -40,11 +39,10 @@ public class SessionGatewayTest {
   @DisplayName("GET(/api/session)  получения сесии пользователя с поддельным токеном")
   void getSessionFakeToken() {
     final SessionJson emptySession = sessionGatewayApiClient.getSession(RandomDataUtils.fakeJwt(), 200);
-    assertAll(() -> {
-          assertNull(emptySession.username());
-          assertNull(emptySession.issuedAt());
-          assertNull(emptySession.expiresAt());
-        }
+    assertAll(
+        () -> assertNull(emptySession.username()),
+        () -> assertNull(emptySession.issuedAt()),
+        () -> assertNull(emptySession.expiresAt())
     );
   }
 

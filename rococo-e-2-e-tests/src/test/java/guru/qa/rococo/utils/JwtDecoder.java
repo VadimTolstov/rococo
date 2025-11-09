@@ -15,7 +15,7 @@ public final class JwtDecoder {
    * Верификацию подписи НЕ делает – только декодирует.
    *
    * @param bearerToken строка вида "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
-   * @return SessionJson с заполненными полями username, issuedAt, expiresAt
+   * @return {@link SessionJson} с заполненными полями username, issuedAt, expiresAt
    * @throws IllegalArgumentException если токен не валиден
    */
   public static @NonNull SessionJson toSessionJson(String bearerToken) {

@@ -73,7 +73,7 @@ public class ArtistGatewayTest {
 
 
   @Test
-  @DisplayName("POST(/api/artist)  ошибка при создании художника с поддельным токином")
+  @DisplayName("POST(/api/artist)  ошибка при создании художника с поддельным токеном")
   @User
   @ApiLogin
   void addArtistFakeToken() {
@@ -131,7 +131,7 @@ public class ArtistGatewayTest {
   }
 
   @Test
-  @DisplayName("PATCH(/api/artist) данные художника не обновляются с поддельным токином")
+  @DisplayName("PATCH(/api/artist) данные художника не обновляются с поддельным токеном")
   @User
   @ApiLogin
   @Content(artistCount = 1)
@@ -461,6 +461,4 @@ public class ArtistGatewayTest {
         "photo: Размер фото не должен превышать 1MB"
     );
   }
-
-
 }

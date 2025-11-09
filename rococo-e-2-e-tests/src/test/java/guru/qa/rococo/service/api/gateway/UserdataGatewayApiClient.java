@@ -1,5 +1,6 @@
 package guru.qa.rococo.service.api.gateway;
 
+import guru.qa.rococo.api.core.ErrorAsserter;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.api.gateway.UserDataGatewayApi;
@@ -9,7 +10,7 @@ import io.qameta.allure.Step;
 import lombok.NonNull;
 import okhttp3.logging.HttpLoggingInterceptor;
 
-public class UserdataGatewayApiClient implements RequestExecutor {
+public class UserdataGatewayApiClient implements RequestExecutor, ErrorAsserter {
   private static final Config CFG = Config.getInstance();
 
   private final UserDataGatewayApi userdataApi;
