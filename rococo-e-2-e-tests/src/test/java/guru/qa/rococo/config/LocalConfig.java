@@ -2,6 +2,8 @@ package guru.qa.rococo.config;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
 enum LocalConfig implements Config {
     instance;
 
@@ -93,5 +95,11 @@ enum LocalConfig implements Config {
     @Override
     public String allureDockerServiceUrl() {
         return "http://127.0.0.1:5050/";
+    }
+
+    @Nonnull
+    @Override
+    public String kafkaAddress() {
+        return "127.0.0.1:9092";
     }
 }

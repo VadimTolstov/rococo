@@ -1,6 +1,7 @@
 package guru.qa.rococo.config;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public interface Config {
 
@@ -58,4 +59,17 @@ public interface Config {
 
     @Nonnull
     String allureDockerServiceUrl();
+
+    @Nonnull
+    String kafkaAddress();
+
+    @Nonnull
+    default List<String> kafkaTopics() {
+        return List.of("users");
+    }
+
+    @Nonnull
+    default String defaultPassword(){
+        return "12345";
+    }
 }

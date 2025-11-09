@@ -26,7 +26,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
 
   private final AuthClient authClient = new AuthApiClient();
   private final UserdataClient userdataClient = new UserdataApiClient();
-  private final String PASSWORD = "12345";
+  private final String PASSWORD = Config.getInstance().defaultPassword();
 
   @Override
   @Step("Создаем пользователе перед началом теста")

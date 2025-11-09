@@ -98,4 +98,10 @@ enum DockerConfig implements Config {
     public String imageContentBaseDir() {
         return "img/content/";
     }
+
+    @Nonnull
+    @Override
+    public String kafkaAddress() {
+        return "kafka:9092";
+    }
 }
