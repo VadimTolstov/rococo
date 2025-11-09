@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KafkaService implements Runnable {
@@ -27,7 +28,7 @@ public class KafkaService implements Runnable {
 
   static {
     properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, CFG.kafkaAddress());
-    properties.put(ConsumerConfig.GROUP_ID_CONFIG, "test");
+    properties.put(ConsumerConfig.GROUP_ID_CONFIG, "test " + UUID.randomUUID());
     properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -43,7 +44,7 @@ public class KafkaService implements Runnable {
   }
 
   public static UserJson getUser(String username) throws InterruptedException {
-    return store.get(username, 5000L);
+    return store.get(username, 10000L);
   }
 
   @Override

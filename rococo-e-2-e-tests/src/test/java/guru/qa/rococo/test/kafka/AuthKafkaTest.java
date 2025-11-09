@@ -1,12 +1,12 @@
 package guru.qa.rococo.test.kafka;
 
 import guru.qa.rococo.config.Config;
+import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.jupiter.annotation.meta.KafkaTest;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.service.AuthClient;
 import guru.qa.rococo.service.api.AuthApiClient;
 import guru.qa.rococo.service.kafka.KafkaService;
-import guru.qa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,11 +22,10 @@ public class AuthKafkaTest {
   private static final String PASSWORD = Config.getInstance().defaultPassword();
 
   @Test
+  @User
   @DisplayName("При регистрации пользователь отправляется в kafka")
-  void userShouldBeProducedToKafka() throws Exception {
-    final String username = RandomDataUtils.randomUsername();
-
-    authClient.createUser(username, PASSWORD);
+  void userShouldBeProducedToKafka(UserJson user) throws Exception {
+    final String username = user.username();
 
     final UserJson userFromKafka = Objects.requireNonNull(KafkaService.getUser(username));
     Assertions.assertEquals(
