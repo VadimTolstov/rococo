@@ -98,6 +98,8 @@ dependencies {
     testImplementation 'com.github.h-thurow:simple-jndi:0.25.0'
     testImplementation "org.assertj:assertj-core:${assertJVersion}"
 
+    //библиотека для парсинга JWT без верификации
+    testImplementation 'com.auth0:java-jwt:4.4.0'
     // Kafka
     testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
 

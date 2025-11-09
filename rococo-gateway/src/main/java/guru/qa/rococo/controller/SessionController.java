@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Контроллер для работы с сессиями пользователя.
@@ -41,9 +42,9 @@ public class SessionController {
                     // Извлекаем логин пользователя из стандартного поля JWT "sub"
                     principal.getClaim("sub"),
                     // Конвертируем Instant в Date для времени выдачи токена
-                    Date.from(principal.getIssuedAt()),
+                    Date.from(Objects.requireNonNull(principal.getIssuedAt())),
                     // Конвертируем Instant в Date для времени истечения токена
-                    Date.from(principal.getExpiresAt())
+                    Date.from(Objects.requireNonNull(principal.getExpiresAt()))
             );
         } else {
             // Возвращаем пустую сессию если аутентификация отсутствует
