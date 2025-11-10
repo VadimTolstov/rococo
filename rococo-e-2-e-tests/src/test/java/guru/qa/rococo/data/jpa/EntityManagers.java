@@ -1,5 +1,6 @@
 package guru.qa.rococo.data.jpa;
 
+import guru.qa.rococo.config.Config;
 import guru.qa.rococo.data.jdbc.DataSources;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -13,27 +14,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ParametersAreNonnullByDefault
 public class EntityManagers {
-    private EntityManagers() {
-    }
+  private EntityManagers() {
+  }
 
-    private static final Map<String, EntityManagerFactory> emfs = new ConcurrentHashMap<>();
+  private static final Map<String, EntityManagerFactory> emfs = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("resource")
-    @Nonnull
-    public static EntityManager em(String jdbcUrl) {
-        return new ThreadSafeEntityManager(
-                emfs.computeIfAbsent(
-                        jdbcUrl,
-                        key -> {
-                            DataSources.dataSource(jdbcUrl);
-                            final String persistenceUnitName = StringUtils.substringAfter(jdbcUrl, "5432/");
-                            return Persistence.createEntityManagerFactory(persistenceUnitName);
-                        }
-                ).createEntityManager()
-        );
-    }
+  @SuppressWarnings("resource")
+  @Nonnull
+  public static EntityManager em(String jdbcUrl) {
+    return new ThreadSafeEntityManager(
+        emfs.computeIfAbsent(
+            jdbcUrl,
+            key -> {
+              DataSources.dataSource(jdbcUrl);
+              final String persistenceUnitName = StringUtils.substringAfter(jdbcUrl, Config.getInstance().dbPort() + "/");
+              return Persistence.createEntityManagerFactory(persistenceUnitName);
+            }
+        ).createEntityManager()
+    );
+  }
 
-    public static void closeAllEmfs() {
-        emfs.values().forEach(EntityManagerFactory::close);
-    }
+  public static void closeAllEmfs() {
+    emfs.values().forEach(EntityManagerFactory::close);
+  }
 }

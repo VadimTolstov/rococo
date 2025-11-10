@@ -10,6 +10,18 @@ enum DockerConfig implements Config {
 
     @Nonnull
     @Override
+    public String dbDriver() {
+        return "jdbc:postgresql";
+    }
+
+    @NotNull
+    @Override
+    public String dbPort() {
+        return "5432";
+    }
+
+    @Nonnull
+    @Override
     public String frontUrl() {
         return "http://frontend.rococo.dc/";
     }
@@ -79,6 +91,7 @@ enum DockerConfig implements Config {
     public String paintingJdbcUrl() {
         return "jdbc:postgresql://127.0.0.1:5432/rococo-painting";
     }
+
 
     @NotNull
     @Override
