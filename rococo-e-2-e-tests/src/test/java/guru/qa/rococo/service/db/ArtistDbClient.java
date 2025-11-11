@@ -48,7 +48,9 @@ public class ArtistDbClient implements ArtistClient {
   @Step("Обновляем данные художника на {artist}")
   public @Nullable ArtistJson updateArtist(@NonNull ArtistJson artist) {
     return xaTransactionTemplate.execute(() -> {
-          final ArtistJson oldArtist = getArtist(artist.id());
+      final ArtistJson oldArtist = artistRepository.findById(artist.id())
+          .map(ArtistMapper::mapToJson)
+          .orElse(null);
           if (oldArtist != null) {
             return ArtistMapper.mapToJson(
                 artistRepository.update(ArtistMapper.mapToEntity(artist)));
