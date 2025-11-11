@@ -28,6 +28,10 @@ public interface HibernateRepository<T> {
     return entity;
   }
 
+  default Optional<T> findById(UUID uuid) {
+    return Optional.ofNullable(em().find(getEntityClass(), uuid));
+  }
+
   default void remove(T entity) {
     em().joinTransaction();
     em().remove(em().contains(entity) ? entity : em().merge(entity));
@@ -74,6 +78,7 @@ public interface HibernateRepository<T> {
     em().createQuery(query)
         .setParameter("uuids", getUuids(uuids))
         .executeUpdate();
+    em().clear();
   }
 
   private List<UUID> getUuids(List<UUID> uuids) {

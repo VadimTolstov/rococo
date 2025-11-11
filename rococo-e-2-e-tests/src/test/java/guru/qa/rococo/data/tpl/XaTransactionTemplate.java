@@ -27,6 +27,7 @@ public class XaTransactionTemplate {
     }
 
 
+    @SafeVarargs
     public final @Nullable <T> T execute(Supplier<T>... actions) {
         UserTransaction ut = new UserTransactionImp();
         try {

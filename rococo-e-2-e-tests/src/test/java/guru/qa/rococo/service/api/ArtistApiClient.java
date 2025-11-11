@@ -14,6 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ArtistApiClient implements ArtistClient, RequestExecutor {
@@ -39,8 +40,8 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
    */
   @Step("Получения художника по id = {id}")
   @Override
-  public @NonNull ArtistJson getArtist(@NonNull String id) {
-    return execute(artistApi.getArtist(UUID.fromString(id)), HttpStatus.SC_OK);
+  public @NonNull ArtistJson getArtist(@NonNull UUID id) {
+    return execute(artistApi.getArtist(id), HttpStatus.SC_OK);
   }
 
   /**
@@ -94,11 +95,26 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
    */
   @Step("Получаем художников по name = {name}, page = {page}, size = {size}, sort = {sort}")
   @Override
-  public @NonNull RestResponsePage<ArtistJson> getListArtists(@Nullable String name,
-                                                              @Nullable Integer page,
-                                                              @Nullable Integer size,
-                                                              @Nullable String sort) {
+  public @NonNull RestResponsePage<ArtistJson> getPageListArtists(@Nullable String name,
+                                                                  @Nullable Integer page,
+                                                                  @Nullable Integer size,
+                                                                  @Nullable String sort) {
 
     return executePage(artistApi.getArtists(name, page, size, sort), HttpStatus.SC_OK);
+  }
+
+  @Override
+  public List<ArtistJson> getListArtists(@NonNull List<UUID> uuidList) {
+    throw new UnsupportedOperationException("Can`t getListArtists artist using API");
+  }
+
+  @Override
+  public void remove(@NonNull ArtistJson artist) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
+  }
+
+  @Override
+  public void removeList(@NonNull List<UUID> uuidList) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
   }
 }

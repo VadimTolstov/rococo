@@ -6,6 +6,7 @@ import guru.qa.rococo.model.rest.museum.MuseumJson;
 import lombok.NonNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 public interface MuseumClient {
@@ -27,4 +28,8 @@ public interface MuseumClient {
   MuseumJson createMuseum(@NonNull MuseumJson museumJson);
 
   MuseumJson updateMuseum(@NonNull MuseumJson museumJson);
+
+  void remove(@NonNull UUID id);
+
+  void removeList(@NonNull List<UUID> uuidList);
 }

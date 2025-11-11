@@ -5,6 +5,7 @@ import guru.qa.rococo.model.rest.painting.PaintingJson;
 import lombok.NonNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 public interface PaintingClient {
@@ -22,7 +23,13 @@ public interface PaintingClient {
       @Nullable String sort,
       @NonNull UUID authorId);
 
+  List<PaintingJson> getPaintingsListByAuthorId(UUID authorId);
+
   PaintingJson createPainting(@NonNull PaintingJson museumJson);
 
   PaintingJson updatePainting(@NonNull PaintingJson museumJson);
+
+  void remove(@NonNull UUID id);
+
+  void removeList(@NonNull List<UUID> uuidList);
 }

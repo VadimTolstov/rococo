@@ -13,6 +13,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class PaintingApiClient implements PaintingClient, RequestExecutor {
@@ -74,6 +75,11 @@ public class PaintingApiClient implements PaintingClient, RequestExecutor {
     return executePage(paintingApi.getPaintingsByAuthorId(page, size, sort, authorId), HttpStatus.SC_OK);
   }
 
+  @Override
+  public List<PaintingJson> getPaintingsListByAuthorId(UUID authorId) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
+  }
+
   /**
    * Создает новую картину в системе.
    * Отправляет POST-запрос к API с данными новой картины для сохранения.
@@ -107,5 +113,15 @@ public class PaintingApiClient implements PaintingClient, RequestExecutor {
   @Override
   public @NonNull PaintingJson updatePainting(@NonNull PaintingJson paintingJson) {
     return execute(paintingApi.patchPainting(paintingJson), HttpStatus.SC_OK);
+  }
+
+  @Override
+  public void remove(@NonNull UUID id) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
+  }
+
+  @Override
+  public void removeList(@NonNull List<UUID> uuidList) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
   }
 }

@@ -72,7 +72,7 @@ public class PaintingExtension implements BeforeEachCallback {
                               .filter(artist -> artistName.equals(artist.name()))
                               .findFirst()
                               .orElseGet(() ->
-                                  artistClient.getListArtists(artistName, null, null, null)
+                                  artistClient.getPageListArtists(artistName, null, null, null)
                                       .stream()
                                       .filter(artist -> artistName.equalsIgnoreCase(artist.name()))
                                       .findFirst()

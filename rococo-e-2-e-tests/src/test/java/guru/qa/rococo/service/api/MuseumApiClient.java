@@ -14,6 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class MuseumApiClient implements MuseumClient, RequestExecutor {
@@ -123,5 +124,15 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
   @Override
   public @NonNull MuseumJson updateMuseum(@NonNull MuseumJson museumJson) {
     return execute(museumApi.updateMuseum(museumJson), HttpStatus.SC_OK);
+  }
+
+  @Override
+  public void remove(@NonNull UUID id) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
+  }
+
+  @Override
+  public void removeList(@NonNull List<UUID> uuidList) {
+    throw new UnsupportedOperationException("Can`t remove artist using API");
   }
 }
