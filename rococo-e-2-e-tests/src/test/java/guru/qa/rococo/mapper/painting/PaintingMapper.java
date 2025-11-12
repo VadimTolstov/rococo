@@ -17,7 +17,7 @@ public class PaintingMapper {
      * @param entity Сущность PaintingEntity.
      * @return Объект PaintingJson.
      */
-    public @NonNull PaintingJson toJson(@NonNull PaintingEntity entity, @NonNull ArtistJson artist, @NonNull MuseumJson museum) {
+    public static @NonNull PaintingJson mapToJson(@NonNull PaintingEntity entity,  ArtistJson artist,  MuseumJson museum) {
         return new PaintingJson(
                 entity.getId(),
                 entity.getTitle(),
@@ -36,7 +36,7 @@ public class PaintingMapper {
      * @param json Сущность PaintingJson.
      * @return Объект PaintingEntity.
      */
-    public @NonNull PaintingEntity toEntity(@NonNull PaintingJson json) {
+    public static @NonNull PaintingEntity mapToEntity(@NonNull PaintingJson json) {
         return new PaintingEntity(
                 json.id(),
                 json.title(),

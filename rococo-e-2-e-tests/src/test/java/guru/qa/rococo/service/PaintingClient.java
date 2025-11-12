@@ -23,13 +23,11 @@ public interface PaintingClient {
       @Nullable String sort,
       @NonNull UUID authorId);
 
-  List<PaintingJson> getPaintingsListByAuthorId(UUID authorId);
-
   PaintingJson createPainting(@NonNull PaintingJson museumJson);
 
   PaintingJson updatePainting(@NonNull PaintingJson museumJson);
 
-  void remove(@NonNull UUID id);
+  void remove(@NonNull PaintingJson painting);
 
   void removeList(@NonNull List<UUID> uuidList);
 }

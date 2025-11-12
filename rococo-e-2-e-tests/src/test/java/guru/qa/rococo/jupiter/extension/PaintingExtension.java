@@ -32,9 +32,9 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public class PaintingExtension implements BeforeEachCallback {
   private static final Config CFG = Config.getInstance();
-  private final String IMAGE_DIR_PAINTINGS = "paintings";
-  private final String IMAGE_DIR_ARTISTS = "artists";
-  private final String IMAGE_DIR_MUSEUMS = "museums";
+  private static final String IMAGE_DIR_PAINTINGS = "paintings";
+  private static final  String IMAGE_DIR_ARTISTS = "artists";
+  private static final String IMAGE_DIR_MUSEUMS = "museums";
 
   private final PaintingClient paintingClient = new PaintingApiClient();
   private final ArtistClient artistClient = new ArtistApiClient();

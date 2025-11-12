@@ -5,6 +5,7 @@ import guru.qa.rococo.data.entity.painting.PaintingEntity;
 import guru.qa.rococo.data.repository.ArtistRepository;
 import guru.qa.rococo.data.repository.PaintingRepository;
 import guru.qa.rococo.data.tpl.XaTransactionTemplate;
+import guru.qa.rococo.ex.RepositoryException;
 import guru.qa.rococo.mapper.artist.ArtistMapper;
 import guru.qa.rococo.model.pageable.RestResponsePage;
 import guru.qa.rococo.model.rest.artist.ArtistJson;
@@ -14,6 +15,7 @@ import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ArtistDbClient implements ArtistClient {
@@ -46,23 +48,23 @@ public class ArtistDbClient implements ArtistClient {
 
   @Override
   @Step("Обновляем данные художника на {artist}")
-  public @Nullable ArtistJson updateArtist(@NonNull ArtistJson artist) {
-    return xaTransactionTemplate.execute(() -> {
-      final ArtistJson oldArtist = artistRepository.findById(artist.id())
-          .map(ArtistMapper::mapToJson)
-          .orElse(null);
+  public @NonNull ArtistJson updateArtist(@NonNull ArtistJson artist) {
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() -> {
+          final ArtistJson oldArtist = artistRepository.findById(artist.id())
+              .map(ArtistMapper::mapToJson)
+              .orElse(null);
           if (oldArtist != null) {
             return ArtistMapper.mapToJson(
                 artistRepository.update(ArtistMapper.mapToEntity(artist)));
           }
-          return null;
+          throw new RepositoryException("updateArtist: Ошибка обновления художника с id {" + artist.id() + "}");
         }
-    );
+    ));
   }
 
   @Override
   public RestResponsePage<ArtistJson> getPageListArtists(@Nullable String name, @Nullable Integer page, @Nullable Integer size, @Nullable String sort) {
-    throw new UnsupportedOperationException("Can`t getListArtists artist using API");
+    throw new UnsupportedOperationException("Can`t getPageListArtists artist using DB");
   }
 
   @Override

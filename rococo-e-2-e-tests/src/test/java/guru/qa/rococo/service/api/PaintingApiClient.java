@@ -75,11 +75,6 @@ public class PaintingApiClient implements PaintingClient, RequestExecutor {
     return executePage(paintingApi.getPaintingsByAuthorId(page, size, sort, authorId), HttpStatus.SC_OK);
   }
 
-  @Override
-  public List<PaintingJson> getPaintingsListByAuthorId(UUID authorId) {
-    throw new UnsupportedOperationException("Can`t remove artist using API");
-  }
-
   /**
    * Создает новую картину в системе.
    * Отправляет POST-запрос к API с данными новой картины для сохранения.
@@ -116,7 +111,7 @@ public class PaintingApiClient implements PaintingClient, RequestExecutor {
   }
 
   @Override
-  public void remove(@NonNull UUID id) {
+  public void remove(@NonNull PaintingJson painting) {
     throw new UnsupportedOperationException("Can`t remove artist using API");
   }
 
