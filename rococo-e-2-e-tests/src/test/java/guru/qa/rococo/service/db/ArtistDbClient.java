@@ -64,7 +64,14 @@ public class ArtistDbClient implements ArtistClient {
 
   @Override
   public RestResponsePage<ArtistJson> getPageListArtists(@Nullable String name, @Nullable Integer page, @Nullable Integer size, @Nullable String sort) {
-    throw new UnsupportedOperationException("Can`t getPageListArtists artist using DB");
+    if (name != null) {
+      final List<ArtistJson> artistJsonList = artistRepository.findByName(name)
+          .stream()
+          .map(ArtistMapper::mapToJson)
+          .toList();
+      return new RestResponsePage<>(artistJsonList);
+    }
+    return new RestResponsePage<>();
   }
 
   @Override

@@ -131,7 +131,6 @@ public class PaintingExtension implements BeforeEachCallback {
             contentJson.paintings().addAll(paintingJsonList);
           });
         });
-
   }
 
   private @NonNull MuseumJson randomMuseum(String museum) {
@@ -143,7 +142,6 @@ public class PaintingExtension implements BeforeEachCallback {
             new GeoJson(RandomDataUtils.city(),
                 new CountryJson(null,
                     Country.random().getCountry()))
-
         )
     );
   }

@@ -11,6 +11,8 @@ import guru.qa.rococo.mapper.artist.ArtistMapper;
 import guru.qa.rococo.mapper.museum.MuseumMapper;
 import guru.qa.rococo.mapper.painting.PaintingMapper;
 import guru.qa.rococo.model.pageable.RestResponsePage;
+import guru.qa.rococo.model.rest.artist.ArtistJson;
+import guru.qa.rococo.model.rest.museum.MuseumJson;
 import guru.qa.rococo.model.rest.painting.PaintingJson;
 import guru.qa.rococo.service.PaintingClient;
 import io.qameta.allure.Step;
@@ -33,7 +35,53 @@ public class PaintingDbClient implements PaintingClient {
 
   @Override
   public RestResponsePage<PaintingJson> getPaintings(@Nullable Integer page, @Nullable Integer size, @Nullable String sort, @Nullable String title) {
-    throw new UnsupportedOperationException("Can`t getPaintings painting using DB");
+    if (title != null) {
+      final List<PaintingEntity> paintingEntityList = paintingRepository.findByTitle(title)
+          .stream()
+          .distinct()
+          .toList();
+
+      final List<ArtistJson> artistJsonList = artistRepository.findAllById(
+              paintingEntityList
+                  .stream()
+                  .map(PaintingEntity::getArtist)
+                  .distinct()
+                  .toList()
+          ).stream()
+          .map(ArtistMapper::mapToJson)
+          .toList();
+
+      final List<MuseumJson> museumJsonList = museumRepository.findAllById(
+              paintingEntityList
+                  .stream()
+                  .map(PaintingEntity::getMuseum)
+                  .distinct()
+                  .toList()
+          ).stream()
+          .map(MuseumMapper::mapToJson)
+          .toList();
+
+      final List<PaintingJson> paintingJsonList = paintingEntityList.stream()
+          .map(pe -> PaintingMapper.mapToJson(
+              pe,
+              artistJsonList.stream().filter(
+                      aj -> Objects.equals(pe.getArtist(), aj.id())
+                  ).distinct()
+                  .findFirst()
+                  .orElse(null),
+              museumJsonList.stream().filter(
+                      mj -> Objects.equals(pe.getMuseum(), mj.id())
+                  ).distinct()
+                  .findFirst()
+                  .orElse(null)
+          ))
+          .toList();
+
+      return new RestResponsePage<>(paintingJsonList);
+    }
+
+    return new RestResponsePage<>();
+
   }
 
   @Override
