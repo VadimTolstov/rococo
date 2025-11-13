@@ -8,30 +8,30 @@ import java.util.ArrayList;
 
 public class GeoMapper {
 
-    /**
-     * Преобразует GeoEntity в GeoJson.
-     *
-     * @param entity Сущность GeoEntity.
-     * @return Объект GeoJson.
-     */
-    public @NonNull GeoJson toJson(@NonNull GeoEntity entity) {
-        return new GeoJson(
-                entity.getCity(),
-                new CountryMapper().toJson(entity.getCountry())
-        );
-    }
+  /**
+   * Преобразует GeoEntity в GeoJson.
+   *
+   * @param entity Сущность GeoEntity.
+   * @return Объект GeoJson.
+   */
+  public static @NonNull GeoJson mapToJson(@NonNull GeoEntity entity) {
+    return new GeoJson(
+        entity.getCity(),
+        CountryMapper.mapToJson(entity.getCountry())
+    );
+  }
 
-    /**
-     * Преобразует GeoJson в GeoEntity.
-     *
-     * @return Объект GeoEntity.
-     */
-    public @NonNull GeoEntity toEntity(@NonNull GeoJson json) {
-        return new GeoEntity(
-                null,
-                json.city(),
-                new CountryMapper().toEntity(json.country()),
-                new ArrayList<>()
-        );
-    }
+  /**
+   * Преобразует GeoJson в GeoEntity.
+   *
+   * @return Объект GeoEntity.
+   */
+  public static @NonNull GeoEntity mapToEntity(@NonNull GeoJson json) {
+    return new GeoEntity(
+        null,
+        json.city(),
+        CountryMapper.mapToEntity(json.country()),
+        new ArrayList<>()
+    );
+  }
 }
