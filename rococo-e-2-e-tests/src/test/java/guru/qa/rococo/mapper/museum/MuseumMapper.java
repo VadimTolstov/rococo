@@ -32,7 +32,7 @@ public class MuseumMapper {
      * @param json Сущность MuseumJson.
      * @return Объект MuseumEntity.
      */
-    public @NonNull MuseumEntity mapToEntity(@NonNull MuseumJson json) {
+    public static @NonNull MuseumEntity mapToEntity(@NonNull MuseumJson json) {
         return new MuseumEntity(
                 json.id(),
                 json.title(),

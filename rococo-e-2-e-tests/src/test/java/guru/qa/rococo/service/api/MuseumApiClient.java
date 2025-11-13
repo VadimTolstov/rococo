@@ -127,7 +127,7 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
   }
 
   @Override
-  public void remove(@NonNull UUID id) {
+  public void remove(@NonNull MuseumJson museumJson) {
     throw new UnsupportedOperationException("Can`t remove artist using API");
   }
 

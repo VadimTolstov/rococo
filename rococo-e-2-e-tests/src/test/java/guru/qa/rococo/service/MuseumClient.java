@@ -29,7 +29,7 @@ public interface MuseumClient {
 
   MuseumJson updateMuseum(@NonNull MuseumJson museumJson);
 
-  void remove(@NonNull UUID id);
+  void remove(@NonNull MuseumJson museumJson);
 
   void removeList(@NonNull List<UUID> uuidList);
 }

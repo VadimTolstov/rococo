@@ -30,58 +30,60 @@ public class PaintingDbClient implements PaintingClient {
   private final MuseumRepository museumRepository = new MuseumRepository();
   private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
       CFG.artistJdbcUrl(),
-      CFG.paintingJdbcUrl()
+      CFG.paintingJdbcUrl(),
+      CFG.museumJdbcUrl()
   );
 
   @Override
-  public RestResponsePage<PaintingJson> getPaintings(@Nullable Integer page, @Nullable Integer size, @Nullable String sort, @Nullable String title) {
+  @Step("Получаем списка картин по title = {title}")
+  public @NonNull RestResponsePage<PaintingJson> getPaintings(@Nullable Integer page, @Nullable Integer size, @Nullable String sort, @Nullable String title) {
     if (title != null) {
-      final List<PaintingEntity> paintingEntityList = paintingRepository.findByTitle(title)
-          .stream()
-          .distinct()
-          .toList();
+      return Objects.requireNonNull(xaTransactionTemplate.execute(() -> {
+        final List<PaintingEntity> paintingEntityList = paintingRepository.findByTitle(title)
+            .stream()
+            .distinct()
+            .toList();
 
-      final List<ArtistJson> artistJsonList = artistRepository.findAllById(
-              paintingEntityList
-                  .stream()
-                  .map(PaintingEntity::getArtist)
-                  .distinct()
-                  .toList()
-          ).stream()
-          .map(ArtistMapper::mapToJson)
-          .toList();
+        final List<ArtistJson> artistJsonList = artistRepository.findAllById(
+                paintingEntityList
+                    .stream()
+                    .map(PaintingEntity::getArtist)
+                    .distinct()
+                    .toList()
+            ).stream()
+            .map(ArtistMapper::mapToJson)
+            .toList();
 
-      final List<MuseumJson> museumJsonList = museumRepository.findAllById(
-              paintingEntityList
-                  .stream()
-                  .map(PaintingEntity::getMuseum)
-                  .distinct()
-                  .toList()
-          ).stream()
-          .map(MuseumMapper::mapToJson)
-          .toList();
+        final List<MuseumJson> museumJsonList = museumRepository.findAllById(
+                paintingEntityList
+                    .stream()
+                    .map(PaintingEntity::getMuseum)
+                    .distinct()
+                    .toList()
+            ).stream()
+            .map(MuseumMapper::mapToJson)
+            .toList();
 
-      final List<PaintingJson> paintingJsonList = paintingEntityList.stream()
-          .map(pe -> PaintingMapper.mapToJson(
-              pe,
-              artistJsonList.stream().filter(
-                      aj -> Objects.equals(pe.getArtist(), aj.id())
-                  ).distinct()
-                  .findFirst()
-                  .orElse(null),
-              museumJsonList.stream().filter(
-                      mj -> Objects.equals(pe.getMuseum(), mj.id())
-                  ).distinct()
-                  .findFirst()
-                  .orElse(null)
-          ))
-          .toList();
+        final List<PaintingJson> paintingJsonList = paintingEntityList.stream()
+            .map(pe -> PaintingMapper.mapToJson(
+                pe,
+                artistJsonList.stream().filter(
+                        aj -> Objects.equals(pe.getArtist(), aj.id())
+                    ).distinct()
+                    .findFirst()
+                    .orElse(null),
+                museumJsonList.stream().filter(
+                        mj -> Objects.equals(pe.getMuseum(), mj.id())
+                    ).distinct()
+                    .findFirst()
+                    .orElse(null)
+            ))
+            .toList();
 
-      return new RestResponsePage<>(paintingJsonList);
+        return new RestResponsePage<>(paintingJsonList);
+      }));
     }
-
     return new RestResponsePage<>();
-
   }
 
   @Override
@@ -91,14 +93,14 @@ public class PaintingDbClient implements PaintingClient {
 
   @Override
   @Step("Создание картины {painting}")
-  public PaintingJson createPainting(@NonNull PaintingJson painting) {
-    return xaTransactionTemplate.execute(() ->
+  public @NonNull PaintingJson createPainting(@NonNull PaintingJson painting) {
+    return Objects.requireNonNull(xaTransactionTemplate.execute(() ->
         PaintingMapper.mapToJson(
             paintingRepository.create(PaintingMapper.mapToEntity(painting)),
             artistRepository.findById(painting.artist().id()).map(ArtistMapper::mapToJson).orElse(null),
             museumRepository.findById(painting.museum().id()).map(MuseumMapper::mapToJson).orElse(null)
         )
-    );
+    ));
   }
 
   @Override

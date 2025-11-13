@@ -50,19 +50,16 @@ public class ArtistDbClient implements ArtistClient {
   @Step("Обновляем данные художника на {artist}")
   public @NonNull ArtistJson updateArtist(@NonNull ArtistJson artist) {
     return Objects.requireNonNull(xaTransactionTemplate.execute(() -> {
-          final ArtistJson oldArtist = artistRepository.findById(artist.id())
-              .map(ArtistMapper::mapToJson)
-              .orElse(null);
-          if (oldArtist != null) {
-            return ArtistMapper.mapToJson(
-                artistRepository.update(ArtistMapper.mapToEntity(artist)));
-          }
-          throw new RepositoryException("updateArtist: Ошибка обновления художника с id {" + artist.id() + "}");
+          artistRepository.findById(artist.id())
+              .orElseThrow(() -> new RepositoryException("updateArtist: Ошибка обновления художника с id {" + artist.id() + "}"));
+          return ArtistMapper.mapToJson(
+              artistRepository.update(ArtistMapper.mapToEntity(artist)));
         }
     ));
   }
 
   @Override
+  @Step("Получаем списка художников по name = {name}")
   public RestResponsePage<ArtistJson> getPageListArtists(@Nullable String name, @Nullable Integer page, @Nullable Integer size, @Nullable String sort) {
     if (name != null) {
       final List<ArtistJson> artistJsonList = artistRepository.findByName(name)
