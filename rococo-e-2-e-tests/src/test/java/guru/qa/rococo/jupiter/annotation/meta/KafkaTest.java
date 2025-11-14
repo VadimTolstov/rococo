@@ -14,10 +14,9 @@ import java.lang.annotation.Target;
 @ExtendWith({
     AllureJunit5.class,
     UserExtension.class,
+    ContentExtension.class,
     ArtistExtension.class,
     MuseumExtension.class,
-    PaintingExtension.class,
-    ContentExtension.class
 })
 public @interface KafkaTest {
 }

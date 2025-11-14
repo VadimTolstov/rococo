@@ -35,6 +35,13 @@ public interface HibernateRepository<T> {
   default void remove(T entity) {
     em().joinTransaction();
     em().remove(em().contains(entity) ? entity : em().merge(entity));
+    em().clear();
+  }
+
+  default void removeAll() {
+    em().joinTransaction();
+    em().createQuery("DELETE FROM " + getEntityClass().getSimpleName()).executeUpdate();
+    em().clear();
   }
 
   @NonNull

@@ -144,4 +144,12 @@ public class PaintingDbClient implements PaintingClient {
       return null;
     });
   }
+
+  @Step("Полное удаление данных")
+  public void removeAll() {
+    xaTransactionTemplate.execute(() -> {
+      paintingRepository.removeAll();
+      return null;
+    });
+  }
 }

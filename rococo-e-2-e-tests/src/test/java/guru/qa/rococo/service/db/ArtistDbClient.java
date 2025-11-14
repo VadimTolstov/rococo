@@ -114,4 +114,12 @@ public class ArtistDbClient implements ArtistClient {
       return null;
     });
   }
+
+  @Step("Полное удаление данных")
+  public void removeAll() {
+    xaTransactionTemplate.execute(() -> {
+      artistRepository.removeAll();
+      return null;
+    });
+  }
 }

@@ -88,4 +88,12 @@ public class MuseumDbClient implements MuseumClient {
       return null;
     });
   }
+
+  @Step("Полное удаление данных")
+  public void removeAll() {
+    xaTransactionTemplate.execute(() -> {
+      museumRepository.removeAll();
+      return null;
+    });
+  }
 }
