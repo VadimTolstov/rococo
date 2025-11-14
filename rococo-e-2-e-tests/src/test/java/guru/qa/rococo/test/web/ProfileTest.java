@@ -85,6 +85,7 @@ public class ProfileTest {
         .getHeader()
         .assertAuthorized()
         .openProfile()
+        .checkThatFormLoaded()
         .checkNick(userNike)
         .checkImgAvatar(image);
   }

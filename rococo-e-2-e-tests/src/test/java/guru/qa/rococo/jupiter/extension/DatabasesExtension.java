@@ -10,10 +10,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class DatabasesExtension implements SuiteExtension {
 
   @Override
-  public void beforeAll(ExtensionContext context) throws Exception {
-    new PaintingDbClient().removeAll();
-    new ArtistDbClient().removeAll();
-    new MuseumDbClient().removeAll();
+  public void beforeSuite(ExtensionContext context) {
+      new PaintingDbClient().removeAll();
+      new ArtistDbClient().removeAll();
+      new MuseumDbClient().removeAll();
   }
 
   @Override

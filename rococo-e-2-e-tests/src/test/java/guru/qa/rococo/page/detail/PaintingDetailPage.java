@@ -10,6 +10,7 @@ import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -28,7 +29,7 @@ public class PaintingDetailPage extends BasePage<PaintingDetailPage> {
   @NonNull
   @Step("Проверяем, что загрузилась страница с подробной информацией о картине.")
   public PaintingDetailPage checkThatPageLoaded() {
-    cardPainting.shouldBe(visible);
+    cardPainting.shouldBe(visible, Duration.ofSeconds(10));
     return this;
   }
 

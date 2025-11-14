@@ -14,6 +14,7 @@ import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -36,7 +37,7 @@ public class ArtistDetailPage extends BasePage<ArtistDetailPage> {
   @NonNull
   @Step("Проверяем, что загрузилась страница с подробной информацией о картине.")
   public ArtistDetailPage checkThatPageLoaded() {
-    cardArtist.shouldBe(visible);
+    cardArtist.shouldBe(visible, Duration.ofSeconds(10));
     return this;
   }
 

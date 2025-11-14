@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -38,7 +39,7 @@ public class Profile extends BaseComponent<Profile> {
   @NonNull
   @Step("Проверяем, что загрузилась форма профиля")
   public Profile checkThatFormLoaded() {
-    self.shouldBe(Condition.visible);
+    self.shouldBe(Condition.visible, Duration.ofSeconds(10));
     return this;
   }
 
