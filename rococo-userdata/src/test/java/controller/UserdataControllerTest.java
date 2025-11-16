@@ -68,15 +68,6 @@ class UserdataControllerTest {
                 .andExpect(jsonPath("$.detail").value("Username не должен быть пустой или содержать одни пробелы"));
     }
 
-    @Test
-    @Disabled("а может username==null?") //todo
-    @Sql("/getUserInfo.sql")
-    void badUsername() throws Exception {
-        mockMvc.perform(get("/internal/user?username")) // параметр без значения
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail").value("Username не должен быть равен null"));
-    }
-
 
     @Test
     @Sql("/updateUserInfo.sql")

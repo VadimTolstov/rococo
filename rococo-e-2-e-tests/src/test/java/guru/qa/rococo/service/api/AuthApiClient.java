@@ -177,7 +177,6 @@ public class AuthApiClient implements AuthClient, RequestExecutor {
         CLIENT_ID
     ), HttpStatus.SC_OK);
 
-    // AuthCodeStore.INSTANCE.clear();
     return response.get("id_token").asText();
   }
 }

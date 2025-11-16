@@ -56,23 +56,15 @@ public class PaintingEntity implements Serializable {
 
     /**
      * Идентификатор художника, создавшего картину.
-     * Аннотация @ManyToOne указывает на связь "многие к одному" между картиной и художником.
-     * Аннотация @JoinColumn(name = "artist_id") указывает, что это поле будет отображаться
-     * на столбец "artist_id" в таблице painting, который является внешним ключом к таблице artist.
      */
-//    @ManyToOne todo
-//    @JoinColumn(name = "artist_id", nullable = false, referencedColumnName = "id")
+
     @Column(name = "artist_id", nullable = false)
     private UUID artist;
 
     /**
      * Идентификатор музея, в котором находится картина.
-     * Аннотация @ManyToOne указывает на связь "многие к одному" между картиной и музеем.
-     * Аннотация @JoinColumn(name = "museum_id") указывает, что это поле будет отображаться
-     * на столбец "museum_id" в таблице painting, который является внешним ключом к таблице museum.
      */
-//    @ManyToOne todo
-//    @JoinColumn(name = "museum_id", referencedColumnName = "id")
+
     @Column(name = "museum_id", nullable = false)
     private UUID museum;
 

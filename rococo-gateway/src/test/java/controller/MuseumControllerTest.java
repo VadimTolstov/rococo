@@ -144,46 +144,4 @@ public class MuseumControllerTest {
                         m.description().equals("Новое описание")
         ));
     }
-
-    //  todo Тест обработки 404 ошибки
-    /* java
-            Copy
-    @ControllerAdvice
-    public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-        @ExceptionHandler(HttpClientErrorException.NotFound.class)
-        public ResponseEntity<ErrorJson> handleNotFound(HttpClientErrorException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorJson(
-                            "not-found",
-                            "Not Found",
-                            HttpStatus.NOT_FOUND.value(),
-                            ex.getMessage()
-                    ));
-        }
-
-        // Остальные обработчики
-    }
-
-    В RestMuseumClient добавьте обработку 404:
-    public @Nonnull MuseumJson getMuseumById(@Nonnull UUID id) {
-    try {
-        // существующий код
-    } catch (HttpClientErrorException e) {
-        if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Museum not found");
-        }
-        throw e;
-    }
-}
-    @Test
-    void getMuseumNotFound() throws Exception {
-        when(restMuseumClient.getMuseumById(any())).thenThrow(
-                new HttpClientErrorException(HttpStatus.NOT_FOUND)
-        );
-
-        mockMvc.perform(get("/api/museum/{id}", UUID.randomUUID()))
-                .andExpect(status().isNotFound());
-    }
-    */
 }

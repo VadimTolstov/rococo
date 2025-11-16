@@ -126,6 +126,12 @@ test {
 //    systemProperty "test.env",
 //            System.getProperty("test.env", "docker")
 
+//mac
+//    test {
+//        systemProperties = [
+//                'test.env': System.getProperty('test.env', 'local')
+//        ]
+
     options {
         systemProperties(System.getProperties())
     }

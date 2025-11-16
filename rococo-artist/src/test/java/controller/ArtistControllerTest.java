@@ -97,24 +97,6 @@ class ArtistControllerTest {
                 .andExpect(jsonPath("$.instance").value("/internal/artist/" + nonExistingArtistId));
     }
 
-//    @Test todo проверко что имя уникально
-//    @Sql("/testdata/singleArtist.sql")
-//    void addArtist_shouldReturnConflictForDuplicateName() throws Exception {
-//        ArtistJson duplicateArtist = new ArtistJson(
-//                null,
-//                existingArtistName,
-//                "Duplicate Biography",
-//                null
-//        );
-//
-//        mockMvc.perform(post("/internal/artist")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(om.writeValueAsString(duplicateArtist)))
-//                .andExpect(status().isConflict())
-//                .andExpect(jsonPath("$.error").value("Artist name must be unique"));
-//    }
-
-
     @Test
     void updateArtist_shouldReturnNotFoundForNonExistingId() throws Exception {
         ArtistJson updatedArtist = new ArtistJson(
@@ -133,25 +115,6 @@ class ArtistControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.instance").value("/internal/artist"));
     }
-
-//    @Test todo проверко что имя уникально
-//    @Sql("/testdata/multipleArtists.sql")
-//    void updateArtist_shouldValidateUniqueName() throws Exception {
-//        ArtistJson updatedArtist = new ArtistJson(
-//                existingArtistId,
-//                "Artist 2",  // Existing name from multipleArtists.sql
-//                "Updated Bio",
-//                null
-//        );
-//
-//        mockMvc.perform(patch("/internal/artist")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(om.writeValueAsString(updatedArtist)))
-//                .andExpect(status().isConflict())
-//                .andExpect(jsonPath("$.error").value("Artist name must be unique"));
-//    }
-
-    // Edge cases
 
     @Test
     @Sql("/testdata/emptyArtists.sql")

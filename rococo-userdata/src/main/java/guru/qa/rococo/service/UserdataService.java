@@ -78,14 +78,6 @@ public class UserdataService {
     UserEntity userEntity = userdataRepository.findById(user.id())
         .orElseThrow(() -> new NotFoundException("id: Пользователь не найден по id: " + user.id()));
 
-        /*todo для безопасности  username в  Gateway в UserDataController  берется из Jwt и не позволяет его обновлять
-        if (user.username() != null && !Objects.equals(user.username(), userEntity.getUsername())) {
-            userdataRepository.findByUsername(user.username()).ifPresent(u -> {
-                throw new SameUsernameException("username: Имя пользователя '" + user.username() + "' уже занято.");
-            });
-            userEntity.setUsername(user.username());
-        }*/
-
     userEntity.setFirstname(user.firstname() != null ? user.firstname() : userEntity.getFirstname());
     userEntity.setLastname(user.lastname() != null ? user.lastname() : userEntity.getLastname());
 

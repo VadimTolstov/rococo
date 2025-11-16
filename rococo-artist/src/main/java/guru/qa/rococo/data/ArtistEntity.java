@@ -40,8 +40,6 @@ public class ArtistEntity implements Serializable {
     @Column(name = "photo",columnDefinition = "bytea")
     private byte[] photo;
 
-//    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL) todo проверить связь
-//    private List<PaintingEntity> paintings = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

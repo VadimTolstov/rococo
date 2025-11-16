@@ -25,7 +25,7 @@ public class UserdataApiClient implements UserdataClient, RequestExecutor {
 
     @Override //todo подумать над контроллером для добавления
     public @NonNull UserJson createUser(@NonNull String username, @NonNull String password) {
-        return null;
+        throw new UnsupportedOperationException("Can`t create user  using API");
     }
 
     /**
@@ -54,6 +54,6 @@ public class UserdataApiClient implements UserdataClient, RequestExecutor {
 
     @Override //todo добавить контроллер на удаление
     public @NonNull UserJson removeUser(@NonNull String username) {
-        return null;
+        throw new UnsupportedOperationException("Can`t remove user  using API");
     }
 }
