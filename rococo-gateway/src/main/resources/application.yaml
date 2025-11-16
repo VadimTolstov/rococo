@@ -55,7 +55,7 @@ spring:
         jwt:
           issuer-uri: 'http://127.0.0.1:9000'  # Локальный сервер авторизации
 
-# URL микросервисов в локальном окружении
+# URL микросервисов в локальном окружении      
 rococo-userdata:
   base-uri: 'http://127.0.0.1:8285'
 rococo-front:
@@ -68,6 +68,13 @@ rococo-painting:
   base-uri: 'http://127.0.0.1:8284'
 rococo-gateway:
   base-uri: 'http://127.0.0.1:8090'
+
+grpc:
+  client:
+    geo-service:
+      address: 'static://127.0.0.1:8286'
+      enableKeepAlive: true
+      negotiationType: PLAINTEXT
 
 ---
 # Конфигурация для профиля "docker"
@@ -103,3 +110,10 @@ rococo-painting:
   base-uri: 'http://painting.rococo.dc:8284'
 rococo-gateway:
   base-uri: 'http://gateway.rococo.dc:8090'
+
+grpc:
+  client:
+    geo-service:
+      address: "static://geo.rococo.dc:8286"
+      enableKeepAlive: true
+      negotiationType: plaintext

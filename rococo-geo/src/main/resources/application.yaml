@@ -1,0 +1,100 @@
+server:
+  port: 8283 # Порт приложения
+  error:
+    include:
+      message: true # Показывать текст ошибок в ответах
+
+spring:
+  application:
+    name: rococo-geo # Идентификатор сервиса в системе
+  mvc:
+      log-request-details: true
+  # Настройки подключения к базе данных
+  datasource:
+    # Конфигурация пула соединений HikariCP
+    hikari:
+      connection-timeout: 20000     # Таймаут подключения (20 сек)
+      minimum-idle: 10              # Минимальное количество idle-соединений
+      maximum-pool-size: 30         # Максимальный размер пула
+      idle-timeout: 10000           # Таймаут неактивных соединений (10 сек)
+      max-lifetime: 30000            # Максимальное время жизни соединения (30 сек)
+      auto-commit: true             # Автокоммит транзакций
+      username: postgres
+      password: secret
+    # Управление миграциями базы данных
+  flyway:
+    enabled: true                   # Включить Flyway
+    baseline-on-migrate: true       # Создать baseline при первой миграции
+    baseline-version: 0             # Начальная версия миграций
+    schemas: public                 # Целевая схема БД
+    locations: classpath:db/migration/rococo-geo # Путь к скриптам
+  # Настройки JPA и Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none # Отключить автоматическое создание DDL
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            # Разрешение создания LOB объектов вне контекста
+            non_contextual_creation: true  # Решение проблем с Lob-объектами
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  # Диалект БД
+    show-sql: true                 # Логировать SQL-запросы
+    generate-ddl: true             # Генерировать DDL-скрипты
+    open-in-view: false            # Запретить длинные сессии для View
+
+logging:
+  file:
+    path: ./logs/rococo-museum
+  level:
+    root: ERROR                      # Общий уровень логирования
+    org.springframework.web: ERROR   # Логи Spring Web
+    org.springframework.security: ERROR   # Логи безопасности
+    org.springframework.security.oauth2: ERROR  # Логи OAuth2
+
+---
+# Конфигурация для локальной разработки
+spring:
+  config:
+    activate:
+      on-profile: 'local'          # Активация профиля 'local'
+
+  # Отключение интеграции с Vault
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+
+  # Параметры подключения к локальной БД
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/rococo-museum'
+    username: postgres
+    password: secret
+rococo-artist:
+  base-uri: 'http://localhost:8282'
+rococo-painting:
+  base-uri: 'http://localhost:8284'
+
+---
+# Конфигурация для Docker окружения
+spring:
+  config:
+    activate:
+      on-profile: 'docker' # Активация профиля 'docker'
+
+  # Отключение Vault (как в локальном профиле)
+  autoconfigure:
+    exclude:
+      - 'org.springframework.cloud.vault.config.VaultAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultObservationAutoConfiguration'
+      - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
+  # Параметры подключения к БД в Docker-сети
+  datasource:
+    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-museum'
+    username: postgres
+    password: secret
+rococo-artist:
+  base-uri: 'http://artist.rococo.dc:8282'
+rococo-museum:
+  base-uri: 'http://painting.rococo.dc:8284'

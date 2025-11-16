@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package ru.tolstov.grpc.country;
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "ru.tolstov.grpc.country";
+option java_outer_classname = "CountryProto";
+
+service CountryService {
+  rpc Country(IdRequest) returns (CountryResponse) {}
+  rpc Countries(google.protobuf.Empty) returns (CountryListResponse) {}
+  rpc CountriesPage(CountriesRequest) returns (CountryListResponse) {}
+  rpc AddCountry(CountryRequest) returns (CountryResponse){}
+  rpc AddStreamCountry(stream CountryRequest) returns (StreamAddResponse){}
+  rpc RandomCountry(CountRequest) returns (stream CountryResponse) {}
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message CountResponse {
+  uint32 count = 1;
+}
+
+message CountriesRequest {
+  uint32 page = 1;
+  uint32 size = 2;
+}
+
+message CountRequest {
+  uint32 count = 1;
+}
+
+message CountryRequest {
+  string name = 1;
+  string code = 2;
+}
+
+message CountryResponse {
+  string  id = 1;
+  string  name = 2;
+  string code = 3;
+}
+
+message StreamAddResponse {
+  uint32 success_count = 1;
+  repeated string errors = 2;   // Сообщения об ошибках
+}
+
+message CountryListResponse {
+  repeated CountryResponse countries = 1;
+  uint32 current_page = 2;
+  uint32 total_pages = 3;
+  uint64 total_items = 4;
+}
