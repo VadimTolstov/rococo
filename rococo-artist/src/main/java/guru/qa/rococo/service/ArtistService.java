@@ -29,9 +29,9 @@ public class ArtistService {
     @Transactional(readOnly = true)
     public @Nonnull Page<ArtistJson> getAllArtists(@Nonnull Pageable pageable,
                                                    @Nullable String name) {
-        Page<ArtistEntity> entities = name == null
-                ? artistRepository.findAll(pageable)
-                : artistRepository.findByNameContainingIgnoreCase(name.trim(), pageable);
+        Page<ArtistEntity> entities = (name != null && !name.isBlank())
+                ? artistRepository.findByNameContainingIgnoreCase(name.trim(), pageable)
+                : artistRepository.findAll(pageable);
         return entities.map(ArtistJson::fromEntity);
     }
 

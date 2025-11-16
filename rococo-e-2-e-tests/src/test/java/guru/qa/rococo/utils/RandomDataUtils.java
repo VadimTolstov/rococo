@@ -47,12 +47,6 @@ public class RandomDataUtils {
     return faker.book().title() + " " + faker.weather().description();
   }
 
-  public static @Nonnull String randomSentence(int wordsCount) {
-    if (wordsCount <= 0) {
-      throw new IllegalArgumentException("Words count must be greater than zero");
-    }
-    return faker.lorem().sentence(wordsCount).trim();
-  }
 
   public static @Nonnull String randomPassword() {
     return faker.internet().password(3, 10);
