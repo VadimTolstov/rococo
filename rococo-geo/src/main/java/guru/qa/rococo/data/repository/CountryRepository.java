@@ -7,6 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CountryRepository extends JpaRepository<CountryEntity, UUID> {
-    Optional<CountryEntity> findByName(String name);
-    boolean existsByName(String name);
+  Optional<CountryEntity> findByName(String name);
+  boolean existsByName(String name);
 }

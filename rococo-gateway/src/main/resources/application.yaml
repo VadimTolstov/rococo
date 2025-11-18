@@ -71,8 +71,8 @@ rococo-gateway:
 
 grpc:
   client:
-    geo-service:
-      address: 'static://127.0.0.1:8286'
+    grpcGeoClient:
+      address: 'static://localhost:8092'
       enableKeepAlive: true
       negotiationType: PLAINTEXT
 
@@ -113,7 +113,7 @@ rococo-gateway:
 
 grpc:
   client:
-    geo-service:
-      address: "static://geo.rococo.dc:8286"
+    grpcGeoClient:
+      address: "static://geo.rococo.dc:8092"
       enableKeepAlive: true
       negotiationType: plaintext

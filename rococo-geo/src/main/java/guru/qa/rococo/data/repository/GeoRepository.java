@@ -12,10 +12,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface GeoRepository extends JpaRepository<GeoEntity, UUID> {
-    Page<GeoEntity> findByCityContainingIgnoreCase(Pageable pageable, String city);
+  Page<GeoEntity> findByCityContainingIgnoreCase(Pageable pageable, String city);
 
-    List<GeoEntity> findByCityAndCountryName(String city, String countryName);
+  List<GeoEntity> findByCityAndCountryName(String city, String countryName);
 
-    @Query("SELECT g FROM GeoEntity g WHERE LOWER(g.city) = LOWER(:city) AND g.country.id = :countryId")
-    Optional<GeoEntity> findByCityAndCountryId(@Param("city") String city, @Param("countryId") UUID countryId);
+  @Query("SELECT g FROM GeoEntity g WHERE LOWER(g.city) = LOWER(:city) AND g.country.id = :countryId")
+  Optional<GeoEntity> findByCityAndCountryId(@Param("city") String city, @Param("countryId") UUID countryId);
 }

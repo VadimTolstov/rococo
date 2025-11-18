@@ -1,8 +1,9 @@
 server:
-  port: 8283 # Порт приложения
-  error:
-    include:
-      message: true # Показывать текст ошибок в ответах
+  port: 8091
+
+grpc:
+  server:
+    port: 8092
 
 spring:
   application:
@@ -45,7 +46,7 @@ spring:
 
 logging:
   file:
-    path: ./logs/rococo-museum
+    path: ./logs/rococo-geo
   level:
     root: ERROR                      # Общий уровень логирования
     org.springframework.web: ERROR   # Логи Spring Web
@@ -68,13 +69,9 @@ spring:
 
   # Параметры подключения к локальной БД
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/rococo-museum'
+    url: 'jdbc:postgresql://localhost:5432/rococo-geo'
     username: postgres
     password: secret
-rococo-artist:
-  base-uri: 'http://localhost:8282'
-rococo-painting:
-  base-uri: 'http://localhost:8284'
 
 ---
 # Конфигурация для Docker окружения
@@ -91,10 +88,6 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
   # Параметры подключения к БД в Docker-сети
   datasource:
-    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-museum'
+    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-geo'
     username: postgres
     password: secret
-rococo-artist:
-  base-uri: 'http://artist.rococo.dc:8282'
-rococo-museum:
-  base-uri: 'http://painting.rococo.dc:8284'

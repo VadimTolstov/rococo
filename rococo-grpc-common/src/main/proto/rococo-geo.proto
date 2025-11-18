@@ -39,10 +39,11 @@ message GeoIdRequest {
 message GeoResponse {
   string id = 1;
   string city = 2;
-  repeated  CountryResponse countries = 3;
+  CountryResponse country = 3;
 }
 
 message GeoRequest {
   string id = 1;
   string city = 2;
+  CountryResponse country = 3;
 }
