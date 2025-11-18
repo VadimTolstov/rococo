@@ -1,147 +1,70 @@
 plugins {
-    // Плагин для работы со Spring Boot
-    id 'org.springframework.boot' version '3.3.2'
-    // Автоматическое управление версиями зависимостей
-    id 'io.spring.dependency-management' version '1.1.6'
-    // Сборка Docker-образов без Dockerfile
+    id 'org.springframework.boot' version '3.4.2'
     id 'com.google.cloud.tools.jib' version '3.4.1'
-    // Генерация Java классов из XSD/WSDL
-    id 'com.github.edeandrea.xjc-generation' version "1.6"
 }
 
-// Группа и версия проекта
 group = 'guru.qa'
-version = '2.0.0'
+version = '2.0.1'
 
-/**
- * Зависимости проекта:
- * - Spring Boot Starter: Веб, JPA, валидация, GraphQL
- * - Базы данных: PostgreSQL, H2 (для тестов)
- * - Инструменты: Lombok, Flyway, SpringDoc OpenAPI
- */
 dependencies {
-    // Основные зависимости Spring Boot
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation project(':rococo-grpc-common')
 
-    // Миграции баз данных
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation("net.devh:grpc-server-spring-boot-starter:${project.ext.springGrpcVersion}") {
+        exclude group: 'io.grpc'
+        exclude group: 'com.google.protobuf'
+    }
+    implementation "com.google.protobuf:protobuf-java-util:${project.ext.protobufVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${project.ext.grpcVersion}"
+    implementation "io.grpc:grpc-services:${project.ext.grpcVersion}"
+    implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
     implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
     implementation "org.flywaydb:flyway-database-postgresql:${project.ext.flywayVersion}"
-
-    // Драйвер PostgreSQL
-    runtimeOnly "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
-
-    // Генерация кода и уменьшение boilerplate
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    runtimeOnly "org.postgresql:postgresql:${project.ext.postgresDriverVersion}"
 
-    // Для работы условий <if> в Logback
-    implementation "org.codehaus.janino:janino:3.1.10"
-
-    // Интеграция с SOAP Web Services
-    implementation('org.springframework.boot:spring-boot-starter-web-services') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-    }
-    implementation 'org.springframework.ws:spring-ws-core'
-
-    // Дополнительные модули Spring
-    implementation 'org.springframework.data:spring-data-commons'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-
-    // Кастомные расширения GraphQL
-    implementation "com.tailrocks.graphql:graphql-datetime-spring-boot-starter:${project.ext.springGraphqlDateTimeVersion}"
-
-    // Интеграция с HashiCorp Vault
-    implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
-
-    // Документация OpenAPI
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.openApiVersion}"
-
-    // Генерация классов из XML схем
-    xjc "org.glassfish.jaxb:jaxb-xjc:${project.ext.jakartaJaxbVersion}"
-
-    // Тестовые зависимости
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }
 
-/**
- * Конфигурация генерации Java классов из WSDL
- * - Генерирует классы в пакет jaxb.userdata
- * - Использует кодировку UTF-8
- */
-xjcGeneration {
-    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
-    schemas {
-        wsdlSchema {
-            schemaFile = 'userdata.wsdl'       // Исходный WSDL-файл
-            javaPackageName = 'jaxb.userdata'  // Целевой Java-пакет
-            sourceSet = 'main'                 // Набор исходников для генерации
-        }
-    }
-}
-
-/**
- * Настройка исходных директорий:
- * - Добавляет сгенерированные XJC классы в исходный код
- */
-sourceSets {
-    main {
-        java {
-            srcDir('src/main/java')
-            srcDir("$buildDir/generated-sources/main/xjc") // Генерируемые классы
-        }
-    }
-}
-
-/**
- * Конфигурация Docker-образа через Jib
- */
 jib {
     container {
-        ports = ['8090'] // Открываемый порт
-        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"] // Активация профиля
-        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()] // Секреты
-        creationTime = 'USE_CURRENT_TIMESTAMP' // Временная метка образа
-        labels = [ // Метаданные
-                   'maintainer': 'Dmitrii Tuchs @dtuchs',
-                   'version'   : "${project.version}".toString()
+        ports = ['8091', '8092']
+        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
+        environment = [
+                'VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
+                'TZ'         : 'Europe/Moscow'
+        ]
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        labels = [
+                'maintainer': 'Dmitrii Tuchs @dtuchs',
+                'version'   : "${project.version}".toString()
         ]
     }
     from {
-        image = "${project.ext.dockerImage}" // Базовый образ
+        image = "${project.ext.dockerImage}"
         platforms {
             platform {
-                architecture = "${project.ext.dockerArch}" // Архитектура
+                architecture = "${project.ext.dockerArch}"
                 os = 'linux'
             }
         }
     }
     to {
-        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}" // Имя образа
-        tags = ['latest', "${project.version}"] // Теги
+        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}"
+        tags = ['latest', "${project.version}"]
     }
 }
 
-// Зависимости задач сборки
 tasks.jib.dependsOn test
 tasks.jibDockerBuild.dependsOn test
 
-// Стратегия обработки дубликатов в JAR
-tasks.named('bootJar') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-// Задача для вывода версии проекта
 tasks.register('printVersion') {
     doLast {
         println project.version
     }
 }
 
-// Настройка тестов
 tasks.named('test') {
     useJUnitPlatform()
 }

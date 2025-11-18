@@ -1,8 +1,6 @@
 plugins {
     // Плагин для работы со Spring Boot
-    id 'org.springframework.boot' version '3.3.2'
-    // Автоматическое управление версиями зависимостей
-    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.springframework.boot' version '3.4.2'
     // Сборка Docker-образов без Dockerfile
     id 'com.google.cloud.tools.jib' version '3.4.1'
     // Генерация Java классов из XSD/WSDL
@@ -23,8 +21,7 @@ dependencies {
     // Основные зависимости Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-logging'
-//   implementation 'org.fusesource.jansi:jansi:2.4.0'
+
     // Миграции баз данных
     implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
     implementation "org.flywaydb:flyway-database-postgresql:${project.ext.flywayVersion}"
@@ -35,9 +32,6 @@ dependencies {
     // Генерация кода и уменьшение boilerplate
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
-
-    // Для работы условий <if> в Logback
-    implementation "org.codehaus.janino:janino:3.1.10"
 
     // Интеграция с SOAP Web Services
     implementation('org.springframework.boot:spring-boot-starter-web-services') {
