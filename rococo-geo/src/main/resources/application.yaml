@@ -10,6 +10,8 @@ spring:
     name: rococo-geo # Идентификатор сервиса в системе
   mvc:
       log-request-details: true
+  aop:
+    proxy-target-class: false  # Использовать JDK proxies вместо CGLIB todo
   # Настройки подключения к базе данных
   datasource:
     # Конфигурация пула соединений HikariCP
@@ -48,10 +50,10 @@ logging:
   file:
     path: ./logs/rococo-geo
   level:
-    root: ERROR                      # Общий уровень логирования
-    org.springframework.web: ERROR   # Логи Spring Web
-    org.springframework.security: ERROR   # Логи безопасности
-    org.springframework.security.oauth2: ERROR  # Логи OAuth2
+    root: info                      # Общий уровень логирования
+    org.springframework.web: info   # Логи Spring Web
+    org.springframework.security: info   # Логи безопасности
+    org.springframework.security.oauth2: info  # Логи OAuth2
 
 ---
 # Конфигурация для локальной разработки

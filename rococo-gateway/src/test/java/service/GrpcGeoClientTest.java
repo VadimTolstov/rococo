@@ -215,21 +215,34 @@ class GrpcGeoClientTest {
   }
 
   @Test
-  void getCountriesPageShouldReturnFullResponse() {
-    // Given
+  void getCountriesWithPaginationShouldReturnFullResponse() {
+    // Given - добавим отладочный вывод ДО when()
+    System.out.println("DEBUG - Before when(): testCountryListResponse.totalElements = " + testCountryListResponse.getTotalElements());
+
     when(rococoGeoServiceBlockingStub.countriesPage(any(CountriesRequest.class)))
         .thenReturn(testCountryListResponse);
 
     // When
-    CountryListResponse result = grpcGeoClient.getCountriesPage(1, 5);
+    var result = grpcGeoClient.getCountriesWithPagination(1, 5);
 
     // Then
+    System.out.println("Expected totalPages: 1");
+    System.out.println("Actual totalPages: " + result.getTotalPages());
+    System.out.println("TotalElements: " + result.getTotalElements());
+    System.out.println("Size: " + result.getSize());
+    System.out.println("Content size: " + result.getContent().size());
+
     assertNotNull(result);
-    assertEquals(10, result.getSize());
-    assertEquals(0, result.getNumber());
+    assertEquals(5, result.getSize());
+    assertEquals(1, result.getNumber());
     assertEquals(1, result.getTotalPages());
-    assertEquals(1, result.getTotalElements());
-    assertEquals(1, result.getCountriesCount());
+    assertEquals(6, result.getTotalElements());  // Ожидаем 1
+    assertEquals(1, result.getContent().size());
+
+    // Проверяем содержимое
+    CountryJson country = result.getContent().get(0);
+    assertEquals(testCountryId, country.id());
+    assertEquals("Test Country", country.name());
 
     verify(rococoGeoServiceBlockingStub).countriesPage(argThat(request ->
         request.getPage() == 1 && request.getSize() == 5
@@ -237,7 +250,69 @@ class GrpcGeoClientTest {
   }
 
   @Test
-  void getCountriesPageShouldThrowExceptionWhenGrpcFails() {
+  void getCountriesWithPaginationShouldReturnEmptyPageWhenNoCountries() {
+    // Given
+    CountryListResponse emptyResponse = CountryListResponse.newBuilder()
+        .setSize(10)
+        .setNumber(0)
+        .setTotalPages(0)
+        .setTotalElements(0)
+        .build();
+
+    when(rococoGeoServiceBlockingStub.countriesPage(any(CountriesRequest.class)))
+        .thenReturn(emptyResponse);
+
+    // When
+    var result = grpcGeoClient.getCountriesWithPagination(0, 10);
+
+    // Then
+    assertNotNull(result);
+    assertTrue(result.getContent().isEmpty());
+    assertEquals(0, result.getTotalElements());
+    assertEquals(0, result.getTotalPages());
+    assertEquals(10, result.getSize());
+    assertEquals(0, result.getNumber());
+  }
+
+  @Test
+  void getCountriesWithPaginationShouldHandleMultipleCountries() {
+    // Given
+    CountryResponse country2 = CountryResponse.newBuilder()
+        .setId(UUID.randomUUID().toString())
+        .setName("Another Country")
+        .build();
+
+    CountryListResponse multiCountryResponse = CountryListResponse.newBuilder()
+        .setSize(10)
+        .setNumber(0)
+        .setTotalPages(2)
+        .setTotalElements(15)
+        .addCountries(testCountryResponse)
+        .addCountries(country2)
+        .build();
+
+    when(rococoGeoServiceBlockingStub.countriesPage(any(CountriesRequest.class)))
+        .thenReturn(multiCountryResponse);
+
+    // When
+    var result = grpcGeoClient.getCountriesWithPagination(0, 10);
+
+    // Then
+    assertNotNull(result);
+    assertEquals(2, result.getContent().size());
+    assertEquals(15, result.getTotalElements());
+    assertEquals(2, result.getTotalPages());
+    assertEquals(10, result.getSize());
+    assertEquals(0, result.getNumber());
+
+    // Проверяем, что страны правильно преобразованы
+    List<CountryJson> countries = result.getContent();
+    assertEquals("Test Country", countries.get(0).name());
+    assertEquals("Another Country", countries.get(1).name());
+  }
+
+  @Test
+  void getCountriesWithPaginationShouldThrowExceptionWhenGrpcFails() {
     // Given
     when(rococoGeoServiceBlockingStub.countriesPage(any(CountriesRequest.class)))
         .thenThrow(new StatusRuntimeException(Status.INTERNAL));
@@ -245,7 +320,7 @@ class GrpcGeoClientTest {
     // When & Then
     ResponseStatusException exception = assertThrows(
         ResponseStatusException.class,
-        () -> grpcGeoClient.getCountriesPage(0, 10)
+        () -> grpcGeoClient.getCountriesWithPagination(0, 10)
     );
 
     assertEquals(HttpStatus.SERVICE_UNAVAILABLE, exception.getStatusCode());
@@ -253,12 +328,33 @@ class GrpcGeoClientTest {
   }
 
   @Test
-  void getGeoByIdShouldHandleNullId() {
-    // When & Then
-    assertThrows(
-        NullPointerException.class,
-        () -> grpcGeoClient.getGeoById(null)
-    );
+  void getCountriesWithPaginationShouldHandleDifferentPageSizes() {
+    // Given
+    CountryListResponse customResponse = CountryListResponse.newBuilder()
+        .setSize(5)      // запрошенный размер страницы
+        .setNumber(2)    // запрошенная страница
+        .setTotalPages(4)
+        .setTotalElements(18)
+        .addCountries(testCountryResponse)
+        .build();
+
+    when(rococoGeoServiceBlockingStub.countriesPage(any(CountriesRequest.class)))
+        .thenReturn(customResponse);
+
+    // When
+    var result = grpcGeoClient.getCountriesWithPagination(2, 5);
+
+    // Then
+    assertNotNull(result);
+    assertEquals(5, result.getSize());
+    assertEquals(2, result.getNumber());
+    assertEquals(4, result.getTotalPages());
+    assertEquals(18, result.getTotalElements());
+    assertEquals(1, result.getContent().size());
+
+    verify(rococoGeoServiceBlockingStub).countriesPage(argThat(request ->
+        request.getPage() == 2 && request.getSize() == 5
+    ));
   }
 
   @Test

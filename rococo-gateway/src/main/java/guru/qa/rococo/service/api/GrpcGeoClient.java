@@ -3,11 +3,13 @@ package guru.qa.rococo.service.api;
 import guru.ga.rococo.grpc.*;
 import guru.qa.rococo.model.CountryJson;
 import guru.qa.rococo.model.GeoJson;
+import guru.qa.rococo.model.page.RestPage;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -76,14 +78,25 @@ public class GrpcGeoClient {
   }
 
   // Дополнительный метод для получения пагинированного ответа с метаданными
-  public @Nonnull CountryListResponse getCountriesPage(int page, int size) {
+  public @Nonnull RestPage<CountryJson> getCountriesWithPagination(int page, int size) {
     try {
-      CountriesRequest request = CountriesRequest.newBuilder()
+      final CountriesRequest request = CountriesRequest.newBuilder()
           .setPage(page)
           .setSize(size)
           .build();
 
-      return rococoGeoServiceBlockingStub.countriesPage(request);
+      final CountryListResponse response = rococoGeoServiceBlockingStub.countriesPage(request);
+      final List<CountryJson> content = response.getCountriesList()
+          .stream()
+          .map(CountryJson::fromGrpcMessage)
+          .toList();
+
+      return new RestPage<>(
+          content,
+          PageRequest.of(page, size),
+          response.getTotalElements(),
+          response.getTotalPages()
+      );
 
     } catch (StatusRuntimeException e) {
       LOG.error("### Error while calling gRPC server for countries page: {}, size: {}", page, size, e);

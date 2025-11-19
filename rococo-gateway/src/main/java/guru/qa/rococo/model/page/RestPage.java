@@ -21,20 +21,22 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RestPage<T> extends PageImpl<T> {
 
+  private final int customTotalPages;
+
   /**
    * Конструктор для десериализации JSON в объект {@link RestPage}.
    * Используется Jackson для создания объекта из JSON.
    *
-   * @param content           Список элементов на странице.
-   * @param number            Номер текущей страницы.
-   * @param size              Размер страницы (количество элементов на странице).
-   * @param totalElements     Общее количество элементов.
-   * @param pageable          JSON-узел, содержащий информацию о пагинации (игнорируется).
-   * @param last              Флаг, указывающий, является ли эта страница последней.
-   * @param totalPages        Общее количество страниц.
-   * @param sort              JSON-узел, содержащий информацию о сортировке (игнорируется).
-   * @param first             Флаг, указывающий, является ли эта страница первой.
-   * @param numberOfElements  Количество элементов на текущей странице.
+   * @param content          Список элементов на странице.
+   * @param number           Номер текущей страницы.
+   * @param size             Размер страницы (количество элементов на странице).
+   * @param totalElements    Общее количество элементов.
+   * @param pageable         JSON-узел, содержащий информацию о пагинации (игнорируется).
+   * @param last             Флаг, указывающий, является ли эта страница последней.
+   * @param totalPages       Общее количество страниц.
+   * @param sort             JSON-узел, содержащий информацию о сортировке (игнорируется).
+   * @param first            Флаг, указывающий, является ли эта страница первой.
+   * @param numberOfElements Количество элементов на текущей странице.
    */
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
   public RestPage(@JsonProperty("content") List<T> content,
@@ -49,17 +51,24 @@ public class RestPage<T> extends PageImpl<T> {
                   @JsonProperty("numberOfElements") int numberOfElements) {
 
     super(content, PageRequest.of(number, size), totalElements);
+    this.customTotalPages = totalPages;
   }
 
   /**
    * Конструктор для создания объекта {@link RestPage} с указанным содержимым, пагинацией и общим количеством элементов.
    *
-   * @param content   Список элементов на странице.
-   * @param pageable  Объект, содержащий информацию о пагинации.
-   * @param total     Общее количество элементов.
+   * @param content  Список элементов на странице.
+   * @param pageable Объект, содержащий информацию о пагинации.
+   * @param total    Общее количество элементов.
    */
   public RestPage(List<T> content, Pageable pageable, long total) {
     super(content, pageable, total);
+    this.customTotalPages = super.getTotalPages();
+  }
+
+  public RestPage(List<T> content, Pageable pageable, long total, int totalPages) {
+    super(content, pageable, total);
+    this.customTotalPages = totalPages;
   }
 
   /**
@@ -70,6 +79,7 @@ public class RestPage<T> extends PageImpl<T> {
    */
   public RestPage(List<T> content) {
     super(content);
+    this.customTotalPages = super.getTotalPages();
   }
 
   /**
@@ -77,5 +87,11 @@ public class RestPage<T> extends PageImpl<T> {
    */
   public RestPage() {
     super(new ArrayList<>());
+    this.customTotalPages = 0;
+  }
+
+  @Override
+  public int getTotalPages() {
+    return customTotalPages;
   }
 }
