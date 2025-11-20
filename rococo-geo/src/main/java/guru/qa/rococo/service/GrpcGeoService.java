@@ -1,6 +1,6 @@
 package guru.qa.rococo.service;
 
-import guru.ga.rococo.grpc.*;
+import guru.qa.grpc.rococo.*;
 import guru.qa.rococo.data.CountryEntity;
 import guru.qa.rococo.data.GeoEntity;
 import guru.qa.rococo.data.repository.CountryRepository;
@@ -9,18 +9,18 @@ import guru.qa.rococo.ex.GrpcBadRequestException;
 import guru.qa.rococo.ex.GrpcNotFoundException;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Service
+@GrpcService
 public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GrpcGeoService.class);
@@ -68,31 +68,40 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
     }
   }
 
-
   @Transactional(readOnly = true)
   @Override
-  public void geo(GeoIdRequest request, StreamObserver<GeoResponse> responseObserver) {
-    if (request.getId().isEmpty()) {
-      throw new GrpcBadRequestException("geo: GeoIdRequest передано c некорректным id " + request.getId());
+  public void geoTitleAndCountryId(GeoTitleAndCountryIdRequest request, StreamObserver<GeoResponse> responseObserver) {
+    if (request.getCountryId().isEmpty() || request.getCity().isEmpty()) {
+      throw new GrpcBadRequestException(
+          "geoTitleAndCountryId: GeoTitleAndCountryIdRequest передано c некорректным id "
+              + request.getCountryId() + " и/или c некорректным citi " + request.getCity()
+      );
     }
-    final GeoEntity geoEntity = geoRepository.findById(UUID.fromString(request.getId()))
-        .orElseThrow(() -> new GrpcNotFoundException("Геолокация не найдена по данному id: " + request.getId()));
-    final CountryEntity countryEntity = countryRepository.findById(geoEntity.getCountry().getId())
-        .orElseThrow(() -> new GrpcNotFoundException("Страна не найдена по данному id: " + geoEntity.getCountry().getId()));
+    try {
+      final GeoEntity geoEntity = geoRepository.findByCityAndCountryId(request.getCity(), UUID.fromString(request.getCountryId()))
+          .orElseThrow(() ->
+              new GrpcNotFoundException(
+                  "Геолокация не найдена по city: " + request.getCity() +
+                      " и countryId: " + request.getCountryId())
+          );
 
-    responseObserver.onNext(
-        GeoResponse.newBuilder()
-            .setId(geoEntity.getId().toString())
-            .setCity(geoEntity.getCity())
-            .setCountry(
-                CountryResponse.newBuilder()
-                    .setId(countryEntity.getId().toString())
-                    .setName(countryEntity.getName())
-                    .build())
-            .build()
-    );
-    responseObserver.onCompleted();
+      responseObserver.onNext(
+          GeoResponse.newBuilder()
+              .setId(geoEntity.getId().toString())
+              .setCity(geoEntity.getCity())
+              .setCountry(
+                  CountryResponse.newBuilder()
+                      .setId(geoEntity.getCountry().getId().toString())
+                      .setName(geoEntity.getCountry().getName())
+                      .build())
+              .build()
+      );
+      responseObserver.onCompleted();
+    } catch (IllegalArgumentException e) {
+      throw new GrpcBadRequestException("Некорректный формат UUID: " + request.getCountryId());
+    }
   }
+
 
   @Transactional
   @Override
@@ -115,7 +124,6 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
                     .build()
             ).build()
     );
-
     responseObserver.onCompleted();
   }
 }

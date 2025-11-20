@@ -1,7 +1,7 @@
 package guru.qa.rococo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import guru.ga.rococo.grpc.CountryResponse;
+import guru.qa.grpc.rococo.CountryResponse;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 

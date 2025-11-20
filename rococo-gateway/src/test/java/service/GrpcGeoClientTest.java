@@ -1,6 +1,6 @@
 package service;
 
-import guru.ga.rococo.grpc.*;
+import guru.qa.grpc.rococo.*;
 import guru.qa.rococo.model.CountryJson;
 import guru.qa.rococo.model.GeoJson;
 import guru.qa.rococo.service.api.GrpcGeoClient;

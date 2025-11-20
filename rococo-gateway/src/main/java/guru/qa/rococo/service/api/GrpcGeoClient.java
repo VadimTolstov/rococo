@@ -1,6 +1,6 @@
 package guru.qa.rococo.service.api;
 
-import guru.ga.rococo.grpc.*;
+import guru.qa.grpc.rococo.*;
 import guru.qa.rococo.model.CountryJson;
 import guru.qa.rococo.model.GeoJson;
 import guru.qa.rococo.model.page.RestPage;
@@ -23,12 +23,12 @@ public class GrpcGeoClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(GrpcGeoClient.class);
 
-  @GrpcClient("grpcRococoClient")
+  @GrpcClient("grpcGeoClient")
   private RococoGeoServiceGrpc.RococoGeoServiceBlockingStub rococoGeoServiceBlockingStub;
 
   public @Nonnull GeoJson getGeoById(@Nonnull UUID id) {
     try {
-      GeoIdRequest request = GeoIdRequest.newBuilder()
+      GeoTitleAndCountryIdRequest request = GeoTitleAndCountryIdRequest.newBuilder()
           .setId(id.toString())
           .build();
 

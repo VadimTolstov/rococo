@@ -26,5 +26,4 @@ public class GeoController {
   public Page<CountryJson> getAllCountries(@PageableDefault Pageable pageable) {
     return grpcGeoClient.getCountriesWithPagination(pageable.getPageNumber(), pageable.getPageSize());
   }
-
 }

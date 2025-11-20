@@ -1,4 +1,4 @@
-import guru.ga.rococo.grpc.*;
+import guru.qa.grpc.rococo.*;
 import guru.qa.rococo.data.CountryEntity;
 import guru.qa.rococo.data.GeoEntity;
 import guru.qa.rococo.data.repository.CountryRepository;

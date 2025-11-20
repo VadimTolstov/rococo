@@ -5,12 +5,12 @@ package guru.qa.grpc.rococo;
 import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
-option java_package = "guru.ga.rococo.grpc";
+option java_package = "guru.qa.grpc.rococo";
 option java_outer_classname = "RococoGeoProto";
 
 service RococoGeoService {
   rpc CountriesPage(CountriesRequest) returns (CountryListResponse) {}
-  rpc Geo(GeoIdRequest) returns (GeoResponse) {}
+  rpc GeoTitleAndCountryId(GeoTitleAndCountryIdRequest) returns (GeoResponse) {}
   rpc AddGeo(GeoRequest) returns (GeoResponse) {}
 }
 
@@ -32,8 +32,9 @@ message CountryResponse {
   string name = 2;
 }
 
-message GeoIdRequest {
-  string id = 1;
+message GeoTitleAndCountryIdRequest {
+  string  city = 1;
+  string country_id = 2;
 }
 
 message GeoResponse {
