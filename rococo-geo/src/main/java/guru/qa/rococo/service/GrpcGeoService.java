@@ -103,14 +103,45 @@ public class GrpcGeoService extends RococoGeoServiceGrpc.RococoGeoServiceImplBas
   }
 
 
+  @Transactional(readOnly = true)
+  @Override
+  public void geoById(GeoIdRequest request, StreamObserver<GeoResponse> responseObserver) {
+    if (request.getId().isEmpty()) {
+      throw new GrpcBadRequestException("geoById: GeoIdRequest передано c некорректным id " + request.getId());
+    }
+    try {
+      final GeoEntity geoEntity = geoRepository.findById(UUID.fromString(request.getId()))
+          .orElseThrow(() ->
+              new GrpcNotFoundException(
+                  "Геолокация не найдена по id: " + request.getId())
+          );
+
+      responseObserver.onNext(
+          GeoResponse.newBuilder()
+              .setId(geoEntity.getId().toString())
+              .setCity(geoEntity.getCity())
+              .setCountry(
+                  CountryResponse.newBuilder()
+                      .setId(geoEntity.getCountry().getId().toString())
+                      .setName(geoEntity.getCountry().getName())
+                      .build())
+              .build()
+      );
+      responseObserver.onCompleted();
+    } catch (IllegalArgumentException e) {
+      throw new GrpcBadRequestException("Некорректный формат UUID: " + request.getId());
+    }
+  }
+
+
   @Transactional
   @Override
   public void addGeo(GeoRequest request, StreamObserver<GeoResponse> responseObserver) {
-    if (request.getCity().isEmpty() || request.getCountry().getId().isEmpty()) {
+    if (request.getCity().isEmpty() || request.getCountryId().isEmpty()) {
       throw new GrpcBadRequestException("addGeo: GeoRequest передано с дефолтными значениями " + request);
     }
-    final CountryEntity countryEntity = countryRepository.findById(UUID.fromString(request.getCountry().getId()))
-        .orElseThrow(() -> new GrpcNotFoundException("Страна не найдена по данному id: " + request.getCountry().getId()));
+    final CountryEntity countryEntity = countryRepository.findById(UUID.fromString(request.getCountryId()))
+        .orElseThrow(() -> new GrpcNotFoundException("Страна не найдена по данному id: " + request.getCountryId()));
     final GeoEntity geoEntity = geoRepository.save(new GeoEntity(null, request.getCity(), countryEntity));
 
     responseObserver.onNext(

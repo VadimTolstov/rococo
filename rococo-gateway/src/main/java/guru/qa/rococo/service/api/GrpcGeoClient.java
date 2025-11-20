@@ -26,16 +26,17 @@ public class GrpcGeoClient {
   @GrpcClient("grpcGeoClient")
   private RococoGeoServiceGrpc.RococoGeoServiceBlockingStub rococoGeoServiceBlockingStub;
 
-  public @Nonnull GeoJson getGeoById(@Nonnull UUID id) {
+  public @Nonnull GeoJson getGeoByTitleAndCountryId(@Nonnull GeoJson geo) {
     try {
       GeoTitleAndCountryIdRequest request = GeoTitleAndCountryIdRequest.newBuilder()
-          .setId(id.toString())
+          .setCity(geo.city())
+          .setCountryId(geo.country().id().toString())
           .build();
 
-      GeoResponse response = rococoGeoServiceBlockingStub.geo(request);
+      GeoResponse response = rococoGeoServiceBlockingStub.geoTitleAndCountryId(request);
       return GeoJson.fromGrpcMessage(response);
     } catch (StatusRuntimeException e) {
-      LOG.error("### Error while calling gRPC server for geo id: {} ", id, e);
+      LOG.error("### Error while calling gRPC server for getGeoByTitleAndCountryId id: {}, geo citi: {} ", geo.country().id(), geo.city(), e);
       throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "The gRPC operation was cancelled", e);
     }
   }
@@ -58,16 +59,24 @@ public class GrpcGeoClient {
     }
   }
 
+  public @Nonnull GeoJson getGeoById(@Nonnull UUID id) {
+    try {
+      GeoIdRequest request = GeoIdRequest.newBuilder()
+          .setId(id.toString())
+          .build();
+      GeoResponse response = rococoGeoServiceBlockingStub.geoById(request);
+      return GeoJson.fromGrpcMessage(response);
+    } catch (StatusRuntimeException e) {
+      LOG.error("### Error while calling gRPC server to add id: {}", id, e);
+      throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "The gRPC operation was cancelled", e);
+    }
+  }
+
   public @Nonnull GeoJson addGeo(@Nonnull GeoJson geoJson) {
     try {
       GeoRequest request = GeoRequest.newBuilder()
           .setCity(geoJson.city())
-          .setCountry(
-              CountryResponse.newBuilder()
-                  .setId(geoJson.country().id().toString())
-                  .setName(geoJson.country().name())
-                  .build()
-          )
+          .setCountryId(geoJson.country().id().toString())
           .build();
       GeoResponse response = rococoGeoServiceBlockingStub.addGeo(request);
       return GeoJson.fromGrpcMessage(response);

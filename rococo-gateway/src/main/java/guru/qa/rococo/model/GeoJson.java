@@ -1,5 +1,6 @@
 package guru.qa.rococo.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import guru.qa.grpc.rococo.GeoResponse;
 import jakarta.annotation.Nonnull;
@@ -10,7 +11,11 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record GeoJson(
+    @JsonProperty("id")
+    UUID id,
+
     @Size(min = 3, max = 255, message = "city: Город должен содержать от 3 до 255 символов")
     @NotBlank(message = "city: Город обязательна для заполнения, не может быть пустой или состоять только из пробелов")
     @JsonProperty("city")
@@ -22,7 +27,8 @@ public record GeoJson(
     CountryJson country
 ) {
 
-  public GeoJson(String city, CountryJson country) {
+  public GeoJson(UUID id, String city, CountryJson country) {
+    this.id = id;
     this.city = normalizeString(city);
     this.country = country;
   }
@@ -37,6 +43,7 @@ public record GeoJson(
 
   public static GeoJson fromGrpcMessage(@Nonnull GeoResponse response) {
     return new GeoJson(
+        UUID.fromString(response.getId()),
         response.getCity(),
         new CountryJson(
             UUID.fromString(response.getCountry().getId()),

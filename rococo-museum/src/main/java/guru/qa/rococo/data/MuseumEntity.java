@@ -45,9 +45,8 @@ public class MuseumEntity implements Serializable {
      * Аннотация @JoinColumn(name = "geo_id") указывает, что это поле будет отображаться
      * на столбец "geo_id" в таблице museum, который является внешним ключом к таблице geo.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "geo_id", nullable = false)
-    private GeoEntity geo;
+    private UUID geo;
 
     @Override
     public final boolean equals(Object o) {

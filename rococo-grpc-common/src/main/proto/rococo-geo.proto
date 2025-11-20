@@ -12,6 +12,7 @@ service RococoGeoService {
   rpc CountriesPage(CountriesRequest) returns (CountryListResponse) {}
   rpc GeoTitleAndCountryId(GeoTitleAndCountryIdRequest) returns (GeoResponse) {}
   rpc AddGeo(GeoRequest) returns (GeoResponse) {}
+  rpc GeoById(GeoIdRequest) returns (GeoResponse) {}
 }
 
 message CountriesRequest {
@@ -44,7 +45,10 @@ message GeoResponse {
 }
 
 message GeoRequest {
+  string city = 1;
+  string country_id = 2;
+}
+
+message GeoIdRequest {
   string id = 1;
-  string city = 2;
-  CountryResponse country = 3;
 }

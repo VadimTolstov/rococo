@@ -21,11 +21,6 @@ public class MuseumController {
         this.museumGeoService = museumGeoService;
     }
 
-    @GetMapping("/country")
-    public Page<CountryJson> getAllCountries(Pageable pageable) {
-        return museumGeoService.getAllCountries(pageable);
-    }
-
     @GetMapping("/museum/{id}")
     public MuseumJson getMuseumById(@PathVariable UUID id) {
         return museumGeoService.getMuseumById(id);
@@ -41,8 +36,8 @@ public class MuseumController {
         return museumGeoService.addMuseum(museum);
     }
 
-    @PatchMapping("/museum")
-    public MuseumJson updateMuseum(@RequestBody MuseumJson museum) {
-        return museumGeoService.updateMuseum(museum);
-    }
+//    @PatchMapping("/museum")
+//    public MuseumJson updateMuseum(@RequestBody MuseumJson museum) {
+//        return museumGeoService.updateMuseum(museum);
+//    }
 }

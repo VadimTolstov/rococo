@@ -1,6 +1,8 @@
 package guru.qa.rococo.service.api;
 
+import guru.qa.rococo.ex.NoGrpcResponseException;
 import guru.qa.rococo.ex.NoRestResponseException;
+import guru.qa.rococo.model.GeoJson;
 import guru.qa.rococo.model.MuseumJson;
 import guru.qa.rococo.model.page.RestPage;
 import guru.qa.rococo.service.utils.HttpQueryPaginationAndSort;
@@ -70,12 +72,8 @@ public class RestMuseumClient {
         }
     );
 
-    RestPage<MuseumJson> museumPage = Optional.ofNullable(response.getBody())
+    return Optional.ofNullable(response.getBody())
         .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/museum GET]"));
-
-    museumPage.getContent().forEach(this::enrichMuseumWithGeoData);
-
-    return museumPage;
   }
 
   public @Nonnull MuseumJson getMuseumById(@Nonnull UUID id) {
@@ -92,8 +90,11 @@ public class RestMuseumClient {
         MuseumJson.class
     );
 
-    return Optional.ofNullable(response.getBody())
+    MuseumJson museumResponse = Optional.ofNullable(response.getBody())
         .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/museum/{id} GET]"));
+    final GeoJson geoJson = grpcGeoClient.getGeoById(museumResponse.geo().id());
+
+    return museumResponse.setGeo(geoJson);
   }
 
   /**
@@ -104,24 +105,30 @@ public class RestMuseumClient {
    * @throws NoRestResponseException При ошибке связи с сервисом
    */
   public @Nonnull MuseumJson addMuseum(@Nonnull MuseumJson museum) {
-    URI uri = UriComponentsBuilder
-        .fromUriString(rococoMuseumBaseUri)
-        .path("/museum")
-        .build()
-        .toUri();
+    final GeoJson geoJson = grpcGeoClient.addGeo(museum.geo());
+    if (geoJson.id() != null) {
+      museum = museum.setGeo(geoJson);
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    HttpEntity<MuseumJson> request = new HttpEntity<>(museum, headers);
+      URI uri = UriComponentsBuilder
+          .fromUriString(rococoMuseumBaseUri)
+          .path("/museum")
+          .build()
+          .toUri();
 
-    ResponseEntity<MuseumJson> response = restTemplate.exchange(
-        uri,
-        HttpMethod.POST,
-        request,
-        MuseumJson.class
-    );
-    return Optional.ofNullable(response.getBody())
-        .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/museum POST]"));
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpEntity<MuseumJson> request = new HttpEntity<>(museum, headers);
+
+      ResponseEntity<MuseumJson> response = restTemplate.exchange(
+          uri,
+          HttpMethod.POST,
+          request,
+          MuseumJson.class
+      );
+      return Optional.ofNullable(response.getBody())
+          .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/museum POST]"));
+    }
+    throw new NoGrpcResponseException("No Grpc response is addGeo geo: " + museum.geo());
   }
 
   public @Nonnull MuseumJson updateMuseum(@Nonnull MuseumJson museum) {
@@ -144,16 +151,5 @@ public class RestMuseumClient {
 
     return Optional.ofNullable(response.getBody())
         .orElseThrow(() -> new NoRestResponseException("No REST response is given [/internal/museum PATCH]"));
-  }
-
-  private MuseumJson enrichMuseumWithGeoData(MuseumJson museum) {
-    if (museum != null && museum.geo() != null && museum.geo().country() != null && museum.geo().country().id() != null) {
-//  try {
-//    var fullgeo = grpcGeoClient.getGeoById(museum.geo().country().id());
-//  }
-      return null;
-    }
-    return null;
-
   }
 }

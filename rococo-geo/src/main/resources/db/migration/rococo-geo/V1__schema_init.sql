@@ -209,5 +209,5 @@ CREATE TABLE IF NOT EXISTS geo (
 );
 
  INSERT INTO geo (id, city, country_id) VALUES
-    (gen_random_uuid(), 'Москва', (SELECT id FROM country WHERE name = 'Россия')),
+    ('3d8b8f64-ab2c-4038-954d-38085f5ac5a1', 'Москва', (SELECT id FROM country WHERE name = 'Россия')),
     (gen_random_uuid(), 'Париж', (SELECT id FROM country WHERE name = 'Франция'));
