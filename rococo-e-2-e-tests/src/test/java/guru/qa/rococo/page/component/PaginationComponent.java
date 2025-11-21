@@ -27,7 +27,6 @@ public class PaginationComponent extends BaseComponent<PaginationComponent> {
     gridList.shouldHave(sizeGreaterThan(initialSize), Duration.ofSeconds(10));
   }
 
-
   @Step("Ищем элемент в пагинации по названию {optionText}")
   public SelenideElement scrollPagination(ElementsCollection elementsCollection, String optionText) {
     elementsCollection.shouldBe(CollectionCondition.sizeGreaterThan(0), Duration.ofSeconds(10));
@@ -35,7 +34,6 @@ public class PaginationComponent extends BaseComponent<PaginationComponent> {
 
     for (int i = 0; i < 15; i++) {
       collectionSize = elementsCollection.size();
-
 
       var targetOption = elementsCollection
           .stream()
