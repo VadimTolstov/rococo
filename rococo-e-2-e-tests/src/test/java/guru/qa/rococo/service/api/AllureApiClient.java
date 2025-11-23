@@ -1,75 +1,70 @@
 package guru.qa.rococo.service.api;
 
 import guru.qa.rococo.api.AllureApi;
+import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
+import guru.qa.rococo.config.Config;
 import guru.qa.rococo.model.allure.AllureResults;
 import guru.qa.rococo.model.allure.Project;
+import guru.qa.rococo.model.allure.ProjectResponse;
+import io.qameta.allure.Param;
 import io.qameta.allure.Step;
-import retrofit2.Response;
-
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.qameta.allure.model.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class AllureApiClient extends RestClient {
+public class AllureApiClient implements RequestExecutor {
+
+  private final AllureApi allureApi;
+
+  private static final Config CFG = Config.getInstance();
+  private static final Logger LOG = LoggerFactory.getLogger(AllureApiClient.class);
+  private static final int MAX_BATCH_SIZE_BYTES = 5 * 1024 * 1024;
+
+  public AllureApiClient() {
+    allureApi = new RestClient.EmtyRestClient(
+        CFG.allureDockerServiceUrl(),
+        true
+    ).create(AllureApi.class);
+  }
 
 
-    private final AllureApi allureApi;
+  @Step("Создаем проект {projectId} для allure")
+  public void createProject(String projectId) {
+    executeVoid(allureApi.createProject(new Project(projectId)), 201);
+  }
 
 
-    public AllureApiClient() {
-        super(CFG.allureDockerServiceUrl());
-        this.allureApi = create(AllureApi.class);
-    }
+  @Step("Отправляем результаты тестов в allure по проекту {projectId}")
+  public void sendResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
+    LOG.info("Preparing to send {} allure results for project {}", allureResults.results().size(), projectId);
+    executeVoid(allureApi.sendResults(projectId, allureResults), 200);
+  }
 
 
-    @Step("Create allure project")
-    public void createProject(String projectId) {
-        final Response<Void> response;
-        try {
-            response = allureApi.createProject(
-                    new Project(projectId)
-            ).execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-        assertEquals(201, response.code());
-    }
+  @Step("Сгенерируем отчет по проекту {projectId}")
+  public void generateReport(String projectId,
+                             String executionName,
+                             String executionFrom,
+                             String executionType) {
+    executeVoid(allureApi.generateReport(projectId, executionName, executionFrom, executionType), 200);
+  }
 
+  @Step("Получаем список проектов allure")
+  public ProjectResponse getProjectsMap() {
+    return execute(allureApi.getProjects(), 200);
+  }
 
-    @Step("Send allure results")
-    public void sendResults(String projectId, AllureResults allureResults) {
-        final Response<Void> response;
-        try {
-            response = allureApi.sendResults(
-                    projectId,
-                    allureResults
-            ).execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-        assertEquals(200, response.code());
-    }
+  @Step("Очищаем результаты тестов в allure по проекту {projectId}")
+  public void cleanResults(String projectId) {
+    executeVoid(allureApi.cleanResults(projectId), 200);
+  }
 
-
-    @Step("Generate allure report")
-    public void generateReport(String projectId,
-                               String executionName,
-                               String executionFrom,
-                               String executionType) {
-        final Response<Void> response;
-        try {
-            response = allureApi.generateReport(
-                    projectId,
-                    executionName,
-                    executionFrom,
-                    executionType
-            ).execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-        assertEquals(200, response.code());
-    }
-
+  public boolean isProjectExists(String projectId) {
+    return getProjectsMap()
+        .data()
+        .projects()
+        .containsKey(projectId);
+  }
 }

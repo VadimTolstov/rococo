@@ -103,10 +103,6 @@ spring:
       auto-offset-reset: earliest
   # Параметры подключения к БД в Docker-сети
   datasource:
-    url: 'jdbc:postgresql://rococo-all-db:5442/rococo-userdata'
+    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-userdata'
     username: postgres
     password: secret
-rococo-artist:
-  base-uri: 'http://artist.rococo.dc:8282'
-rococo-museum:
-  base-uri: 'http://museum.rococo.dc:8283'

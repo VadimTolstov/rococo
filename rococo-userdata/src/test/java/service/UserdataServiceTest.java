@@ -247,40 +247,52 @@ public class UserdataServiceTest {
     }
 
     @Test
-    void updateUserShouldThrowExceptionForExistingUsername() {
-        final UUID otherUserId = UUID.randomUUID();
-
+    void updateUserShouldNotUpdateUsername() {
         final UserEntity existingUser = new UserEntity(
-                userId,
-                "existingUser",
-                "John",
-                "Doe",
-                "avatar1".getBytes(StandardCharsets.UTF_8)
+            userId,
+            "existingUser",
+            "John",
+            "Doe",
+            "avatar1".getBytes(StandardCharsets.UTF_8)
         );
 
-        final UserEntity otherUser = new UserEntity(
-                otherUserId,
-                "occupiedUser",
-                "Other",
-                "User",
-                new byte[0]
+        final UserEntity updatedUser = new UserEntity(
+            userId,
+            "existingUser", // username остается прежним
+            "Jane", // firstname обновляется
+            "Smith", // lastname обновляется
+            "newAvatar".getBytes(StandardCharsets.UTF_8)
         );
 
         UserJson updateRequest = new UserJson(
-                userId, "occupiedUser", "John", "Doe", "avatar"
+            userId,
+            "attemptedNewUsername", // Этот username должен игнорироваться
+            "Jane",
+            "Smith",
+            "newAvatar"
         );
 
         when(userdataRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        when(userdataRepository.findByUsername("occupiedUser")).thenReturn(Optional.of(otherUser));
+        when(userdataRepository.save(any(UserEntity.class))).thenReturn(updatedUser);
 
-        SameUsernameException exception = assertThrows(
-                SameUsernameException.class,
-                () -> userdataService.update(updateRequest)
-        );
+        UserJson result = userdataService.update(updateRequest);
 
-        assertEquals("username: Имя пользователя 'occupiedUser' уже занято.", exception.getMessage());
+        Assertions.assertThat(result)
+            .isNotNull()
+            .extracting(
+                UserJson::id,
+                UserJson::username,
+                UserJson::firstname,
+                UserJson::lastname
+            ).containsExactly(
+                userId,
+                "existingUser",
+                "Jane",
+                "Smith"
+            );
+
         verify(userdataRepository).findById(userId);
-        verify(userdataRepository).findByUsername("occupiedUser");
-        verify(userdataRepository, never()).save(any());
+        verify(userdataRepository, never()).findByUsername(anyString()); // Не должно быть проверки username
+        verify(userdataRepository).save(any(UserEntity.class));
     }
 }

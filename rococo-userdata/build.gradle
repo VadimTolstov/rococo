@@ -5,8 +5,6 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
     // Сборка Docker-образов без Dockerfile
     id 'com.google.cloud.tools.jib' version '3.4.1'
-    // Генерация Java классов из XSD/WSDL
-    id 'com.github.edeandrea.xjc-generation' version "1.6"
 }
 
 // Группа и версия проекта
@@ -23,8 +21,7 @@ dependencies {
     // Основные зависимости Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-logging'
-//   implementation 'org.fusesource.jansi:jansi:2.4.0'
+
     // Миграции баз данных
     implementation "org.flywaydb:flyway-core:${project.ext.flywayVersion}"
     implementation "org.flywaydb:flyway-database-postgresql:${project.ext.flywayVersion}"
@@ -38,23 +35,10 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
 
-    // Для работы условий <if> в Logback
-    implementation "org.codehaus.janino:janino:3.1.10"
-
-    // Интеграция с SOAP Web Services
-    implementation('org.springframework.boot:spring-boot-starter-web-services') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-    }
-    implementation 'org.springframework.ws:spring-ws-core'
-
     // Дополнительные модули Spring
     implementation 'org.springframework.data:spring-data-commons'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-
-    // Кастомные расширения GraphQL
-    implementation "com.tailrocks.graphql:graphql-datetime-spring-boot-starter:${project.ext.springGraphqlDateTimeVersion}"
 
     // Интеграция с HashiCorp Vault
     implementation "org.springframework.cloud:spring-cloud-starter-vault-config:${project.ext.springVaultVersion}"
@@ -62,31 +46,10 @@ dependencies {
     // Документация OpenAPI
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.openApiVersion}"
 
-    // Генерация классов из XML схем
-    xjc "org.glassfish.jaxb:jaxb-xjc:${project.ext.jakartaJaxbVersion}"
-
     // Тестовые зависимости
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }
-
-
-/**
- * Конфигурация генерации Java классов из WSDL
- * - Генерирует классы в пакет jaxb.userdata
- * - Использует кодировку UTF-8
- */
-xjcGeneration {
-    defaultAdditionalXjcOptions = ['encoding': 'UTF-8']
-    schemas {
-        wsdlSchema {
-            schemaFile = 'userdata.wsdl'       // Исходный WSDL-файл
-            javaPackageName = 'jaxb.userdata'  // Целевой Java-пакет
-            sourceSet = 'main'                 // Набор исходников для генерации
-        }
-    }
-}
-
 /**
  * Настройка исходных директорий:
  * - Добавляет сгенерированные XJC классы в исходный код
@@ -105,12 +68,12 @@ sourceSets {
  */
 jib {
     container {
-        ports = ['8090'] // Открываемый порт
+        ports = ['8285'] // Открываемый порт
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"] // Активация профиля
         environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()] // Секреты
         creationTime = 'USE_CURRENT_TIMESTAMP' // Временная метка образа
         labels = [ // Метаданные
-                   'maintainer': 'Dmitrii Tuchs @dtuchs',
+                   'maintainer': 'Vadim Tolstov @VadimTolstovv',
                    'version'   : "${project.version}".toString()
         ]
     }

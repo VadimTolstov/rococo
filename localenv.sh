@@ -1,9 +1,15 @@
 #!/bin/bash
-
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
 
-docker run -d --name rococo-all -p 3307:3306 -e MYSQL_ROOT_PASSWORD=secret -v mysql-data:/var/lib/mysql -v ./mysql/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql mysql:8.0 --max_connections=100
+docker run --name rococo-all -p 5432:5432 \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=secret \
+-e CREATE_DATABASES=rococo-auth,rococo-artist,rococo-userdata,rococo-museum,rococo-painting \
+-v pgdata:/var/lib/postgresql/data \
+-v D:/IdeaProjects/rococo/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh \
+-d postgres:15.1 \
+--max_prepared_transactions=100
 docker run --name=zookeeper -e ZOOKEEPER_CLIENT_PORT=2181 -p 2181:2181 -d confluentinc/cp-zookeeper:7.3.2
 docker run --name=kafka -e KAFKA_BROKER_ID=1 \
 -e KAFKA_ZOOKEEPER_CONNECT=$(docker inspect zookeeper --format='{{ .NetworkSettings.IPAddress }}'):2181 \
@@ -12,3 +18,6 @@ docker run --name=kafka -e KAFKA_BROKER_ID=1 \
 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
 -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
 -p 9092:9092 -d confluentinc/cp-kafka:7.3.2
+
+cd rococo-client
+npm run dev

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -70,7 +71,7 @@ class UserDataControllerTest {
     }
 
     @Test
-    void getCurrentUser_ShouldExtractUsernameFromJwt() throws Exception {
+    void getCurrentUserShouldExtractUsernameFromJwt() throws Exception {
         // Arrange
         when(restUserDataClient.getUser(username)).thenReturn(testUser);
 
@@ -86,7 +87,7 @@ class UserDataControllerTest {
     }
 
     @Test
-    void updateUser_ShouldAddUsernameFromToken() throws Exception {
+    void updateUserShouldAddUsernameFromToken() throws Exception {
         UserJson updateRequest = new UserJson(
                 null,
                 username,
@@ -114,25 +115,25 @@ class UserDataControllerTest {
     }
 
     @Test
-    void updateUser_ShouldIgnoreProvidedUsername() throws Exception {
+    void updateUserShouldIgnoreProvidedUsername() throws Exception {
         UserJson invalidUpdate = new UserJson(
-                userId,
-                "hacker",
-                "Jane",
-                "Smith",
-                "new-avatar"
+            userId,
+            "hacker",
+            "Jane",
+            "Smith",
+            "data:image/png;base64,new-avatar" // Исправлено: должно начинаться с data:image/
         );
 
         when(restUserDataClient.updateUserInfo(any()))
-                .thenAnswer(inv -> inv.getArgument(0));
+            .thenAnswer(inv -> inv.getArgument(0));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/user")
-                        .with(jwt())
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidUpdate)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(username));
+                .with(jwt())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidUpdate)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value(username));
 
         verify(restUserDataClient).updateUserInfo(userCaptor.capture());
         UserJson capturedUser = userCaptor.getValue();
@@ -142,7 +143,7 @@ class UserDataControllerTest {
 
 
     @Test
-    void updateUser_ShouldValidateInput() throws Exception {
+    void updateUserShouldValidateInput() throws Exception {
         UserJson invalidUser = new UserJson(
                 null,
                 null,
@@ -156,14 +157,15 @@ class UserDataControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidUser)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail").value(
-                        allOf(
-                                containsString("firstname: Отчество не может быть длиннее 255 символов"),
-                                containsString("lastname: Фамилия не может быть длиннее 255 символов"),
-                                containsString("avatar: Размер аватара не должен превышать 1MB")
-                        )
-                ));
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.detail").value("Validation failed. Check 'errors' field for details"))
+            .andExpect(jsonPath("$.errors").value(
+                hasItems(
+                    "firstname: Отчество не может быть длиннее 255 символов",
+                    "lastname: Фамилия не может быть длиннее 255 символов",
+                    "avatar: Размер аватара не должен превышать 1MB"
+                )
+            ));
 
         verifyNoInteractions(restUserDataClient);
     }

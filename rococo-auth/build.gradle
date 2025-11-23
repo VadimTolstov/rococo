@@ -34,7 +34,7 @@ jib {
         environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()]
         creationTime = 'USE_CURRENT_TIMESTAMP'
         labels = [
-                'maintainer': 'Dmitrii Tuchs @dtuchs',
+                'maintainer': 'Vadim Tolstov @VadimTolstovv',
                 'version'   : "${project.version}".toString()
         ]
     }

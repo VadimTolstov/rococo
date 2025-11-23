@@ -91,7 +91,7 @@ spring:
       - 'org.springframework.cloud.vault.config.VaultReactiveAutoConfiguration'
   # Параметры подключения к БД в Docker-сети
   datasource:
-    url: 'jdbc:postgresql://rococo-all-db:5442/rococo-painting'
+    url: 'jdbc:postgresql://rococo-all-db:5432/rococo-painting'
     username: postgres
     password: secret
 rococo-artist:

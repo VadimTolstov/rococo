@@ -1,10 +1,9 @@
 FROM eclipse-temurin:21-jdk
 
-WORKDIR /niffler-ng-8
+WORKDIR /rococo
 ENV TZ=Europe/Moscow
 COPY ./gradle ./gradle
-COPY ./niffler-e-2-e-tests ./niffler-e-2-e-tests
-COPY ./niffler-grpc-common ./niffler-grpc-common
+COPY ./rococo-e-2-e-tests ./rococo-e-2-e-tests
 COPY ./gradlew ./
 COPY ./build.gradle ./
 COPY ./settings.gradle ./

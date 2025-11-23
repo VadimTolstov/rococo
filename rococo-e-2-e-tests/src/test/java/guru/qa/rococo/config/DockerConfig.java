@@ -56,25 +56,25 @@ enum DockerConfig implements Config {
         return "jdbc:postgresql://rococo-all-db:5432/rococo-userdata";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String artistUrl() {
-        return "http://spend.rococo.dc:8282/";
+        return "http://artist.rococo.dc:8282/";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String artistJdbcUrl() {
         return "jdbc:postgresql://rococo-all-db:5432/rococo-artist";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String museumUrl() {
-        return "http://spend.rococo.dc:8283/";
+        return "http://museum.rococo.dc:8283/";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String museumJdbcUrl() {
         return "jdbc:postgresql://rococo-all-db:5432/rococo-museum";
@@ -83,13 +83,13 @@ enum DockerConfig implements Config {
     @NotNull
     @Override
     public String paintingUrl() {
-        return "http://127.0.0.1:8284/";
+        return "http://painting.rococo.dc:8284/";
     }
 
     @NotNull
     @Override
     public String paintingJdbcUrl() {
-        return "jdbc:postgresql://127.0.0.1:5432/rococo-painting";
+        return "jdbc:postgresql://rococo-all-db:5432/rococo-painting";
     }
 
 

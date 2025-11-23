@@ -71,10 +71,7 @@ spring:
     url: 'jdbc:postgresql://localhost:5432/rococo-museum'
     username: postgres
     password: secret
-rococo-artist:
-  base-uri: 'http://localhost:8282'
-rococo-painting:
-  base-uri: 'http://localhost:8284'
+
 
 ---
 # Конфигурация для Docker окружения
@@ -94,7 +91,3 @@ spring:
     url: 'jdbc:postgresql://rococo-all-db:5432/rococo-museum'
     username: postgres
     password: secret
-rococo-artist:
-  base-uri: 'http://artist.rococo.dc:8282'
-rococo-museum:
-  base-uri: 'http://painting.rococo.dc:8284'

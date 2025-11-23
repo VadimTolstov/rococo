@@ -16,55 +16,57 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class AllureResultsDockerExtension implements SuiteExtension {
-    private final boolean isDocker = "docker".equals(System.getProperty("test.env"));
-    private final AllureApiClient allureApiClient = new AllureApiClient();
-    private final String PROJECT_ID = "rococo";
-    private final String ALLURE_RESULTS_DIRECTORY = "./rococo-e-2-e-tests/build/allure-results";
+  private static final boolean isDocker = "docker".equals(System.getProperty("test.env"));
+  private static final AllureApiClient allureApiClient = new AllureApiClient();
+  private static final String PROJECT_ID = "rococo";
+  private static final String ALLURE_RESULTS_DIRECTORY = "./rococo-e-2-e-tests/build/allure-results";
 
-    @Override
-    public void beforeSuite(ExtensionContext context) {
-        if (isDocker) {
-            allureApiClient.createProject(PROJECT_ID);
-        }
+  @Override
+  public void beforeSuite(ExtensionContext context) {
+    if (isDocker) {
+      final boolean projectExists = allureApiClient.isProjectExists(PROJECT_ID);
+      if (!projectExists) allureApiClient.createProject(PROJECT_ID);
+      allureApiClient.cleanResults(PROJECT_ID);
     }
+  }
 
-    @Override
-    public void afterSuite() {
-        if (isDocker) {
-            final Base64.Encoder encoder = Base64.getEncoder();
-            final List<AllureResult> results = new ArrayList<>();
+  @Override
+  public void afterSuite() {
+    if (isDocker) {
+      final Base64.Encoder encoder = Base64.getEncoder();
+      final List<AllureResult> results = new ArrayList<>();
 
-            try (Stream<Path> filePathStream = Files.walk(Paths.get(ALLURE_RESULTS_DIRECTORY))) {
-                filePathStream
-                        .filter(Files::isRegularFile)
-                        .forEach(filePath -> {
-                            try (InputStream is = Files.newInputStream(filePath)) {
-                                results.add(
-                                        new AllureResult(
-                                                filePath.getFileName().toString(),
-                                                encoder.encodeToString(is.readAllBytes())
-                                        )
-                                );
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-
-                allureApiClient.sendResults(
-                        PROJECT_ID,
-                        new AllureResults(results)
+      try (Stream<Path> filePathStream = Files.walk(Paths.get(ALLURE_RESULTS_DIRECTORY))) {
+        filePathStream
+            .filter(Files::isRegularFile)
+            .forEach(filePath -> {
+              try (InputStream is = Files.newInputStream(filePath)) {
+                results.add(
+                    new AllureResult(
+                        filePath.getFileName().toString(),
+                        encoder.encodeToString(is.readAllBytes())
+                    )
                 );
-
-                allureApiClient.generateReport(
-                        PROJECT_ID,
-                        System.getenv("HEAD_COMMIT_MESSAGE"),
-                        System.getenv("BUILD_URL"),
-                        System.getenv("EXECUTION_TYPE")
-                );
-
-            } catch (IOException e) {
+              } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-        }
+              }
+            });
+
+        allureApiClient.sendResults(
+            PROJECT_ID,
+            new AllureResults(results)
+        );
+
+        allureApiClient.generateReport(
+            PROJECT_ID,
+            System.getenv("HEAD_COMMIT_MESSAGE"),
+            System.getenv("BUILD_URL"),
+            System.getenv("EXECUTION_TYPE")
+        );
+
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
+  }
 }
