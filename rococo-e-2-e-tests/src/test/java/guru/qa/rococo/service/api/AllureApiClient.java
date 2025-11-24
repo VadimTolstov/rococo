@@ -26,7 +26,7 @@ public class AllureApiClient implements RequestExecutor {
 
   private static final Config CFG = Config.getInstance();
   private static final Logger LOG = LoggerFactory.getLogger(AllureApiClient.class);
-  private static final int MAX_BATCH_SIZE_BYTES = 2 * 1024 * 1024; // 5MB
+  private static final int MAX_BATCH_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
   public AllureApiClient() {
     allureApi = new RestClient.EmtyRestClient(
@@ -57,7 +57,7 @@ public class AllureApiClient implements RequestExecutor {
       final int resultSize = result.contentBase64().length();
       if (batchSize + resultSize > MAX_BATCH_SIZE_BYTES && !batch.isEmpty()) {
         LOG.info("Отправка пакета {} с результатами {} ({} байт)", batchNumber, batch.size(), batchSize);
-        resultsBatch(projectId, batch);
+        uploadResultsBatch(projectId, batch);
         batch.clear();
         batchSize = 0;
         batchNumber++;
@@ -67,7 +67,7 @@ public class AllureApiClient implements RequestExecutor {
     }
   }
 
-  private void resultsBatch(String projectId, List<AllureResult> results) {
+  private void uploadResultsBatch(String projectId, List<AllureResult> results) {
     try {
       executeVoid(allureApi.uploadResults(projectId, new AllureResults(new ArrayList<>(results))), 200);
       LOG.info("Пакет успешно отправлен, результаты: {}.", results.size());
