@@ -18,6 +18,11 @@ enum LocalConfig implements Config {
     return "jdbc:postgresql";
   }
 
+  @Nonnull
+  private String serverUrl(@Nonnull String port) {
+    return url("http", localhost(), port);
+  }
+
   @NotNull
   @Override
   public String dbPort() {
@@ -126,8 +131,4 @@ enum LocalConfig implements Config {
     return url(dbDriver(), localhost(), dbPort());
   }
 
-  @Nonnull
-  private String serverUrl(@Nonnull String port) {
-    return url("http", localhost(), port);
-  }
 }

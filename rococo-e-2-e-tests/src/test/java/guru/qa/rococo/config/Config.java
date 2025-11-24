@@ -12,6 +12,11 @@ public interface Config {
   }
 
   @Nonnull
+  default String projectId() {
+    return "rococo";
+  }
+
+  @Nonnull
   String frontUrl();
 
   @Nonnull
@@ -48,7 +53,7 @@ public interface Config {
   String paintingJdbcUrl();
 
   @Nonnull
-   String dbPort();
+  String dbPort();
 
   @Nonnull
   String dbDriver();

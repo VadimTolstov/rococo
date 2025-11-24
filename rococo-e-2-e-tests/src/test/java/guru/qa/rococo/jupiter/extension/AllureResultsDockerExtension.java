@@ -1,5 +1,6 @@
 package guru.qa.rococo.jupiter.extension;
 
+import guru.qa.rococo.config.Config;
 import guru.qa.rococo.model.allure.AllureResult;
 import guru.qa.rococo.model.allure.AllureResults;
 import guru.qa.rococo.service.api.AllureApiClient;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -18,14 +18,13 @@ import java.util.stream.Stream;
 public class AllureResultsDockerExtension implements SuiteExtension {
   private static final boolean isDocker = "docker".equals(System.getProperty("test.env"));
   private static final AllureApiClient allureApiClient = new AllureApiClient();
-  private static final String PROJECT_ID = "rococo";
-  private static final String ALLURE_RESULTS_DIRECTORY = "./rococo-e-2-e-tests/build/allure-results";
+  private static final String PROJECT_ID = Config.getInstance().projectId();
+  private static final Path pathToResults = Path.of("./rococo-e-2-e-tests/build/allure-results");
 
   @Override
   public void beforeSuite(ExtensionContext context) {
     if (isDocker) {
-      final boolean projectExists = allureApiClient.isProjectExists(PROJECT_ID);
-      if (!projectExists) allureApiClient.createProject(PROJECT_ID);
+      allureApiClient.createProject(PROJECT_ID);
       allureApiClient.cleanResults(PROJECT_ID);
     }
   }
@@ -36,8 +35,8 @@ public class AllureResultsDockerExtension implements SuiteExtension {
       final Base64.Encoder encoder = Base64.getEncoder();
       final List<AllureResult> results = new ArrayList<>();
 
-      try (Stream<Path> filePathStream = Files.walk(Paths.get(ALLURE_RESULTS_DIRECTORY))) {
-        filePathStream
+      try (Stream<Path> allureResults = Files.walk(pathToResults)) {
+        allureResults
             .filter(Files::isRegularFile)
             .forEach(filePath -> {
               try (InputStream is = Files.newInputStream(filePath)) {
@@ -52,17 +51,12 @@ public class AllureResultsDockerExtension implements SuiteExtension {
               }
             });
 
-        allureApiClient.sendResults(
+        allureApiClient.uploadResults(
             PROJECT_ID,
             new AllureResults(results)
         );
 
-        allureApiClient.generateReport(
-            PROJECT_ID,
-            System.getenv("HEAD_COMMIT_MESSAGE"),
-            System.getenv("BUILD_URL"),
-            System.getenv("EXECUTION_TYPE")
-        );
+        allureApiClient.generateReport(PROJECT_ID);
 
       } catch (IOException e) {
         throw new RuntimeException(e);
