@@ -33,7 +33,7 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   final private PaginationComponent pageContainer = new PaginationComponent();
 
   @NonNull
-  @Step("Добавляем новый Музей {museum}")
+  @Step("Добавляем новый Музей ")
   public MuseumPage addMuseum(MuseumJson museum) {
     return checkThatComponentLoaded()
         .setTitle(museum.title())
@@ -45,7 +45,7 @@ public class MuseumForm extends BaseComponent<MuseumForm> {
   }
 
   @NonNull
-  @Step("Редактируем все поля музея {museum}")
+  @Step("Редактируем все поля музея")
   public MuseumDetailPage fullUpdateMuseum(MuseumJson museum) {
     addMuseum(museum);
     return new MuseumDetailPage().checkThatPageLoaded();

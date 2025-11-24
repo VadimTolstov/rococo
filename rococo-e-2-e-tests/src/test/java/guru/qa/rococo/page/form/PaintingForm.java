@@ -47,7 +47,7 @@ public class PaintingForm extends BaseComponent<PaintingForm> {
   }
 
   @NonNull
-  @Step("Редактируем все поля музея {museum}")
+  @Step("Редактируем все поля картины")
   public PaintingDetailPage fullUpdatePainting(PaintingJson painting) {
     addPainting(painting);
     return new PaintingDetailPage().checkThatPageLoaded();

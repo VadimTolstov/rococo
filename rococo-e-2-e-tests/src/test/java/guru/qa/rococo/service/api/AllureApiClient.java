@@ -36,7 +36,7 @@ public class AllureApiClient implements RequestExecutor {
   }
 
 
-  @Step("Создаем проект {projectId} для allure")
+ //"Создаем проект {projectId} для allure"
   public void createProject(String projectId) {
     if (isProjectExists(projectId)) {
       LOG.info("Проект {} уже существует", projectId);
@@ -47,7 +47,7 @@ public class AllureApiClient implements RequestExecutor {
   }
 
 
-  @Step("Отправляем результаты тестов в allure по проекту {projectId}")
+//"Отправляем результаты тестов в allure по проекту {projectId}"
   public void uploadResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
     LOG.info("Подготовка к отправке {} результатов allure для проекта {}", allureResults.results().size(), projectId);
     final List<AllureResult> batch = new ArrayList<>();
@@ -65,6 +65,12 @@ public class AllureApiClient implements RequestExecutor {
       batch.add(result);
       batchSize += resultSize;
     }
+    if (!batch.isEmpty()) {
+      LOG.info("Отправка финального пакета {} с {} результатами ({} байт)", batchNumber, batch.size(), batchSize);
+      uploadResultsBatch(projectId, batch);
+    }
+
+    LOG.info("Всего отправлено пакетов: {}", batchNumber);
   }
 
   private void uploadResultsBatch(String projectId, List<AllureResult> results) {
@@ -77,7 +83,7 @@ public class AllureApiClient implements RequestExecutor {
     }
   }
 
-  @Step("Сгенерируем отчет по проекту {projectId}")
+  //"Сгенерируем отчет по проекту {projectId}"
   public void generateReport(String projectId) {
     executeVoid(
         allureApi.generateReport(
@@ -89,7 +95,7 @@ public class AllureApiClient implements RequestExecutor {
     );
   }
 
-  @Step("Получаем список проектов allure")
+  //"Получаем список проектов allure"
   public ProjectResponse getProjectsMap() {
     return execute(allureApi.getProjects(), 200);
   }
