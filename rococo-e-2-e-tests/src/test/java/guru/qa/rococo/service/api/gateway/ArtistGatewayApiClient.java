@@ -23,7 +23,7 @@ public class ArtistGatewayApiClient implements RequestExecutor, ErrorAsserter {
   public ArtistGatewayApiClient() {
     artistApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.HEADERS
+        HttpLoggingInterceptor.Level.NONE
     ).create(ArtistGatewayApi.class);
   }
 

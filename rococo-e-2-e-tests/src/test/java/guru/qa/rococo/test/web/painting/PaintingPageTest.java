@@ -85,12 +85,4 @@ public class PaintingPageTest {
         .toPage(PaintingPage.class)
         .checkImage(image, paintingName);
   }
-
-  @Test
-  @DisplayName("Проверяем отображения текста, когда список картин пуст")
-  void checkMessageArtisEmpty() {
-    Selenide.open(PaintingPage.URL, PaintingPage.class)
-        .checkThatPageLoaded()
-        .checkMessagePaintingEmpty();
-  }
 }

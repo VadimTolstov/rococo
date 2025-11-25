@@ -24,7 +24,7 @@ public class PaintingApiClient implements PaintingClient, RequestExecutor {
   public PaintingApiClient() {
     paintingApi = new RestClient.EmtyRestClient(
         CFG.paintingUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(PaintingApi.class);
   }
 

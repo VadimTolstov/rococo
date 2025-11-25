@@ -19,7 +19,7 @@ public class UserdataApiClient implements UserdataClient, RequestExecutor {
     public UserdataApiClient() {
         userdataApi = new RestClient.EmtyRestClient(
                 CFG.userdataUrl(),
-                HttpLoggingInterceptor.Level.BODY
+            HttpLoggingInterceptor.Level.NONE
         ).create(UserdataApi.class);
     }
 

@@ -25,7 +25,7 @@ public class MuseumApiClient implements MuseumClient, RequestExecutor {
   public MuseumApiClient() {
     museumApi = new RestClient.EmtyRestClient(
         CFG.museumUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(MuseumApi.class);
   }
 

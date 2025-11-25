@@ -22,7 +22,7 @@ public class PaintingGatewayApiClient implements RequestExecutor, ErrorAsserter 
   public PaintingGatewayApiClient() {
     paintingApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(PaintingGatewayApi.class);
   }
 

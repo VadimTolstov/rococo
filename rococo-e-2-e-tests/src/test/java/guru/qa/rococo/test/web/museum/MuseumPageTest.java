@@ -86,11 +86,4 @@ public class MuseumPageTest {
         .checkImage(image, museumName);
   }
 
-  @Test
-  @DisplayName("Проверяем отображения текста, когда список музеев пуст")
-  void checkMessageArtisEmpty() {
-    Selenide.open(MuseumPage.URL, MuseumPage.class)
-        .checkThatPageLoaded()
-        .checkMessageMuseumEmpty();
-  }
 }

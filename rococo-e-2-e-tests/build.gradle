@@ -121,6 +121,17 @@ tasks.register('printVersion') {
     }
 }
 
+tasks.register("first", Test) {
+    options {
+        systemProperties(System.getProperties())
+    }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform {
+        includeTags("FIRST")
+    }
+}
+
 
 test {
 //    systemProperty "test.env",
@@ -133,9 +144,15 @@ test {
 //        ]
 
     options {
+        // Указываем зависимость - сначала выполнить first
+        dependsOn tasks.named("first")
         systemProperties(System.getProperties())
     }
     testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
+    useJUnitPlatform {
+        excludeTags("FIRST")
+    }
     useJUnitPlatform()
 }
+

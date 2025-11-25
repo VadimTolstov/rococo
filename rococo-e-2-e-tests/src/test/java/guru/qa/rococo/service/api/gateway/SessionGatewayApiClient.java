@@ -19,7 +19,7 @@ public class SessionGatewayApiClient implements RequestExecutor {
   public SessionGatewayApiClient() {
     userdataApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(SessionGatewayApi.class);
   }
 

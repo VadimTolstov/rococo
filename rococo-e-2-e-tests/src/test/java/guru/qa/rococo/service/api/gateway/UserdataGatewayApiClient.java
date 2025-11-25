@@ -18,7 +18,7 @@ public class UserdataGatewayApiClient implements RequestExecutor, ErrorAsserter 
   public UserdataGatewayApiClient() {
     userdataApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(UserDataGatewayApi.class);
   }
 

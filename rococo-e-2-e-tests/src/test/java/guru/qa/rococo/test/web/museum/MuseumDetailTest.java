@@ -25,8 +25,36 @@ public class MuseumDetailTest {
         .checkThatPageLoaded()
         .checkImage(image);
   }
+/*Тесты на детальную форму картины > Авторизованный пользователь имеет возможность открыть форму редактирования STANDARD_OUT
 
-  @Content(
+    09:16:08.112 [ForkJoinPool-1-worker-1] INFO  g.q.rococo.service.api.AuthApiClient - Войдите в систему под: username = [cameron.king Roxana], password = [12345]
+
+    09:16:08.193 [ForkJoinPool-1-worker-1] INFO  c.c.s.WebDriverThreadLocalContainer - No webdriver is bound to current thread: 44 - let's create a new webdriver
+
+    09:16:08.489 [ForkJoinPool-1-worker-3] INFO  c.c.selenide.impl.AttachmentPrinter - [[ATTACHMENT|/rococo/build/reports/tests/1764051368486.347.html]]
+
+    09:16:08.600 [ForkJoinPool-1-worker-3] INFO  c.c.selenide.impl.AttachmentPrinter - [[ATTACHMENT|/rococo/build/reports/tests/1764051368486.347.png]]
+
+    09:16:08.835 [ForkJoinPool-1-worker-2] INFO  c.c.selenide.impl.AttachmentPrinter - [[ATTACHMENT|/rococo/build/reports/tests/1764051368746.349.html]]
+
+
+Failed to map supported failure 'Element should be Screenshot comparison {.content/img}
+
+Element: '<img alt="Ренуар" class="content__image" src="images/renuar.jpeg" width="90"></img>'
+
+Actual value: Screen comparison failure
+
+Screenshot: file:/rococo/build/reports/tests/1764051368486.347.png
+
+Page source: file:/rococo/build/reports/tests/1764051368486.347.html
+
+Timeout: 8 s.' with mapper 'org.gradle.api.internal.tasks.testing.failure.mappers.OpenTestAssertionFailedMapper@435f2047': Cannot invoke "Object.getClass()" because "expectedValue" is null
+
+Failed to map supported failure 'Element should be Screenshot comparison {#appShell/#page-content li/img}
+
+Element: '<img alt="The Moving Finger Clear skies" class="max-w-full rounded-lg object-cover w-full h-96" src="data:image/png;base64,UklGRsh0AABXRUJQVlA4ILx0AA*/
+
+ @Content(
       museumCount = 1
   )
   @Test

@@ -25,7 +25,7 @@ public class ArtistApiClient implements ArtistClient, RequestExecutor {
   public ArtistApiClient() {
     artistApi = new RestClient.EmtyRestClient(
         CFG.artistUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(ArtistApi.class);
   }
 

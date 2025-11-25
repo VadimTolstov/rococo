@@ -90,11 +90,4 @@ public class ArtistPageTest {
         .checkThatComponentLoaded();
   }
 
-  @Test
-  @DisplayName("Проверяем отображения текста, когда список художников пуст")
-  void checkMessageArtisEmpty() {
-    Selenide.open(ArtistPage.URL, ArtistPage.class)
-        .checkThatPageLoaded()
-        .checkMessageArtisEmpty();
-  }
 }

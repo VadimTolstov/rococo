@@ -17,7 +17,7 @@ public class GhApiClient implements RequestExecutor {
   public GhApiClient() {
     ghApi = new RestClient.EmtyRestClient(
         CFG.ghUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(GhApi.class);
   }
 

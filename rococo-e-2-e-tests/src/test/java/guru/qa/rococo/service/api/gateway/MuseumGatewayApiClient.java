@@ -23,7 +23,7 @@ public class MuseumGatewayApiClient implements RequestExecutor, ErrorAsserter {
   public MuseumGatewayApiClient() {
     museumApi = new RestClient.EmtyRestClient(
         CFG.gatewayUrl(),
-        HttpLoggingInterceptor.Level.BODY
+        HttpLoggingInterceptor.Level.NONE
     ).create(MuseumGatewayApi.class);
   }
 

@@ -42,7 +42,7 @@ public class AuthApiClient implements AuthClient, RequestExecutor {
         CFG.authUrl(),
         true,
         JacksonConverterFactory.create(),
-        HttpLoggingInterceptor.Level.BODY,
+        HttpLoggingInterceptor.Level.NONE,
         new CodeInterceptor()
     ).create(AuthApi.class);
   }
