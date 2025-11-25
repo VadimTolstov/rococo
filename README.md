@@ -394,3 +394,40 @@ $ docker logs -f rococo-tests
 ![This is an image](img/allure_report_dashboard.png)
 ### Список тест-кейсов в Allure Report
 ![This is an image](img/testcases.png)
+
+# Исправить формат файла sh 
+1. Перейдите в папку с файлом
+```posh
+cd postgres/script
+```
+2. Преобразуйте формат файла из Windows в Unix
+```posh
+sed -i 's/\r$//' init-database.sh
+```
+3. Или используйте dos2unix если установлен
+```posh
+dos2unix init-database.sh
+```
+4. Сделайте файл исполняемым
+```posh
+chmod +x init-database.sh
+```
+5. Проверьте формат
+```posh
+file init-database.sh
+вывод неверного формата: init-database.sh: Bourne-Again shell script, ASCII text executable, with CRLF line terminators
+вывод верного формата: init-database.sh: Bourne-Again shell script, ASCII text executable
+```
+
+# Поиск и остановка процесса с указанным портом
+1. Сначала найдем процесс
+```posh
+PS C:\> netstat -ano | findstr :9000
+TCP    0.0.0.0:9000           0.0.0.0:0              LISTENING       1234
+TCP    [::]:9000              [::]:0                 LISTENING       1234
+```
+2. Затем остановим его
+```posh
+PS C:\> taskkill /PID 1234 /F
+SUCCESS: The process with PID 1234 has been terminated.
+```

@@ -26,7 +26,6 @@ public class AllureApiClient implements RequestExecutor {
 
   private static final Config CFG = Config.getInstance();
   private static final Logger LOG = LoggerFactory.getLogger(AllureApiClient.class);
-  private static final int MAX_BATCH_SIZE_BYTES = 30 * 1024 * 1024; // 30MB
 
   public AllureApiClient() {
     allureApi = new RestClient.EmtyRestClient(
@@ -49,38 +48,7 @@ public class AllureApiClient implements RequestExecutor {
 
 //"Отправляем результаты тестов в allure по проекту {projectId}"
   public void uploadResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
-    LOG.info("Подготовка к отправке {} результатов allure для проекта {}", allureResults.results().size(), projectId);
-    final List<AllureResult> batch = new ArrayList<>();
-    int batchSize = 0;
-    int batchNumber = 1;
-    for (AllureResult result : allureResults.results()) {
-      final int resultSize = result.contentBase64().length();
-      if (batchSize + resultSize > MAX_BATCH_SIZE_BYTES && !batch.isEmpty()) {
-        LOG.info("Отправка пакета {} с результатами {} ({} байт)", batchNumber, batch.size(), batchSize);
-        uploadResultsBatch(projectId, batch);
-        batch.clear();
-        batchSize = 0;
-        batchNumber++;
-      }
-      batch.add(result);
-      batchSize += resultSize;
-    }
-    if (!batch.isEmpty()) {
-      LOG.info("Отправка финального пакета {} с {} результатами ({} байт)", batchNumber, batch.size(), batchSize);
-      uploadResultsBatch(projectId, batch);
-    }
-
-    LOG.info("Всего отправлено пакетов: {}", batchNumber);
-  }
-
-  private void uploadResultsBatch(String projectId, List<AllureResult> results) {
-    try {
-      executeVoid(allureApi.uploadResults(projectId, new AllureResults(new ArrayList<>(results))), 200);
-      LOG.info("Пакет успешно отправлен, результаты: {}.", results.size());
-    } catch (HttpException e) {
-      LOG.error("Не удалось отправить пакет с {} результатами.", results.size(), e);
-      throw new RuntimeException(e);
-    }
+      executeVoid(allureApi.uploadResults(projectId, allureResults), 200);
   }
 
   //"Сгенерируем отчет по проекту {projectId}"

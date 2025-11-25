@@ -20,31 +20,31 @@ public class RandomDataUtils {
   private static final Faker faker = new Faker();
 
   public static @Nonnull String randomUsername() {
-    return faker.name().username() + " " + faker.name().firstName();
+    return (faker.name().username() + " " + faker.name().firstName()).replace("'", "-");
   }
 
   public static @Nonnull String randomArtistName() {
-    return faker.artist().name() + " " + faker.name().firstName();
+    return (faker.artist().name() + " " + faker.name().firstName()).replace("'", "-");
   }
 
   public static @Nonnull String randomSurname() {
-    return faker.name().lastName();
+    return faker.name().lastName().replace("'", "-");
   }
 
   public static @Nonnull String shortBio() {
-    return faker.lorem().paragraph();
+    return faker.lorem().paragraph().replace("'", "-");
   }
 
   public static @Nonnull String city() {
-    return faker.address().city();
+    return faker.address().city().replace("'", "-");
   }
 
   public static @Nonnull String museum() {
-    return faker.university().name() + " " + city() + " Museum";
+    return (faker.university().name() + " " + city() + " Museum").replace("'", "-");
   }
 
   public static @Nonnull String painting() {
-    return faker.book().title() + " " + faker.weather().description();
+    return (faker.book().title() + " " + faker.weather().description()).replace("'", "-");
   }
 
 

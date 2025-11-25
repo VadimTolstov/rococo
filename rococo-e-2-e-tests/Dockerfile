@@ -9,4 +9,4 @@ COPY ./build.gradle ./
 COPY ./settings.gradle ./
 COPY ./gradle.properties ./
 
-CMD ./gradlew test -Dtest.env=docker -Drepository=jpa -Duser.timezone=Europe/Moscow -Dorg.gradle.jvmargs="-Xmx6g -Xms4g" --no-daemon
+CMD ./gradlew test -Dtest.env=docker -Drepository=jpa -Duser.timezone=Europe/Moscow
