@@ -15,77 +15,86 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import java.io.ByteArrayInputStream;
 
 public class BrowserExtension implements
-        BeforeEachCallback,
-        AfterEachCallback,
-        TestExecutionExceptionHandler,
-        LifecycleMethodExecutionExceptionHandler {
+    BeforeEachCallback,
+    AfterEachCallback,
+    TestExecutionExceptionHandler,
+    LifecycleMethodExecutionExceptionHandler {
 
-    static {
-        String browser = System.getenv("SELENOID_BROWSER");
-        if (browser == null || browser.isEmpty() || "chrome".equals(browser)) {
-            browser = "chrome";
-        }
-
-        Configuration.browser = browser;
-        Configuration.timeout = 8000;
-        Configuration.pageLoadStrategy = "eager";
-        if ("firefox".equals(browser)) {
-            Configuration.browserVersion = "125.0";
-            Configuration.browserCapabilities = new FirefoxOptions();
-        }
-
-        if ("docker".equals(System.getProperty("test.env"))) {
-            Configuration.remote = "http://selenoid:4444/wd/hub";
-            if ("chrome".equals(browser)) {
-                Configuration.browserVersion = "127.0";
-                Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
-            }
-        }
+  static {
+    String browser = System.getenv("SELENOID_BROWSER");
+    if (browser == null || browser.isEmpty() || "chrome".equals(browser)) {
+      browser = "chrome";
     }
 
-    @Override
-    public void afterEach(ExtensionContext context) throws Exception {
-        if (WebDriverRunner.hasWebDriverStarted()) {
-            Selenide.closeWebDriver();
-        }
+    Configuration.browser = browser;
+    Configuration.timeout = 8000;
+    Configuration.pageLoadStrategy = "eager";
+
+    if ("firefox".equals(browser)) {
+      Configuration.browserVersion = "125.0";
+      FirefoxOptions firefoxOptions = new FirefoxOptions();
+      firefoxOptions.addPreference("intl.accept_languages", "ru,ru-RU");
+      firefoxOptions.addArguments("--lang=ru");
+      Configuration.browserCapabilities = firefoxOptions;
     }
 
-    @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
-        SelenideLogger.addListener("Allure-selenide", new AllureSelenide()
-                .savePageSource(false)
-                .screenshots(false)
-        );
-        // Добавляем информацию о браузере в Allure
-        Allure.addAttachment("Browser", "text/plain", Configuration.browser + " " + Configuration.browserVersion);
-    }
-
-    @Override
-    public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        doScreenshot();
-        throw throwable;
-    }
-
-    @Override
-    public void handleBeforeEachMethodExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        doScreenshot();
-        throw throwable;
-    }
-
-    @Override
-    public void handleAfterEachMethodExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        doScreenshot();
-        throw throwable;
-    }
-
-    private static void doScreenshot() {
-        if (WebDriverRunner.hasWebDriverStarted()) {
-            Allure.addAttachment(
-                    "Screen on fail",
-                    new ByteArrayInputStream(
-                            ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES)
-                    )
+    if ("docker".equals(System.getProperty("test.env"))) {
+      Configuration.remote = "http://selenoid:4444/wd/hub";
+      if ("chrome".equals(browser)) {
+        Configuration.browserVersion = "127.0";
+        Configuration.browserCapabilities = new ChromeOptions()
+            .addArguments(
+                "--no-sandbox",
+                "--lang=ru",
+                "--accept-lang=ru,ru-RU"
             );
-        }
+      }
     }
+  }
+
+  @Override
+  public void afterEach(ExtensionContext context) throws Exception {
+    if (WebDriverRunner.hasWebDriverStarted()) {
+      Selenide.closeWebDriver();
+    }
+  }
+
+  @Override
+  public void beforeEach(ExtensionContext context) throws Exception {
+    SelenideLogger.addListener("Allure-selenide", new AllureSelenide()
+        .savePageSource(false)
+        .screenshots(false)
+    );
+    // Добавляем информацию о браузере в Allure
+    Allure.addAttachment("Browser", "text/plain", Configuration.browser + " " + Configuration.browserVersion);
+  }
+
+  @Override
+  public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+    doScreenshot();
+    throw throwable;
+  }
+
+  @Override
+  public void handleBeforeEachMethodExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+    doScreenshot();
+    throw throwable;
+  }
+
+  @Override
+  public void handleAfterEachMethodExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
+    doScreenshot();
+    throw throwable;
+  }
+
+  private static void doScreenshot() {
+    if (WebDriverRunner.hasWebDriverStarted()) {
+      Allure.addAttachment(
+          "Screen on fail",
+          new ByteArrayInputStream(
+              ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES)
+          )
+      );
+    }
+  }
 }

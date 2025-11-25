@@ -1,5 +1,6 @@
 package guru.qa.rococo.jupiter.extension;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.qa.rococo.config.Config;
 import guru.qa.rococo.jupiter.annotation.ScreenShotTest;
@@ -20,33 +21,34 @@ import java.util.Base64;
 
 import static guru.qa.rococo.jupiter.extension.TestsMethodContextExtension.context;
 
+
 @ParametersAreNonnullByDefault
 public class ScreenShotTestExtension implements ParameterResolver, TestExecutionExceptionHandler {
 
-    private static final Config CFG = Config.getInstance();
+  private static final Config CFG = Config.getInstance();
 
-    public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
-    public static final String ASSERT_SCREEN_MESSAGE = "Screen comparison failure";
+  public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ScreenShotTestExtension.class);
+  public static final String ASSERT_SCREEN_MESSAGE = "Screen comparison failure";
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Base64.Encoder encoder = Base64.getEncoder();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
+  private static final Base64.Encoder encoder = Base64.getEncoder();
 
-    @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return AnnotationSupport.isAnnotated(extensionContext.getRequiredTestMethod(), ScreenShotTest.class) &&
-                parameterContext.getParameter().getType().isAssignableFrom(BufferedImage.class);
-    }
+  @Override
+  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    return AnnotationSupport.isAnnotated(extensionContext.getRequiredTestMethod(), ScreenShotTest.class) &&
+        parameterContext.getParameter().getType().isAssignableFrom(BufferedImage.class);
+  }
 
-    @SneakyThrows
-    @Override
-    public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        final ScreenShotTest screenShotTest = extensionContext.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
-        return ImageIO.read(
-                new ClassPathResource(
-                        CFG.screenshotBaseDir() + screenShotTest.expected()
-                ).getInputStream()
-        );
-    }
+  @SneakyThrows
+  @Override
+  public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    final ScreenShotTest screenShotTest = extensionContext.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
+    return ImageIO.read(
+        new ClassPathResource(
+            CFG.screenshotBaseDir() + screenShotTest.expected()
+        ).getInputStream()
+    );
+  }
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
@@ -63,53 +65,53 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
                 }
             }
 
-            if (throwable.getMessage().contains(ASSERT_SCREEN_MESSAGE)) {
-                ScreenDif screenDif = new ScreenDif(
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
-                );
+      if (throwable.getMessage().contains(ASSERT_SCREEN_MESSAGE)) {
+        ScreenDif screenDif = new ScreenDif(
+            "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
+            "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
+            "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
+        );
 
-                Allure.addAttachment(
-                        "Screenshot diff",
-                        "application/vnd.allure.image.diff",
-                        objectMapper.writeValueAsString(screenDif)
-                );
-            }
-        }
-        throw throwable;
+        Allure.addAttachment(
+            "Screenshot diff",
+            "application/vnd.allure.image.diff",
+            objectMapper.writeValueAsString(screenDif)
+        );
+      }
     }
+    throw throwable;
+  }
 
-    public static void setExpected(BufferedImage expected) {
-        context().getStore(NAMESPACE).put("expected", expected);
-    }
+  public static void setExpected(BufferedImage expected) {
+    context().getStore(NAMESPACE).put("expected", expected);
+  }
 
-    public static BufferedImage getExpected() {
-        return context().getStore(NAMESPACE).get("expected", BufferedImage.class);
-    }
+  public static BufferedImage getExpected() {
+    return context().getStore(NAMESPACE).get("expected", BufferedImage.class);
+  }
 
-    public static void setActual(BufferedImage actual) {
-        context().getStore(NAMESPACE).put("actual", actual);
-    }
+  public static void setActual(BufferedImage actual) {
+    context().getStore(NAMESPACE).put("actual", actual);
+  }
 
-    public static BufferedImage getActual() {
-        return context().getStore(NAMESPACE).get("actual", BufferedImage.class);
-    }
+  public static BufferedImage getActual() {
+    return context().getStore(NAMESPACE).get("actual", BufferedImage.class);
+  }
 
-    public static void setDiff(BufferedImage diff) {
-        context().getStore(NAMESPACE).put("diff", diff);
-    }
+  public static void setDiff(BufferedImage diff) {
+    context().getStore(NAMESPACE).put("diff", diff);
+  }
 
-    public static BufferedImage getDiff() {
-        return context().getStore(NAMESPACE).get("diff", BufferedImage.class);
-    }
+  public static BufferedImage getDiff() {
+    return context().getStore(NAMESPACE).get("diff", BufferedImage.class);
+  }
 
-    private static byte[] imageToBytes(BufferedImage image) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "png", outputStream);
-            return outputStream.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+  private static byte[] imageToBytes(BufferedImage image) {
+    try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+      ImageIO.write(image, "png", outputStream);
+      return outputStream.toByteArray();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 }
