@@ -23,7 +23,7 @@ public class AllureResultsDockerExtension implements SuiteExtension {
   private static final Logger LOG = LoggerFactory.getLogger(AllureResultsDockerExtension.class);
   private boolean allureBroken = false;
 
-  private static final long MAX_FILE_SIZE_BYTES = 40 * 1024 * 1024;
+  private static final long MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
 
   @Override
   public void beforeSuite(ExtensionContext context) {

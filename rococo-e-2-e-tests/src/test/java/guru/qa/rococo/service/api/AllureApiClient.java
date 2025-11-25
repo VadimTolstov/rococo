@@ -26,7 +26,7 @@ public class AllureApiClient implements RequestExecutor {
 
   private static final Config CFG = Config.getInstance();
   private static final Logger LOG = LoggerFactory.getLogger(AllureApiClient.class);
-  private static final int MAX_BATCH_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+  private static final int MAX_BATCH_SIZE_BYTES = 30 * 1024 * 1024; // 30MB
 
   public AllureApiClient() {
     allureApi = new RestClient.EmtyRestClient(
