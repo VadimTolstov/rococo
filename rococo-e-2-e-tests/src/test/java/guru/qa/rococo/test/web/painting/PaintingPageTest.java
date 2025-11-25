@@ -43,7 +43,7 @@ public class PaintingPageTest {
     Selenide.open(PaintingPage.URL, PaintingPage.class)
         .checkThatPageLoaded()
         .getSearchField()
-        .searchThroughButton(RandomDataUtils.randomSurname())
+        .searchThroughButton(RandomDataUtils.museum())
         .toPage(PaintingPage.class)
         .checkMessagePaintingNotFound();
   }

@@ -74,7 +74,7 @@ public class ArtistPageTest {
     Selenide.open(ArtistPage.URL, ArtistPage.class)
         .checkThatPageLoaded()
         .getSearchField()
-        .searchThroughButton(RandomDataUtils.randomSurname())
+        .searchThroughButton(RandomDataUtils.museum())
         .toPage(ArtistPage.class)
         .checkMessageArtistNotFound();
   }

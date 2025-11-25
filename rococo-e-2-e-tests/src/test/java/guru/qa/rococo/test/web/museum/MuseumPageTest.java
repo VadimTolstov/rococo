@@ -43,7 +43,7 @@ public class MuseumPageTest {
     Selenide.open(MuseumPage.URL, MuseumPage.class)
         .checkThatPageLoaded()
         .getSearchField()
-        .searchThroughButton(RandomDataUtils.randomSurname())
+        .searchThroughButton(RandomDataUtils.city())
         .toPage(MuseumPage.class)
         .checkMessageMuseumNotFound();
   }

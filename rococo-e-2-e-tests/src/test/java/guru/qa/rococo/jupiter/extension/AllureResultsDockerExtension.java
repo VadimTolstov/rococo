@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,14 +24,13 @@ public class AllureResultsDockerExtension implements SuiteExtension {
   private static final Logger LOG = LoggerFactory.getLogger(AllureResultsDockerExtension.class);
   private boolean allureBroken = false;
 
-  private static final long MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+  private static final long MAX_FILE_SIZE_BYTES = 40 * 1024 * 1024;
 
   @Override
   public void beforeSuite(ExtensionContext context) {
     if (isDocker) {
       try {
-
-        LOG.info("Initializing Allure project {}", PROJECT_ID);
+        LOG.info("Инициализация проекта Allure {}", PROJECT_ID);
         allureApiClient.createProject(PROJECT_ID);
         allureApiClient.cleanResults(PROJECT_ID);
       } catch (Throwable e) {
@@ -43,28 +43,28 @@ public class AllureResultsDockerExtension implements SuiteExtension {
   @Override
   public void afterSuite() {
     if (isDocker && !allureBroken) {
-      LOG.info("Processing Allure results");
+      LOG.info("Обработка результатов Allure");
 
       try {
         if (!Files.exists(pathToResults)) {
-          LOG.error("Allure results directory not found: {}", pathToResults.toAbsolutePath());
+          LOG.error("Каталог результатов Allure не найден: {}", pathToResults.toAbsolutePath());
           return;
         }
 
         List<Path> allFiles = getAllResultFiles();
-        LOG.info("Found {} files to process", allFiles.size());
+        LOG.info("Найдено {} файлов для обработки", allFiles.size());
 
         if (allFiles.isEmpty()) {
-          LOG.warn("No files to send to Allure");
+          LOG.warn("Нет файлов для отправки в Allure");
           return;
         }
 
         processFiles(allFiles);
         allureApiClient.generateReport(PROJECT_ID);
-        LOG.info("Allure processing completed");
+        LOG.info("Обработка Allure завершена");
 
       } catch (Exception e) {
-        LOG.error("Error processing Allure results: {}", e.getMessage());
+        LOG.error("Ошибка обработки результатов Allure: {}", e.getMessage());
       }
     }
   }
@@ -79,56 +79,63 @@ public class AllureResultsDockerExtension implements SuiteExtension {
 
   private void processFiles(List<Path> allFiles) {
     int successCount = 0;
-    int skipCount = 0;
     int errorCount = 0;
+    long batchSize = 0;
+    boolean isSuccess;
+    final List<Path> batch = new ArrayList<>();
 
     for (Path filePath : allFiles) {
       try {
         long fileSize = Files.size(filePath);
-
-        if (fileSize > MAX_FILE_SIZE_BYTES) {
-          skipCount++;
-          continue;
+        if (batchSize + fileSize > MAX_FILE_SIZE_BYTES && !batch.isEmpty()) {
+          if (processAndSendSingleFile(batch)) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+          batch.clear();
+          batchSize = 0;
         }
-
-        if (fileSize == 0) {
-          skipCount++;
-          continue;
-        }
-
-        boolean success = processAndSendSingleFile(filePath);
-        if (success) {
-          successCount++;
+        if (fileSize <= MAX_FILE_SIZE_BYTES) {
+          batch.add(filePath);
+          batchSize += fileSize;
         } else {
           errorCount++;
         }
-
       } catch (Exception e) {
         errorCount++;
       }
     }
-
-    LOG.info("Processed: {} success, {} errors, {} skipped, {} total",
-        successCount, errorCount, skipCount, allFiles.size());
+    if (!batch.isEmpty()) {
+      LOG.info("Отправка последних файлов");
+      isSuccess = processAndSendSingleFile(batch);
+      if (isSuccess) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    }
+    LOG.info("Processed: {} success, {} errors,  {} total ",
+        successCount, errorCount, allFiles.size());
   }
 
-  private boolean processAndSendSingleFile(Path filePath) {
-    try {
-      String encodedContent = encodeFileToBase64(filePath);
-      if (encodedContent == null || encodedContent.isEmpty()) {
+  private boolean processAndSendSingleFile(List<Path> filePath) {
+    final List<AllureResult> singleFileList = new ArrayList<>();
+    for (Path path : filePath) {
+      try {
+        final String encodedContent = encodeFileToBase64(path);
+        if (encodedContent == null || encodedContent.isEmpty()) {
+          return false;
+        }
+        singleFileList.add(new AllureResult(encodedContent, path.getFileName().toString()));
+      } catch (Exception e) {
         return false;
       }
-
-      AllureResult singleResult = new AllureResult(encodedContent, filePath.getFileName().toString());
-      List<AllureResult> singleFileList = List.of(singleResult);
-      AllureResults singleFileResults = new AllureResults(singleFileList);
-
-      allureApiClient.uploadResults(PROJECT_ID, singleFileResults);
-      return true;
-
-    } catch (Exception e) {
-      return false;
     }
+    LOG.info("Отправка файлов");
+    allureApiClient.uploadResults(PROJECT_ID, new AllureResults(singleFileList));
+    LOG.info("Отправка файлов завершена");
+    return true;
   }
 
   private String encodeFileToBase64(Path filePath) {
