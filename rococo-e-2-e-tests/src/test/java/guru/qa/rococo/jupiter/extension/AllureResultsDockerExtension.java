@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,7 +82,6 @@ public class AllureResultsDockerExtension implements SuiteExtension {
     int successCount = 0;
     int errorCount = 0;
     long batchSize = 0;
-    boolean isSuccess;
     final List<Path> batch = new ArrayList<>();
 
     for (Path filePath : allFiles) {
@@ -108,8 +108,7 @@ public class AllureResultsDockerExtension implements SuiteExtension {
     }
     if (!batch.isEmpty()) {
       LOG.info("Отправка последних файлов");
-      isSuccess = processAndSendSingleFile(batch);
-      if (isSuccess) {
+      if (processAndSendSingleFile(batch)) {
         successCount++;
       } else {
         errorCount++;
@@ -125,10 +124,12 @@ public class AllureResultsDockerExtension implements SuiteExtension {
       try {
         final String encodedContent = encodeFileToBase64(path);
         if (encodedContent == null || encodedContent.isEmpty()) {
+          LOG.info("Файл пустой или содержит ошибки: {}", path.getFileName().toString());
           return false;
         }
         singleFileList.add(new AllureResult(encodedContent, path.getFileName().toString()));
       } catch (Exception e) {
+        LOG.error("Ошибка при отправке файлов {}", e.getMessage());
         return false;
       }
     }
@@ -138,7 +139,7 @@ public class AllureResultsDockerExtension implements SuiteExtension {
     return true;
   }
 
-  private String encodeFileToBase64(Path filePath) {
+  private @Nullable String encodeFileToBase64(Path filePath) {
     try {
       byte[] fileBytes = Files.readAllBytes(filePath);
       return Base64.getEncoder().encodeToString(fileBytes);

@@ -132,6 +132,40 @@ tasks.register("first", Test) {
     }
 }
 
+tasks.register("web", Test) {
+    dependsOn tasks.named("first")
+    options {
+        systemProperties(System.getProperties())
+    }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform {
+        excludeTags("FIRST")
+        includeTags("WEB")
+    }
+}
+
+tasks.register("rest", Test) {
+    options {
+        systemProperties(System.getProperties())
+    }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform {
+        includeTags("REST")
+    }
+}
+
+tasks.register("kafka", Test) {
+    options {
+        systemProperties(System.getProperties())
+    }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform {
+        includeTags("KAFKA")
+    }
+}
 
 test {
 //    systemProperty "test.env",

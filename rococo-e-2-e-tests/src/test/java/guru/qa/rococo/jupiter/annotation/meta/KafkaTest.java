@@ -1,7 +1,9 @@
 package guru.qa.rococo.jupiter.annotation.meta;
 
 import guru.qa.rococo.jupiter.extension.*;
+import io.qameta.allure.Feature;
 import io.qameta.allure.junit5.AllureJunit5;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;
@@ -11,6 +13,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Feature("Kafka тесты")
+@Tag("KAFKA")
 @ExtendWith({
     AllureJunit5.class,
     UserExtension.class,

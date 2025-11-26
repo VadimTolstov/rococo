@@ -13,5 +13,4 @@ public record ContentJson(
     @Nonnull Set<MuseumJson> museums,
     @Nonnull Set<PaintingJson> paintings
 ) {
-
 }

@@ -16,7 +16,7 @@ public class AllureBackendLogsExtension implements SuiteExtension {
   @SneakyThrows
   @Override
   public void afterSuite() {
-    if (!"docker".equals(System.getProperty("test.env"))) { // TODO: 2024-05-21  логи не собираются в докере т.к находятся в контейнере мс а не e-2-e
+    if (!"docker".equals(System.getProperty("test.env"))) { // TODO: 2024-05-21  логи не собираются в докере к аллюру, т.к находятся в контейнере мс а не e-2-e
       final AllureLifecycle allureLifecycle = Allure.getLifecycle();
       final String caseId = UUID.randomUUID().toString();
       allureLifecycle.scheduleTestCase(new TestResult().setUuid(caseId).setName(caseName));

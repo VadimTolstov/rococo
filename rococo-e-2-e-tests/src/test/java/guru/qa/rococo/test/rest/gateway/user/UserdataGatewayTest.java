@@ -7,7 +7,6 @@ import guru.qa.rococo.jupiter.annotation.Token;
 import guru.qa.rococo.jupiter.annotation.User;
 import guru.qa.rococo.jupiter.annotation.meta.RestTest;
 import guru.qa.rococo.jupiter.extension.ApiLoginExtension;
-import guru.qa.rococo.model.rest.artist.ArtistJson;
 import guru.qa.rococo.model.rest.userdata.UserJson;
 import guru.qa.rococo.service.api.gateway.UserdataGatewayApiClient;
 import guru.qa.rococo.utils.PhotoConverter;
@@ -225,7 +224,7 @@ public class UserdataGatewayTest {
     );
 
     final HttpException ex = assertThrows(HttpException.class,
-        () -> userdataGatewayApiClient.updateUser( request, token,400));
+        () -> userdataGatewayApiClient.updateUser(request, token, 400));
 
     userdataGatewayApiClient.assertError(
         400,
