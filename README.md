@@ -318,26 +318,26 @@ Rococo при запуске в докере будет работать для 
 
 a) Запустить все тесты командой:
 ```posh
-$ ./gradlew :rococo-tests:test
+$ ./gradlew :rococo-e-2-e-tests:test
 ```
 
 b) Запустить REST-тесты командой:
 ```posh
-$ ./gradlew :rococo-tests:rest
+$ ./gradlew :rococo-e-2-e-tests:rest
 ```
 
 c) Запустить Kafka-тесты командой:
 ```posh
-$ ./gradlew :rococo-tests:kafka
+$ ./gradlew :rococo-e-2-e-tests:kafka
 ```
 
 d) Запустить WEB-тесты командой:
 ```posh
-$ ./gradlew :rococo-tests:web
+$ ./gradlew :rococo-e-2-e-tests:web
 ```
 2. После прогона тестов запустить формирование отчёта командой:
 ```posh
-$ ./gradlew :rococo-tests:allureServe
+$ ./gradlew :rococo-e-2-e-tests:allureServe
 ```
 
 <a name="docker-run-tests"></a>
@@ -394,7 +394,7 @@ bash docker-compose-e2e.sh firefox --skip-build
 ```posh
 $ docker logs -f rococo-e-2-e
 ```
-5. После прогона тестов в логах отобразится ссылка на аллюр отчёт
+5. После прогона тестов отчет можно посмотреть по ссылке http://localhost:5252/allure-docker-service-ui
 
 <a name="report"></a>
 ### Итоговые dashboard в Allure Report
