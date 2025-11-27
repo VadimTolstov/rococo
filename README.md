@@ -62,7 +62,7 @@
 Исключением является painting-сервис, который напрямую взаимодействует с artist-сервисом и museum-сервисом через REST Client.
 Gateway выполняет роль единой точки входа в систему, а auth-сервис отвечает за аутентификацию и передачу информации о пользователях в userdata-сервис.
 
-<img src="img/schema.jpg" alt="Architecture">
+<img src="img/schema.png" alt="Architecture">
 
 <a name="ports"></a>
 ## Сетевые порты и их назначение
@@ -71,12 +71,25 @@ Gateway выполняет роль единой точки входа в сис
 |:--------:|:-------------:|
 |   AUTH   | 9000 (server) |
 | GATEWAY  | 8090 (server) |
-|  ARTIST  |  8282 (rest)  |
-|  MUSEUM  |  8283 (rest)  |
-| PAINTING |  8284 (rest)  |
-| USERDATA |  8285 (rest)  |
+|  ARTIST  |  8282 (server)  |
+|  MUSEUM  |  8283 (server)  |
+| PAINTING |  8284 (server)  |
+| USERDATA |  8285 (server)  |
 | FRONTEND |  80 (server)  |
+| POSTGRESQL |   5432 (DB)   |
 
+Поиск и остановка процесса с указанным портом при необходимости
+1. Найти процесс с указанным портом
+```posh
+PS C:\> netstat -ano | findstr :9000
+TCP    0.0.0.0:9000           0.0.0.0:0              LISTENING       1234
+TCP    [::]:9000              [::]:0                 LISTENING       1234
+```
+2. Остановить процесс
+```posh
+PS C:\> taskkill /PID 1234 /F
+SUCCESS: The process with PID 1234 has been terminated.
+```
 <a name="minimum-system-requirements"></a>
 ## Минимальные предусловия для работы с проектом Rococo
 #### 0. Если у вас ОС Windows
@@ -136,7 +149,7 @@ docker volume create pgdata
 User-MacBook-Pro  rococo % bash localenv.sh
 ```
 
-Или выполнив последовательно команды, для *nix:
+Или выполнив последовательно команды:
 
 ```posh
 docker run --name rococo-all -p 5432:5432 -e POSTGRES_PASSWORD=secret -e CREATE_DATABASES=rococo-auth,rococo-currency,rococo-spend,rococo-userdata -v pgdata:/var/lib/postgresql/data -v ./postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh -d postgres:15.1 --max_prepared_transactions=100
@@ -248,11 +261,6 @@ User-MacBook-Pro rococo-auth % gradle bootRun --args='--spring.profiles.active=l
 <a name="hosts"></a>
 #### 4. Прописать в etc/hosts элиас для Docker-имени
 
-#### frontend:  127.0.0.1 frontend.rococo.dc,
-#### auth:      127.0.0.1 auth.rococo.dc
-#### gateway:   127.0.0.1 gateway.rococo.dc
-
-Для *nix:
 ```posh
 $ vi /etc/hosts
 ```
@@ -263,10 +271,15 @@ $ vi /etc/hosts
 # localhost is used to configure the loopback interface
 # when the system is booting.  Do not change this entry.
 ##
-127.0.0.1       localhost
-127.0.0.1       frontend.rococo.dc
-127.0.0.1       auth.rococo.dc
-127.0.0.1       gateway.rococo.dc
+127.0.0.1 localhost
+127.0.0.1 gateway.rococo.dc
+127.0.0.1 frontend.rococo.dc
+127.0.0.1 auth.rococo.dc
+127.0.0.1 artist.rococo.dc
+127.0.0.1 museum.rococo.dc
+127.0.0.1 painting.rococo.dc
+127.0.0.1 userdata.rococo.dc
+127.0.0.1 rococo-all-db
 ```
 
 В windows файл hosts лежит по пути:
@@ -296,46 +309,35 @@ Rococo при запуске в докере будет работать для 
 <a name="local-run-tests"></a>
 ## Запуск тестов в локальном окружении
 
-**Обратите внимание! Запуск тестов происходит в четыре потока. Изменить число потоков можно в
-файле [junit-platform.properties](rococo-tests%2Fsrc%2Ftest%2Fresources%2Fjunit-platform.properties)**
+**Обратите внимание! Запуск тестов происходит в три потока. Изменить число потоков можно в
+файле [junit-platform.properties](rococo-e-2-e-tests%2Fsrc%2Ftest%2Fresources%2Fjunit-platform.properties)**. 
 
-1. Запустить приложение локально и запустить тесты из корня проекта
+**Для запуска тестов в build.gradle настроены задачи.**
+
+1. Запустить приложение локально и запустить тесты из корня проекта командой:
+
+a) Запустить все тесты командой:
 ```posh
-$ ./gradlew :rococo-tests:clean test
+$ ./gradlew :rococo-tests:test
 ```
 
+b) Запустить REST-тесты командой:
+```posh
+$ ./gradlew :rococo-tests:rest
+```
+
+c) Запустить Kafka-тесты командой:
+```posh
+$ ./gradlew :rococo-tests:kafka
+```
+
+d) Запустить WEB-тесты командой:
+```posh
+$ ./gradlew :rococo-tests:web
+```
 2. После прогона тестов запустить формирование отчёта командой:
 ```posh
 $ ./gradlew :rococo-tests:allureServe
-```
-
-3. Примечание
-   Вы можете запустить тесты по определённому тегу с помощью предопределённых задач
-```posh
-// Универсальная задача для запуска тестов с тегами
-def createTagTask(String name, String tag) {
-    tasks.register(name, Test) {
-        useJUnitPlatform {
-            includeTags(tag)
-        }
-        testLogging {
-            events "passed", "skipped", "failed", "standardOut", "standardError"
-            exceptionFormat "short"
-        }
-    }
-}
-
-// Задачи для запуска тестов по тегам
-createTagTask('testApi', 'api')
-createTagTask('testWeb', 'web')
-```
-Запуск API-тестов:
-```posh
-./gradlew :rococo-tests:testApi
-```
-Запуск Web-тестов:
-```posh
-./gradlew :rococo-tests:testWeb
 ```
 
 <a name="docker-run-tests"></a>
@@ -353,39 +355,44 @@ createTagTask('testWeb', 'web')
 # localhost is used to configure the loopback interface
 # when the system is booting.  Do not change this entry.
 ##
-127.0.0.1       localhost
-127.0.0.1       frontend.rococo.dc
-127.0.0.1       auth.rococo.dc
-127.0.0.1       gateway.rococo.dc
-127.0.0.1       allure
+127.0.0.1 localhost
+127.0.0.1 gateway.rococo.dc
+127.0.0.1 frontend.rococo.dc
+127.0.0.1 auth.rococo.dc
+127.0.0.1 artist.rococo.dc
+127.0.0.1 museum.rococo.dc
+127.0.0.1 painting.rococo.dc
+127.0.0.1 userdata.rococo.dc
+127.0.0.1 rococo-all-db
+127.0.0.1 allure
 ```
 
 2. Запустить скрипт:
 ```posh
-$ bash docker-compose-test.sh
+$ bash docker-compose-e2e.sh
 ```
 3. Дополнительные варианты запуска
 
 Можно выбрать браузер, передав его название (chrome или firefox) в параметрах команды:
 ```posh
-bash docker-compose-test.sh chrome
-bash docker-compose-test.sh firefox
+bash docker-compose-e2e.sh chrome
+bash docker-compose-e2e.sh firefox
 ```
 По умолчанию, если не передавать в команде название браузера, используется Chrome.
 
 Чтобы избежать пересборку и только перезапустить тестовый контейнер:
 ```posh
-bash docker-compose-test.sh --skip-build
+bash docker-compose-e2e.sh --skip-build
 ```
 Также можно использовать одновременно выбор браузера и пропуск сборки:
 ```posh
-bash docker-compose-test.sh chrome --skip-build
-bash docker-compose-test.sh firefox --skip-build
+bash docker-compose-e2e.sh chrome --skip-build
+bash docker-compose-e2e.sh firefox --skip-build
 ```
 
 4. После того, как все контейнеры успешно соберутся и запустятся - переключиться на логи контейнера rococo-tests командой:
 ```posh
-$ docker logs -f rococo-tests
+$ docker logs -f rococo-e-2-e
 ```
 5. После прогона тестов в логах отобразится ссылка на аллюр отчёт
 
@@ -394,40 +401,3 @@ $ docker logs -f rococo-tests
 ![This is an image](img/allure_report_dashboard.png)
 ### Список тест-кейсов в Allure Report
 ![This is an image](img/testcases.png)
-
-# Исправить формат файла sh 
-1. Перейдите в папку с файлом
-```posh
-cd postgres/script
-```
-2. Преобразуйте формат файла из Windows в Unix
-```posh
-sed -i 's/\r$//' init-database.sh
-```
-3. Или используйте dos2unix если установлен
-```posh
-dos2unix init-database.sh
-```
-4. Сделайте файл исполняемым
-```posh
-chmod +x init-database.sh
-```
-5. Проверьте формат
-```posh
-file init-database.sh
-вывод неверного формата: init-database.sh: Bourne-Again shell script, ASCII text executable, with CRLF line terminators
-вывод верного формата: init-database.sh: Bourne-Again shell script, ASCII text executable
-```
-
-# Поиск и остановка процесса с указанным портом
-1. Сначала найдем процесс
-```posh
-PS C:\> netstat -ano | findstr :9000
-TCP    0.0.0.0:9000           0.0.0.0:0              LISTENING       1234
-TCP    [::]:9000              [::]:0                 LISTENING       1234
-```
-2. Затем остановим его
-```posh
-PS C:\> taskkill /PID 1234 /F
-SUCCESS: The process with PID 1234 has been terminated.
-```

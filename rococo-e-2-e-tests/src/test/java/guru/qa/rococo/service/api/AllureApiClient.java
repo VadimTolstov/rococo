@@ -68,7 +68,7 @@ public class AllureApiClient implements RequestExecutor {
     return execute(allureApi.getProjects(), 200);
   }
 
-  @Step("Очищаем результаты тестов в allure по проекту {projectId}")
+  //"Очищаем результаты тестов в allure по проекту {projectId}")
   public void cleanResults(String projectId) {
     executeVoid(allureApi.cleanResults(projectId), 200);
   }
