@@ -70,7 +70,9 @@ jib {
     container {
         ports = ['8283'] // Открываемый порт
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"] // Активация профиля
-        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()] // Секреты
+        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
+                       'TZ'         : 'Europe/Moscow'
+        ] // Секреты
         creationTime = 'USE_CURRENT_TIMESTAMP' // Временная метка образа
         labels = [ // Метаданные
                    'maintainer': 'Vadim Tolstov @VadimTolstovv',

@@ -44,7 +44,9 @@ jib {
     container {
         ports = ['8282']  // Экспортируемые порты
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
-        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString()]
+        environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
+                       'TZ'         : 'Europe/Moscow'
+        ]
         creationTime = 'USE_CURRENT_TIMESTAMP'  // Для воспроизводимости образов
         labels = [
                 'maintainer': 'Vadim Tolstov @VadimTolstovv',
