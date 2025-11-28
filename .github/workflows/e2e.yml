@@ -60,8 +60,8 @@ jobs:
         with:
           script: |
             const exitCode = ${{ steps.e2e.outputs.E2E_EXIT_CODE }}
-            const reportUrl = 'https://allure.niffler-stage.qa.guru/api/allure-docker-service/projects/rococo-yegorych/reports/latest/index.html'
-            const historyUrl = 'https://allure.niffler-stage.qa.guru/allure-docker-service-ui/projects/rococo-yegorych'
+            const reportUrl = 'https://allure.niffler-stage.qa.guru/api/allure-docker-service/projects/rococo-tolstov/reports/latest/index.html'
+            const historyUrl = 'https://allure.niffler-stage.qa.guru/allure-docker-service-ui/projects/rococo-tolstov'
             const message = exitCode == '0' ?
               `✅ TEST RUN PASSED ✅ There is the [report](${reportUrl})\n🕓 All reports [history](${historyUrl})` :
               `🔴 TEST RUN FAILED 🔴 There is the [report](${reportUrl})\n🕓 All reports [history](${historyUrl})`
