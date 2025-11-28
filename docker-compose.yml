@@ -197,7 +197,6 @@ services:
       - EXECUTION_TYPE=${EXECUTION_TYPE}
       - SELENOID_BROWSER=${SELENOID_BROWSER}
     volumes:
-      - allure-results:/rococo/rococo-e-2-e-tests/build/allure-results
       - ./rococo-e-2-e-tests/.screen-output/screenshots/selenoid:/rococo/rococo-e-2-e-tests/.screen-output/screenshots/selenoid
     depends_on:
       frontend.rococo.dc:
