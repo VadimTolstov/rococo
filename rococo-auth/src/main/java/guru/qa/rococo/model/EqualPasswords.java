@@ -9,29 +9,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Пользовательская аннотация для валидации совпадения паролей.
- * Применяется к классам и проверяет, что два поля (например, пароль и подтверждение пароля) равны.
- */
-@Target(ElementType.TYPE)  // Аннотация может быть применена только к классам, интерфейсам или перечислениям.
-@Retention(RetentionPolicy.RUNTIME)  // Аннотация доступна во время выполнения программы.
-@Constraint(validatedBy = {EqualPasswordsValidator.class})  // Валидация выполняется с помощью EqualPasswordsValidator.
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = {EqualPasswordsValidator.class})
 public @interface EqualPasswords {
 
-  /**
-   * Сообщение об ошибке, которое будет выводиться, если валидация не пройдена.
-   * По умолчанию: "Passwords should be equal".
-   */
   String message() default "Passwords should be equal";
 
-  /**
-   * Группы валидации. По умолчанию пусто.
-   */
+
   Class<?>[] groups() default {};
 
-  /**
-   * Дополнительная информация, которая может быть передана в процессе валидации.
-   * По умолчанию пусто.
-   */
   Class<? extends Payload>[] payload() default {};
 }

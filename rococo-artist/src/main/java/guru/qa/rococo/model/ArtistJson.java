@@ -21,12 +21,6 @@ public record ArtistJson(
         String photo
 ) {
 
-    /**
-     * Преобразует ArtistEntity в ArtistJson.
-     *
-     * @param entity Сущность ArtistEntity.
-     * @return Объект ArtistJson.
-     */
     public static @Nonnull ArtistJson fromEntity(@Nonnull ArtistEntity entity) {
         return new ArtistJson(
                 entity.getId(),
@@ -38,11 +32,6 @@ public record ArtistJson(
         );
     }
 
-    /**
-     * Преобразует ArtistJson в ArtistEntity.
-     *
-     * @return Объект ArtistEntity.
-     */
     public @Nonnull ArtistEntity toEntity() {
         ArtistEntity entity = new ArtistEntity();
         entity.setId(this.id);

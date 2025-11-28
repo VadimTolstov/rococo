@@ -17,12 +17,6 @@ public record MuseumJson(
         @JsonProperty("geo") GeoJson geo
 ) {
 
-    /**
-     * Преобразует MuseumEntity в MuseumJson.
-     *
-     * @param entity Сущность MuseumEntity.
-     * @return Объект MuseumJson.
-     */
     public static @Nonnull MuseumJson fromEntity(@Nonnull MuseumEntity entity) {
         return new MuseumJson(
                 entity.getId(),
@@ -35,11 +29,6 @@ public record MuseumJson(
         );
     }
 
-    /**
-     * Преобразует MuseumJson в MuseumEntity.
-     *
-     * @return Объект MuseumEntity.
-     */
     public @Nonnull MuseumEntity toEntity() {
         MuseumEntity entity = new MuseumEntity();
         entity.setId(this.id);

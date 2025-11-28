@@ -17,13 +17,6 @@ import java.util.UUID;
  */
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
-    /**
-     * Находит пользователя по его имени (логину).
-     *
-     * @param username Имя пользователя (логин), по которому осуществляется поиск.
-     * @return {@link Optional}, содержащий найденного пользователя, если он существует,
-     * или пустой {@link Optional}, если пользователь с таким именем не найден.
-     */
     @Nonnull
     Optional<UserEntity> findByUsername(@Nonnull String username);
 }

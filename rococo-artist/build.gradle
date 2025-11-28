@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'com.google.cloud.tools.jib' version '3.4.1'  // Плагин для создания Docker-образов
+    id 'com.google.cloud.tools.jib' version '3.4.1'
 }
 
 group = 'guru.qa'
@@ -35,57 +35,55 @@ sourceSets {
     main {
         java {
             srcDir('src/main/java')
-            srcDir("$buildDir/generated-sources/main/xjc")  // Интеграция сгенерированного кода
+            srcDir("$buildDir/generated-sources/main/xjc")
         }
     }
 }
 
 jib {
     container {
-        ports = ['8282']  // Экспортируемые порты
+        ports = ['8282']
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
         environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
                        'TZ'         : 'Europe/Moscow'
         ]
-        creationTime = 'USE_CURRENT_TIMESTAMP'  // Для воспроизводимости образов
+        creationTime = 'USE_CURRENT_TIMESTAMP'
         labels = [
                 'maintainer': 'Vadim Tolstov @VadimTolstovv',
                 'version'   : "${project.version}".toString()
         ]
     }
     from {
-        image = "${dockerImage}"  // Базовый образ из переменных
+        image = "${dockerImage}"
         platforms {
             platform {
-                architecture = "${dockerArch}"  // Мультиархитектурные сборки
+                architecture = "${dockerArch}"
                 os = 'linux'
             }
         }
     }
     to {
-        image = "${dockerHubName}/${project.name}-${System.env.PROFILE}"  // Имя образа
-        tags = ['latest', "${project.version}"]  // Тегирование версий
+        image = "${dockerHubName}/${project.name}-${System.env.PROFILE}"
+        tags = ['latest', "${project.version}"]
     }
 }
 
-// Задачи сборки
-tasks.jib.dependsOn test  // Гарантируем выполнение тестов перед сборкой
+tasks.jib.dependsOn test
 tasks.jibDockerBuild.dependsOn test
 
 tasks.named('bootJar') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE  // Обработка дублирующихся файлов
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// Вспомогательные задачи
 tasks.register('printVersion') {
     doLast {
-        println project.version  // Утилита для проверки версии
+        println project.version
     }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
     testLogging {
-        events 'passed', 'skipped', 'failed'  // Детальный лог тестов
+        events 'passed', 'skipped', 'failed'
     }
 }

@@ -21,12 +21,7 @@ public record PaintingRequestJson(
         @JsonProperty("museum")
         MuseumRef museum
 ) {
-    /**
-     * Преобразует PaintingEntity в PaintingJson.
-     *
-     * @param entity Сущность PaintingEntity.
-     * @return Объект PaintingJson.
-     */
+
     public static @Nonnull PaintingRequestJson fromEntity(@Nonnull PaintingEntity entity) {
         return new PaintingRequestJson(
                 entity.getId(),

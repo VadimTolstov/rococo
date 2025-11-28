@@ -59,13 +59,10 @@ public class MuseumService {
         validateRequest(museum);
         checkPhoto(museum.photo());
 
-        // Обработка страны
         CountryEntity countryEntity = resolveCountry(museum.geo().country());
 
-        // Создание/получение геолокации
         GeoEntity geoEntity = getOrCreateGeo(museum.geo().city().trim(), countryEntity.getId());
 
-        // Создание музея
         MuseumEntity entity = new MuseumEntity();
         entity.setTitle(museum.title().trim());
         entity.setDescription(museum.description().trim());
@@ -83,14 +80,11 @@ public class MuseumService {
         MuseumEntity entity = museumRepository.findById(museum.id())
                 .orElseThrow(() -> new NotFoundException("Музей не найден по ID: " + museum.id()));
 
-        // Обновление основных полей
         Optional.ofNullable(museum.title()).ifPresent(title -> entity.setTitle(title.trim()));
         Optional.ofNullable(museum.description()).ifPresent(desc -> entity.setDescription(desc.trim()));
 
-        // Обновление фото
         entity.setPhoto(museum.photo().getBytes(StandardCharsets.UTF_8));
 
-        // Обновление геолокации и страны
         CountryEntity countryEntity = resolveCountry(museum.geo().country());
         GeoEntity geoEntity = getOrCreateGeo(museum.geo().city().trim(), countryEntity.getId());
         entity.setGeo(geoEntity);

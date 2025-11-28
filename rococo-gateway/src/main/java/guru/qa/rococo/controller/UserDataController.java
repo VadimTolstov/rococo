@@ -13,13 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Контроллер для управления данными пользователя.
- * <p>
- * Обеспечивает операции получения и обновления профиля пользователя.
- * Требует аутентификации через OAuth2. Интегрируется с микросервисом пользовательских данных.
- * </p>
- */
 @RestController
 @RequestMapping("/api/user")
 @SecurityRequirement(name = RococoGatewayServiceConfig.OPEN_API_AUTH_SCHEME)
@@ -33,15 +26,6 @@ public class UserDataController {
         this.restUserDataClient = restUserDataClient;
     }
 
-    /**
-     * Получение данных текущего аутентифицированного пользователя.
-     * <p>
-     * Извлекает имя пользователя из JWT токена и возвращает его профиль.
-     * </p>
-     *
-     * @param principal JWT токен, автоматически внедряемый Spring Security
-     * @return Полный профиль пользователя {@link UserJson}
-     */
     @GetMapping
     public UserJson getUser(@AuthenticationPrincipal @Nonnull Jwt principal) {
         String username = principal.getClaim("sub");
@@ -49,25 +33,12 @@ public class UserDataController {
         return restUserDataClient.getUser(username);
     }
 
-    /**
-     * Обновление профиля пользователя.
-     * <p>
-     * Валидирует входные данные и гарантирует, что обновление выполняется только для текущего пользователя.
-     * Добавляет имя пользователя из токена в DTO для предотвращения подмены.
-     * </p>
-     *
-     * @param principal JWT токен аутентификации
-     * @param user      Объект с обновленными данными пользователя
-     * @return Обновленный профиль пользователя {@link UserJson}
-     * @throws jakarta.validation.ConstraintViolationException При невалидных данных
-     */
     @PatchMapping
     public UserJson updateUser(@AuthenticationPrincipal @Nonnull Jwt principal,
                                @Valid @RequestBody @Nonnull UserJson user) {
         String username = principal.getClaim("sub");
         LOG.info("Updating user profile for: {}", username);
 
-        // Добавляем username из токена в DTO, чтобы предотвратить изменение чужого профиля
         return restUserDataClient.updateUserInfo(
                 user.addUsername(username)
         );

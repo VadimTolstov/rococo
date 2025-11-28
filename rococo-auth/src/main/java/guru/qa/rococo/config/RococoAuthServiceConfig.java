@@ -44,52 +44,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Конфигурационный класс для настройки OAuth2 Authorization Server.
- * Этот класс определяет конфигурацию для работы с OAuth2 и OpenID Connect,
- * включая настройки безопасности, клиентов, токенов и ключей шифрования.
- * <p>
- * Аннотация @Configuration указывает, что этот класс является конфигурационным и содержит
- * определения бинов, которые будут управляться Spring-контейнером.
- */
 @Configuration
 public class RococoAuthServiceConfig {
 
-    // Менеджер ключей для генерации RSA-ключей
     private final KeyManager keyManager;
 
-    // URI фронтенд-приложения
     private final String rococoFrontUri;
 
-    // URI сервера аутентификации
     private final String rococoAuthUri;
 
-    // Идентификатор клиента OAuth2
     private final String clientId;
 
-    // Порт сервера
     private final String serverPort;
 
-    // Порт HTTPS по умолчанию
     private final String defaultHttpsPort = "443";
 
-    // Кастомизатор CORS
     private final CorsCustomizer corsCustomizer;
 
-    // Окружение (профили) приложения
     private final Environment environment;
 
-    /**
-     * Конструктор для внедрения зависимостей.
-     *
-     * @param keyManager     Менеджер ключей для генерации RSA-ключей.
-     * @param rococoFrontUri URI фронтенд-приложения.
-     * @param rococoAuthUri  URI сервера аутентификации.
-     * @param clientId       Идентификатор клиента OAuth2.
-     * @param serverPort     Порт сервера.
-     * @param corsCustomizer Кастомизатор CORS.
-     * @param environment    Окружение (профили) приложения.
-     */
     @Autowired
     public RococoAuthServiceConfig(KeyManager keyManager,
                                    @Value("${rococo-front.base-uri}") String rococoFrontUri,
@@ -107,24 +80,13 @@ public class RococoAuthServiceConfig {
         this.environment = environment;
     }
 
-    /**
-     * Настройка SecurityFilterChain для OAuth2 Authorization Server.
-     * Этот метод определяет правила безопасности для сервера авторизации,
-     * включая настройки OpenID Connect и обработку исключений.
-     *
-     * @param http       Объект HttpSecurity для настройки безопасности.
-     * @param entryPoint Точка входа для аутентификации.
-     * @return SecurityFilterChain для OAuth2 Authorization Server.
-     * @throws Exception Если произошла ошибка при настройке безопасности.
-     */
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
                                                                       LoginUrlAuthenticationEntryPoint entryPoint) throws Exception {
-        // Применяем стандартные настройки безопасности для OAuth2 Authorization Server
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
-        // Добавляем фильтр для логирования запросов в локальном и staging окружении
         if (environment.acceptsProfiles(Profiles.of("local", "staging"))) {
             http.addFilterBefore(new SpecificRequestDumperFilter(
                     new RequestDumperFilter(),
@@ -132,25 +94,17 @@ public class RococoAuthServiceConfig {
             ), DisableEncodeUrlFilter.class);
         }
 
-        // Включаем поддержку OpenID Connect 1.0
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults());
 
-        // Настраиваем обработку исключений и OAuth2 Resource Server
         http.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(entryPoint))
                 .oauth2ResourceServer(rs -> rs.jwt(Customizer.withDefaults()));
 
-        // Применяем кастомизацию CORS
         corsCustomizer.corsCustomizer(http);
         return http.build();
     }
 
-    /**
-     * Создает точку входа для аутентификации с принудительным использованием HTTPS.
-     * Этот бин используется в окружениях "staging" и "prod".
-     *
-     * @return LoginUrlAuthenticationEntryPoint с настройками для HTTPS.
-     */
+
     @Bean
     @Profile({"staging", "prod"})
     public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPointHttps() {
@@ -169,24 +123,14 @@ public class RococoAuthServiceConfig {
         return entryPoint;
     }
 
-    /**
-     * Создает точку входа для аутентификации без принудительного использования HTTPS.
-     * Этот бин используется в окружениях "local" и "docker".
-     *
-     * @return LoginUrlAuthenticationEntryPoint без принудительного HTTPS.
-     */
+
     @Bean
     @Profile({"local", "docker"})
     public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPointHttp() {
         return new LoginUrlAuthenticationEntryPoint("/login");
     }
 
-    /**
-     * Создает репозиторий зарегистрированных клиентов OAuth2.
-     * Этот метод регистрирует клиента с идентификатором clientId и настройками для авторизации.
-     *
-     * @return Репозиторий зарегистрированных клиентов.
-     */
+
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient publicClient = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -209,23 +153,13 @@ public class RococoAuthServiceConfig {
         return new InMemoryRegisteredClientRepository(publicClient);
     }
 
-    /**
-     * Создает кодировщик паролей.
-     * Этот метод возвращает DelegatingPasswordEncoder, который поддерживает несколько алгоритмов хеширования.
-     *
-     * @return Кодировщик паролей.
-     */
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    /**
-     * Создает настройки сервера авторизации.
-     * Этот метод возвращает настройки, включая URI сервера аутентификации.
-     *
-     * @return Настройки сервера авторизации.
-     */
+
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
@@ -233,26 +167,14 @@ public class RococoAuthServiceConfig {
                 .build();
     }
 
-    /**
-     * Создает источник JWK (JSON Web Key) для подписи и проверки JWT.
-     * Этот метод использует RSA-ключи, сгенерированные KeyManager.
-     *
-     * @return Источник JWK.
-     * @throws NoSuchAlgorithmException Если алгоритм генерации ключей не поддерживается.
-     */
+
     @Bean
     public JWKSource<SecurityContext> jwkSource() throws NoSuchAlgorithmException {
         JWKSet set = new JWKSet(keyManager.rsaKey());
         return (jwkSelector, securityContext) -> jwkSelector.select(set);
     }
 
-    /**
-     * Создает декодер JWT для проверки токенов.
-     * Этот метод использует источник JWK для декодирования токенов.
-     *
-     * @param jwkSource Источник JWK.
-     * @return Декодер JWT.
-     */
+
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);

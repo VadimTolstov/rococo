@@ -21,33 +21,15 @@ import java.util.Objects;
 @RequestMapping("/api/session")
 public class SessionController {
 
-    /**
-     * Возвращает информацию о текущей сессии пользователя.
-     * <p>
-     * Извлекает данные из JWT токена аутентификации:
-     * </p>
-     * <ul>
-     *   <li><b>sub</b> - идентификатор пользователя (логин)</li>
-     *   <li><b>issuedAt</b> - время выдачи токена</li>
-     *   <li><b>expiresAt</b> - время истечения срока действия токена</li>
-     * </ul>
-     *
-     * @param principal JWT токен аутентифицированного пользователя, автоматически внедряемый Spring Security
-     * @return Объект сессии {@link SessionJson} или пустой объект если пользователь не аутентифицирован
-     */
     @GetMapping
     public SessionJson session(@AuthenticationPrincipal Jwt principal) {
         if (principal != null) {
             return new SessionJson(
-                    // Извлекаем логин пользователя из стандартного поля JWT "sub"
                     principal.getClaim("sub"),
-                    // Конвертируем Instant в Date для времени выдачи токена
                     Date.from(Objects.requireNonNull(principal.getIssuedAt())),
-                    // Конвертируем Instant в Date для времени истечения токена
                     Date.from(Objects.requireNonNull(principal.getExpiresAt()))
             );
         } else {
-            // Возвращаем пустую сессию если аутентификация отсутствует
             return SessionJson.empty();
         }
     }

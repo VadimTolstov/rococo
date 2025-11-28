@@ -28,39 +28,23 @@ public class UserdataService {
     this.userdataRepository = userdataRepository;
   }
 
-  /**
-   * Обработчик Kafka-сообщений для создания новых пользователей.
-   *
-   * @param user объект пользователя из Kafka-сообщения
-   * @param cr   полная запись ConsumerRecord для логирования
-   */
   @Transactional
   @KafkaListener(
-      topics = "users",  // Название топика Kafka
-      groupId = "userdata"  // Идентификатор группы потребителей
-      //containerFactory ="kafkaListenerContainerFactory" // (подразумевается по умолчанию)
+      topics = "users",
+      groupId = "userdata"
   )
   public void listener(@Payload UserJson user, ConsumerRecord<String, UserJson> cr) {
-    // Поиск существующего пользователя по имени
     userdataRepository.findByUsername(user.username())
         .ifPresentOrElse(
-            // Если пользователь существует
             u -> {
-              // Логирование пропуска события
               LOG.info("### User already exist in DB, kafka event will be skipped: {}", cr.toString());
             },
-            // Если пользователь не найден
             () -> {
-              // Логирование полученного Kafka-события
               LOG.info("### Kafka consumer record: {}", cr.toString());
 
-              // Создание нового объекта пользователя
               UserEntity userDataEntity = new UserEntity();
-              // Установка имени пользователя из сообщения
               userDataEntity.setUsername(user.username());
-              // Сохранение пользователя в БД
               UserEntity userEntity = userdataRepository.save(userDataEntity);
-              // Логирование успешного сохранения
               LOG.info("### User '{}' successfully saved to database with id: {}",
                   user.username(),
                   userEntity.getId()

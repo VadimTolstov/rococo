@@ -24,12 +24,6 @@ public record PaintingResponseJson(
         MuseumJson museum
 ) {
 
-    /**
-     * Преобразует PaintingEntity в PaintingJson.
-     *
-     * @param entity Сущность PaintingEntity.
-     * @return Объект PaintingJson.
-     */
     public static @Nonnull PaintingResponseJson fromEntity(@Nonnull PaintingEntity entity,
                                                            @Nonnull ArtistJson artist,
                                                            @Nonnull MuseumJson museum) {

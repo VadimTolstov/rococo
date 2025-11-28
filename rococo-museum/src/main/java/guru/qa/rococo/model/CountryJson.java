@@ -14,12 +14,6 @@ public record CountryJson(
         @JsonProperty("name") String name
 ) {
 
-    /**
-     * Преобразует CountryEntity в CountryJson.
-     *
-     * @param entity Сущность CountryEntity.
-     * @return Объект CountryJson.
-     */
     public static @Nonnull CountryJson fromEntity(@Nonnull CountryEntity entity) {
         return new CountryJson(
                 entity.getId(),
@@ -27,11 +21,6 @@ public record CountryJson(
         );
     }
 
-    /**
-     * Преобразует CountryJson в CountryEntity.
-     *
-     * @return Объект CountryEntity.
-     */
     public @Nonnull CountryEntity toEntity() {
         CountryEntity entity = new CountryEntity();
         entity.setId(this.id);

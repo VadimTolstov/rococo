@@ -168,15 +168,6 @@ tasks.register("kafka", Test) {
 }
 
 test {
-//    systemProperty "test.env",
-//            System.getProperty("test.env", "docker")
-
-//mac
-//    test {
-//        systemProperties = [
-//                'test.env': System.getProperty('test.env', 'local')
-//        ]
-
     options {
         // Указываем зависимость - сначала выполнить first
         dependsOn tasks.named("first")

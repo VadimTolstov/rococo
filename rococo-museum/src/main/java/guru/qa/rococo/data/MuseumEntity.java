@@ -10,15 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Класс, представляющий сущность музея (museum) в базе данных.
- * Этот класс используется для хранения информации о музеях.
- * <p>
- * Аннотация @Entity указывает, что этот класс является JPA-сущностью, которая будет
- * отображаться на таблицу в базе данных.
- * <p>
- * Аннотация @Table(name = "museum") указывает имя таблицы в базе данных.
- */
 @Getter
 @Setter
 @Entity
@@ -39,12 +30,6 @@ public class MuseumEntity implements Serializable {
     @Column(columnDefinition = "bytea", nullable = false)
     private byte[] photo;
 
-    /**
-     * Геолокация, в которой находится музей.
-     * Аннотация @ManyToOne указывает на связь "многие к одному" между музеем и геолокацией.
-     * Аннотация @JoinColumn(name = "geo_id") указывает, что это поле будет отображаться
-     * на столбец "geo_id" в таблице museum, который является внешним ключом к таблице geo.
-     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "geo_id", nullable = false)
     private GeoEntity geo;

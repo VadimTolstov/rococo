@@ -1,22 +1,12 @@
 plugins {
-    // Плагин для работы со Spring Boot
     id 'org.springframework.boot' version '3.3.2'
-    // Автоматическое управление версиями зависимостей
     id 'io.spring.dependency-management' version '1.1.6'
-    // Сборка Docker-образов без Dockerfile
     id 'com.google.cloud.tools.jib' version '3.4.1'
 }
 
-// Группа и версия проекта
 group = 'guru.qa'
 version = '2.0.0'
 
-/**
- * Зависимости проекта:
- * - Spring Boot Starter: Веб, JPA, валидация, GraphQL
- * - Базы данных: PostgreSQL, H2 (для тестов)
- * - Инструменты: Lombok, Flyway, SpringDoc OpenAPI
- */
 dependencies {
     // Основные зависимости Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -50,67 +40,56 @@ dependencies {
     testImplementation "com.h2database:h2:${project.ext.h2Version}"
 }
 
-/**
- * Настройка исходных директорий:
- * - Добавляет сгенерированные XJC классы в исходный код
- */
 sourceSets {
     main {
         java {
             srcDir('src/main/java')
-            srcDir("$buildDir/generated-sources/main/xjc") // Генерируемые классы
+            srcDir("$buildDir/generated-sources/main/xjc")
         }
     }
 }
 
-/**
- * Конфигурация Docker-образа через Jib
- */
 jib {
     container {
         ports = ['8283'] // Открываемый порт
-        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"] // Активация профиля
+        jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
         environment = ['VAULT_TOKEN': "${System.env.VAULT_TOKEN}".toString(),
                        'TZ'         : 'Europe/Moscow'
         ] // Секреты
-        creationTime = 'USE_CURRENT_TIMESTAMP' // Временная метка образа
-        labels = [ // Метаданные
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        labels = [
                    'maintainer': 'Vadim Tolstov @VadimTolstovv',
                    'version'   : "${project.version}".toString()
         ]
     }
     from {
-        image = "${project.ext.dockerImage}" // Базовый образ
+        image = "${project.ext.dockerImage}"
         platforms {
             platform {
-                architecture = "${project.ext.dockerArch}" // Архитектура
+                architecture = "${project.ext.dockerArch}"
                 os = 'linux'
             }
         }
     }
     to {
-        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}" // Имя образа
-        tags = ['latest', "${project.version}"] // Теги
+        image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}"
+        tags = ['latest', "${project.version}"]
     }
 }
 
-// Зависимости задач сборки
 tasks.jib.dependsOn test
 tasks.jibDockerBuild.dependsOn test
 
-// Стратегия обработки дубликатов в JAR
 tasks.named('bootJar') {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// Задача для вывода версии проекта
 tasks.register('printVersion') {
     doLast {
         println project.version
     }
 }
 
-// Настройка тестов
 tasks.named('test') {
     useJUnitPlatform()
 }
