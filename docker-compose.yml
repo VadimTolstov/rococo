@@ -197,7 +197,6 @@ services:
       - EXECUTION_TYPE=${EXECUTION_TYPE}
       - SELENOID_BROWSER=${SELENOID_BROWSER}
     volumes:
-      - allure-results:/rococo/rococo-e-2-e-tests/build/allure-results
       - ./rococo-e-2-e-tests/.screen-output/screenshots/selenoid:/rococo/rococo-e-2-e-tests/.screen-output/screenshots/selenoid
     depends_on:
       frontend.rococo.dc:
@@ -216,8 +215,6 @@ services:
       - KEEP_HISTORY=1
     ports:
       - 5050:5050
-    volumes:
-      - allure-results:/app/allure-results
     networks:
       - rococo-network
 
