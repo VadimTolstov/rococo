@@ -216,8 +216,6 @@ services:
       - KEEP_HISTORY=1
     ports:
       - 5050:5050
-    volumes:
-      - allure-results:/app/allure-results
     networks:
       - rococo-network
 
