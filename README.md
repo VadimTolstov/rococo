@@ -366,12 +366,15 @@ $ ./gradlew :rococo-e-2-e-tests:allureServe
 127.0.0.1 rococo-all-db
 127.0.0.1 allure
 ```
-
-2. Запустить скрипт:
+2. Создать volume для allure для сохранения отчетов:
+```posh
+$ docker volume create allure-results
+```
+3. Запустить скрипт:
 ```posh
 $ bash docker-compose-e2e.sh
 ```
-3. Дополнительные варианты запуска
+4. Дополнительные варианты запуска
 
 Можно выбрать браузер, передав его название (chrome или firefox) в параметрах команды:
 ```posh
@@ -390,11 +393,11 @@ bash docker-compose-e2e.sh chrome --skip-build
 bash docker-compose-e2e.sh firefox --skip-build
 ```
 
-4. После того, как все контейнеры успешно соберутся и запустятся - переключиться на логи контейнера rococo-tests командой:
+5. После того, как все контейнеры успешно соберутся и запустятся - переключиться на логи контейнера rococo-tests командой:
 ```posh
 $ docker logs -f rococo-e-2-e
 ```
-5. После прогона тестов отчет можно посмотреть по ссылке http://localhost:5252/allure-docker-service-ui
+6. После прогона тестов отчет можно посмотреть по ссылке http://localhost:5252/allure-docker-service-ui
 
 <a name="report"></a>
 ### Итоговые dashboard в Allure Report
