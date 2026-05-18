@@ -89,7 +89,7 @@ public class MuseumGatewayTest {
 
 
   @Test
-  @DisplayName("POST(/api/museum)  ошибка при создании музея c невалидным токеном")
+  @DisplayName("POST(/api/museum)  ошибка при создании музея c невалидным токеном.")
   @User
   @ApiLogin
   void addMuseumIncorrectToken() {
