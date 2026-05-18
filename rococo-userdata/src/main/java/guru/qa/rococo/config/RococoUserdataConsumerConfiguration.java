@@ -24,11 +24,12 @@ public class RococoUserdataConsumerConfiguration {
 
     @Bean
     public ConsumerFactory<String, UserJson> consumerFactory(SslBundles sslBundles) {
-        final JsonDeserializer<UserJson> jsonDeserializer = new JsonDeserializer<>();
+        final JsonDeserializer<UserJson> jsonDeserializer = new JsonDeserializer<>(UserJson.class, false);
         jsonDeserializer.addTrustedPackages("*");
+        jsonDeserializer.setUseTypeHeaders(false);
 
         return new DefaultKafkaConsumerFactory<>(
-                kafkaProperties.buildAdminProperties(sslBundles),
+                kafkaProperties.buildConsumerProperties(sslBundles),
 
                 new StringDeserializer(),
 

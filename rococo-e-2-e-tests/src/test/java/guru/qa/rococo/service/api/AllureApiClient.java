@@ -4,20 +4,14 @@ import guru.qa.rococo.api.AllureApi;
 import guru.qa.rococo.api.core.RequestExecutor;
 import guru.qa.rococo.api.core.RestClient;
 import guru.qa.rococo.config.Config;
-import guru.qa.rococo.model.allure.AllureResult;
 import guru.qa.rococo.model.allure.AllureResults;
 import guru.qa.rococo.model.allure.Project;
 import guru.qa.rococo.model.allure.ProjectResponse;
 import io.qameta.allure.Param;
-import io.qameta.allure.Step;
 import io.qameta.allure.model.Parameter;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit2.HttpException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class AllureApiClient implements RequestExecutor {
@@ -35,7 +29,7 @@ public class AllureApiClient implements RequestExecutor {
   }
 
 
- //"Создаем проект {projectId} для allure"
+  //"Создаем проект {projectId} для allure"
   public void createProject(String projectId) {
     if (isProjectExists(projectId)) {
       LOG.info("Проект {} уже существует", projectId);
@@ -46,9 +40,9 @@ public class AllureApiClient implements RequestExecutor {
   }
 
 
-//"Отправляем результаты тестов в allure по проекту {projectId}"
+  //"Отправляем результаты тестов в allure по проекту {projectId}"
   public void uploadResults(String projectId, @Param(mode = Parameter.Mode.HIDDEN) AllureResults allureResults) {
-      executeVoid(allureApi.uploadResults(projectId, allureResults), 200);
+    executeVoid(allureApi.uploadResults(projectId, allureResults), 200);
   }
 
   //"Сгенерируем отчет по проекту {projectId}"

@@ -56,7 +56,7 @@ public class ArtistGatewayTest {
   }
 
   @Test
-  @DisplayName("POST(/api/artist)  ошибка при создании художника без токина")
+  @DisplayName("POST(/api/artist)  ошибка при создании художника без токена")
   @User
   @ApiLogin
   void addArtistNotToken() {

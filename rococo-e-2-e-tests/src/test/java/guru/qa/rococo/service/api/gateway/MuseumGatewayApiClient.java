@@ -94,7 +94,7 @@ public class MuseumGatewayApiClient implements RequestExecutor, ErrorAsserter {
    *
    * @param museumJson  объект {@link MuseumJson} с данными создаваемого музея.
    *                    Должен содержать обязательные поля (title, description, city, country, photo)
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return созданный объект {@link MuseumJson} с присвоенным идентификатором и данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой, данные невалидны или музей с таким названием уже существует
    * @throws NullPointerException           если переданный museumJson равен null
@@ -112,7 +112,7 @@ public class MuseumGatewayApiClient implements RequestExecutor, ErrorAsserter {
    *
    * @param museumJson  объект {@link MuseumJson} с обновляемыми данными музея.
    *                    Должен содержать идентификатор существующего музея и поля для обновления
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return обновленный объект {@link MuseumJson} с актуальными данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой, музей не найден или данные невалидны
    * @throws NullPointerException           если переданный museumJson равен null

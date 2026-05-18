@@ -24,9 +24,9 @@ public class SessionGatewayApiClient implements RequestExecutor {
   }
 
   /**
-   * Метод для получения сеанса пользователя по токину.
+   * Метод для получения сеанса пользователя по токену.
    *
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return {@link UserJson}.
    */
   @Step("Получения пользователя  по username = {username}")

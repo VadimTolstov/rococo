@@ -66,7 +66,7 @@ public class MuseumGatewayTest {
   }
 
   @Test
-  @DisplayName("POST(/api/museum) ошибка при создании музея без токина")
+  @DisplayName("POST(/api/museum) ошибка при создании музея без токена")
   @User
   @ApiLogin
   void addMuseumNotToken() {
@@ -89,7 +89,7 @@ public class MuseumGatewayTest {
 
 
   @Test
-  @DisplayName("POST(/api/museum)  ошибка при создании музея c невалидным токином")
+  @DisplayName("POST(/api/museum)  ошибка при создании музея c невалидным токеном")
   @User
   @ApiLogin
   void addMuseumIncorrectToken() {
@@ -164,7 +164,7 @@ public class MuseumGatewayTest {
   }
 
   @Test
-  @DisplayName("PATCH(/api/artist) данные музея не обновляются с поддельным токином")
+  @DisplayName("PATCH(/api/artist) данные музея не обновляются с поддельным токеном")
   @User
   @ApiLogin
   @Content(museumCount = 1)

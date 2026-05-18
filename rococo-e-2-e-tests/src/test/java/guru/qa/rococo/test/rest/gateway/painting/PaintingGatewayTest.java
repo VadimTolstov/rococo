@@ -70,7 +70,7 @@ public class PaintingGatewayTest {
   }
 
   @Test
-  @DisplayName("POST(/api/painting)  ошибка при создании картины без токина")
+  @DisplayName("POST(/api/painting)  ошибка при создании картины без токена")
   @Content(
       museumCount = 1,
       artistCount = 1
@@ -95,7 +95,7 @@ public class PaintingGatewayTest {
 
 
   @Test
-  @DisplayName("POST(/api/painting)  ошибка при создании картины с поддельным токином")
+  @DisplayName("POST(/api/painting)  ошибка при создании картины с поддельным токеном")
   @Content(
       museumCount = 1,
       artistCount = 1
@@ -179,7 +179,7 @@ public class PaintingGatewayTest {
   }
 
   @Test
-  @DisplayName("PATCH(/api/painting) данные картины не обновляются с поддельным токином")
+  @DisplayName("PATCH(/api/painting) данные картины не обновляются с поддельным токен")
   @User
   @ApiLogin
   @Content(

@@ -25,7 +25,7 @@ public class UserdataGatewayApiClient implements RequestExecutor, ErrorAsserter 
   /**
    * Метод для получения пользователя по имени.
    *
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return {@link UserJson}.
    */
   @Step("Получения пользователя  по username = {username}")
@@ -37,7 +37,7 @@ public class UserdataGatewayApiClient implements RequestExecutor, ErrorAsserter 
    * Метод для обновления данных пользователя.
    *
    * @param userJson    данные пользователя (тип: {@link UserJson}).
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return {@link UserJson}.
    */
   @Step("Обновление данных пользователя")

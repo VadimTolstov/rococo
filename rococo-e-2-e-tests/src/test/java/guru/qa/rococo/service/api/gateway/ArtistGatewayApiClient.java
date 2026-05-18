@@ -47,7 +47,7 @@ public class ArtistGatewayApiClient implements RequestExecutor, ErrorAsserter {
    *
    * @param artist      объект {@link ArtistJson} с данными создаваемого художника.
    *                    Должен содержать обязательные поля (name, biography, photo)
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return созданный объект {@link ArtistJson} с присвоенным идентификатором и данными из системы
    * @throws ApiException если запрос завершился ошибкой, данные невалидны или художник с таким именем уже существует
    */
@@ -63,7 +63,7 @@ public class ArtistGatewayApiClient implements RequestExecutor, ErrorAsserter {
    *
    * @param artist      объект {@link ArtistJson} с обновляемыми данными художника.
    *                    Должен содержать идентификатор существующего художника и поля для обновления
-   * @param bearerToken объект {@link String} с токином авторизации.
+   * @param bearerToken объект {@link String} с токеном авторизации.
    * @return обновленный объект {@link ArtistJson} с актуальными данными из системы
    * @throws ApiException если запрос завершился ошибкой или данные невалидны
    */

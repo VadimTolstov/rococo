@@ -79,7 +79,7 @@ public class PaintingGatewayApiClient implements RequestExecutor, ErrorAsserter 
    *
    * @param paintingJson объект {@link PaintingJson} с данными создаваемой картины.
    *                     Должен содержать обязательные поля (title, description, content, artistId)
-   * @param bearerToken  объект {@link String} с токином авторизации.
+   * @param bearerToken  объект {@link String} с токеном авторизации.
    * @return созданный объект {@link PaintingJson} с присвоенным идентификатором и данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой, данные невалидны
    *                                        или картина с таким названием уже существует
@@ -97,7 +97,7 @@ public class PaintingGatewayApiClient implements RequestExecutor, ErrorAsserter 
    *
    * @param paintingJson объект {@link PaintingJson} с обновляемыми данными картины.
    *                     Должен содержать идентификатор существующей картины и поля для обновления
-   * @param bearerToken  объект {@link String} с токином авторизации.
+   * @param bearerToken  объект {@link String} с токеном авторизации.
    * @return обновленный объект {@link PaintingJson} с актуальными данными из системы
    * @throws guru.qa.rococo.ex.ApiException если запрос завершился ошибкой или данные невалидны
    * @throws NullPointerException           если переданный paintingJson равен null
